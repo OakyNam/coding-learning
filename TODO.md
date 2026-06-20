@@ -15,11 +15,11 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [ ] `languages\bash\advanced\09_deployment_scripts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\bash\advanced\10_script_architecture.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\bash\advanced\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\beginner\01_setup_and_shell_basics.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\beginner\02_commands_files_and_directories.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\beginner\03_variables_and_quoting.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\beginner\04_input_and_output.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\beginner\05_conditionals.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [x] `languages\bash\beginner\01_setup_and_shell_basics.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\bash\beginner\02_commands_files_and_directories.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\bash\beginner\03_variables_and_quoting.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\bash\beginner\04_input_and_output.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\bash\beginner\05_conditionals.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [ ] `languages\bash\beginner\06_loops.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\bash\beginner\07_arrays.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\bash\beginner\08_functions.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
