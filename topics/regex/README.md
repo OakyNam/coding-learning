@@ -1,21 +1,16 @@
-# Regex
+﻿# Regex
 
-Regex, short for regular expressions, is a pattern language for finding and validating text.
+Regex is a shared programming topic that transfers across languages and tools.
 
-## Core Ideas
+## Lessons
 
-- Use literals to match exact text.
-- Use character classes like `[0-9]` for groups of characters.
-- Use quantifiers like `+`, `*`, and `{3}` to control repetition.
+1. [Foundations](01_foundations.md)
+2. [Core Concepts](02_core_concepts.md)
+3. [Practical Patterns](03_practical_patterns.md)
+4. [Common Mistakes](04_common_mistakes.md)
+5. [Practice Project](05_practice_project.md)
 
-## Example
+## Goal
 
-```regex
-^[A-Za-z0-9_]+$
-```
+Use this topic in at least one language track and one small project.
 
-This matches a simple username containing letters, numbers, and underscores.
-
-## Practice
-
-Write a regex that matches a 5-digit ZIP code.

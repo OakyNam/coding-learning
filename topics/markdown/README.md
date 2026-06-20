@@ -1,23 +1,16 @@
-# Markdown
+﻿# Markdown
 
-Markdown is a lightweight format for writing readable documents with headings, links, lists, and code blocks.
+Markdown is a shared programming topic that transfers across languages and tools.
 
-## Core Ideas
+## Lessons
 
-- `#` creates headings.
-- `-` creates bullet lists.
-- Backticks mark code.
-- Links use `[text]` followed by `(path-or-url)`.
+1. [Foundations](01_foundations.md)
+2. [Core Concepts](02_core_concepts.md)
+3. [Practical Patterns](03_practical_patterns.md)
+4. [Common Mistakes](04_common_mistakes.md)
+5. [Practice Project](05_practice_project.md)
 
-## Example
+## Goal
 
-```markdown
-# Notes
+Use this topic in at least one language track and one small project.
 
-- Learn one idea at a time.
-- Practice with small examples.
-```
-
-## Practice
-
-Write a short README for a project idea using headings, bullets, and a code block.

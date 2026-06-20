@@ -1,27 +1,48 @@
-# 07 - Lists and Collections
+﻿# 07 - Lists and Collections
 
-Lists store multiple values in order.
+## Learning Goal
 
-```python
-names = ["Ali", "Mona", "Sam"]
-print(names[0])
+Learn lists and collections in Python well enough to read examples, edit them, and use the idea in a small program.
 
-names.append("Nora")
-names.remove("Sam")
+## Why It Matters
+
+This lesson helps you move from recognizing the idea to using it in real programs. Read the example, trace what each line does, and then change the code so the idea becomes yours.
+
+## Core Idea
+
+In Python, this topic shows up often at the beginner level. Focus on the shape of the problem first: what data enters, what work happens, and what result should come out.
+
+## Example
+
+```
+items = ["api", "json", "test"]
+for item in items:
+    print(item.upper())
 ```
 
-Loop through a list:
+## How To Think About It
 
-```python
-for name in names:
-    print(name)
-```
+- Name the input before writing the solution.
+- Keep each step small enough to explain out loud.
+- Check the result with simple values before trying harder cases.
+- Prefer clear code while learning; clever code can wait.
 
-Useful operations:
+## Common Mistakes
 
-```python
-len(names)
-"Ali" in names
-```
+- Copying the example without changing it.
+- Ignoring error messages instead of reading the first useful line.
+- Mixing several new ideas in one experiment.
+- Forgetting to run the program after each small change.
 
-Practice: create a list of favorite foods and print each one.
+## Practice
+
+1. Recreate the example from memory.
+2. Change the names, values, or inputs and run it again.
+3. Write a short note explaining what changed.
+4. Connect the idea to one shared topic from the root README.
+
+## Next Step
+
+Return to this level's README and continue with the next numbered lesson.
+
+

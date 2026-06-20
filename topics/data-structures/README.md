@@ -1,16 +1,16 @@
-# Data Structures
+﻿# Data Structures
 
-Data structures organize information so programs can store, search, update, and process it effectively.
+Data Structures is a shared programming topic that transfers across languages and tools.
 
-## Common Structures
+## Lessons
 
-- Arrays and lists
-- Stacks and queues
-- Hash maps and dictionaries
-- Sets
-- Trees
-- Graphs
+1. [Foundations](01_foundations.md)
+2. [Core Concepts](02_core_concepts.md)
+3. [Practical Patterns](03_practical_patterns.md)
+4. [Common Mistakes](04_common_mistakes.md)
+5. [Practice Project](05_practice_project.md)
 
-## Practice
+## Goal
 
-Choose a list, set, or dictionary for storing unique usernames, then explain your choice.
+Use this topic in at least one language track and one small project.
+

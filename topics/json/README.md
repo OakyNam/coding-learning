@@ -1,23 +1,25 @@
-# JSON
+﻿# JSON
 
-JSON is a text format for storing and sending structured data. It is common in APIs, configuration files, logs, and data exchange.
+JSON is a text format for storing and sending structured data. This topic emphasizes how to query JSON, especially with JSONPath-style thinking.
 
-## Core Ideas
+## Lessons
 
-- JSON stores objects, arrays, strings, numbers, booleans, and null.
-- Object keys must be strings in double quotes.
-- JSON is data only; it does not include comments or functions.
+1. [Foundations](01_foundations.md)
+2. [JSON Structure](02_json_structure.md)
+3. [JSONPath Basics](03_jsonpath_basics.md)
+4. [Querying Nested Data](04_querying_nested_data.md)
+5. [Querying Arrays](05_querying_arrays.md)
+6. [Filters and Conditions](06_filters_and_conditions.md)
+7. [Querying API Responses](07_querying_api_responses.md)
+8. [Querying JSON in Languages](08_querying_json_in_languages.md)
+9. [Common Query Mistakes](09_common_query_mistakes.md)
+10. [Practice Project](10_practice_project.md)
 
-## Example
+## Querying Focus
 
-```json
-{
-  "name": "Mona",
-  "skills": ["Python", "SQL"],
-  "active": true
-}
-```
+You will practice selecting fields, nested values, array items, filtered results, API response data, and missing or null values.
 
-## Practice
+## Goal
 
-Create a JSON object for a student with a name, age, active status, and list of completed lessons.
+Be able to look at an unfamiliar JSON document and write a precise query for the data you need.
+

@@ -1,18 +1,49 @@
-# 03 - Variables and Data Types
+﻿# 03 - Variables and Data Types
 
-Use `let` for values that change and `const` for values that should not be reassigned.
+## Learning Goal
 
-```javascript
-const name = "Mona";
-let age = 25;
-const price = 19.99;
-const isActive = true;
+Learn variables and data types in JavaScript well enough to read examples, edit them, and use the idea in a small program.
+
+## Why It Matters
+
+This lesson helps you move from recognizing the idea to using it in real programs. Read the example, trace what each line does, and then change the code so the idea becomes yours.
+
+## Core Idea
+
+In JavaScript, this topic shows up often at the beginner level. Focus on the shape of the problem first: what data enters, what work happens, and what result should come out.
+
+## Example
+
+```
+const items = ["api", "json", "test"];
+for (const item of items) {
+  console.log(item.toUpperCase());
+}
 ```
 
-Common types include strings, numbers, booleans, arrays, objects, `null`, and `undefined`.
+## How To Think About It
 
-```javascript
-console.log(typeof name);
-```
+- Name the input before writing the solution.
+- Keep each step small enough to explain out loud.
+- Check the result with simple values before trying harder cases.
+- Prefer clear code while learning; clever code can wait.
 
-Practice: create variables for a course title, lesson count, and completion status.
+## Common Mistakes
+
+- Copying the example without changing it.
+- Ignoring error messages instead of reading the first useful line.
+- Mixing several new ideas in one experiment.
+- Forgetting to run the program after each small change.
+
+## Practice
+
+1. Recreate the example from memory.
+2. Change the names, values, or inputs and run it again.
+3. Write a short note explaining what changed.
+4. Connect the idea to one shared topic from the root README.
+
+## Next Step
+
+Return to this level's README and continue with the next numbered lesson.
+
+

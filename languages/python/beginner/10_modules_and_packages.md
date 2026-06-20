@@ -1,29 +1,48 @@
-# 10 - Modules and Packages
+﻿# 10 - Modules and Packages
 
-A module is a Python file you can import.
+## Learning Goal
 
-```python
-import math
+Learn modules and packages in Python well enough to read examples, edit them, and use the idea in a small program.
 
-print(math.sqrt(16))
+## Why It Matters
+
+This lesson helps you move from recognizing the idea to using it in real programs. Read the example, trace what each line does, and then change the code so the idea becomes yours.
+
+## Core Idea
+
+In Python, this topic shows up often at the beginner level. Focus on the shape of the problem first: what data enters, what work happens, and what result should come out.
+
+## Example
+
+```
+items = ["api", "json", "test"]
+for item in items:
+    print(item.upper())
 ```
 
-Import your own file:
+## How To Think About It
 
-```text
-project/
-  main.py
-  helpers.py
-```
+- Name the input before writing the solution.
+- Keep each step small enough to explain out loud.
+- Check the result with simple values before trying harder cases.
+- Prefer clear code while learning; clever code can wait.
 
-```python
-from helpers import greet
-```
+## Common Mistakes
 
-Packages are reusable code installed from tools like `pip`.
+- Copying the example without changing it.
+- Ignoring error messages instead of reading the first useful line.
+- Mixing several new ideas in one experiment.
+- Forgetting to run the program after each small change.
 
-```bash
-pip install requests
-```
+## Practice
 
-Practice: create `helpers.py` with one function and import it in `main.py`.
+1. Recreate the example from memory.
+2. Change the names, values, or inputs and run it again.
+3. Write a short note explaining what changed.
+4. Connect the idea to one shared topic from the root README.
+
+## Next Step
+
+Return to this level's README and continue with the next numbered lesson.
+
+

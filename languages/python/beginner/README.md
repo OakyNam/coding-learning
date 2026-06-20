@@ -1,6 +1,6 @@
-# Python Beginner
+﻿# Python Beginner
 
-Start here if you are new to Python or programming.
+This level contains detailed lessons for Python. Work through them in order, run the examples, and keep a notes file with what you learn.
 
 ## Lessons
 
@@ -14,3 +14,8 @@ Start here if you are new to Python or programming.
 8. [Dictionaries and Objects](08_dictionaries_and_objects.md)
 9. [Functions](09_functions.md)
 10. [Modules and Packages](10_modules_and_packages.md)
+
+## Completion Goal
+
+By the end of this level, you should be able to explain each topic, modify the examples, and build a small project that uses several lessons together.
+

@@ -1,25 +1,48 @@
-# 03 - Variables and Data Types
+﻿# 03 - Variables and Data Types
 
-Variables store values so you can reuse them.
+## Learning Goal
 
-```python
-name = "Mona"
-age = 25
-price = 19.99
-is_active = True
+Learn variables and data types in Python well enough to read examples, edit them, and use the idea in a small program.
+
+## Why It Matters
+
+This lesson helps you move from recognizing the idea to using it in real programs. Read the example, trace what each line does, and then change the code so the idea becomes yours.
+
+## Core Idea
+
+In Python, this topic shows up often at the beginner level. Focus on the shape of the problem first: what data enters, what work happens, and what result should come out.
+
+## Example
+
+```
+items = ["api", "json", "test"]
+for item in items:
+    print(item.upper())
 ```
 
-Common beginner types:
+## How To Think About It
 
-- `str` for text
-- `int` for whole numbers
-- `float` for decimals
-- `bool` for true or false
+- Name the input before writing the solution.
+- Keep each step small enough to explain out loud.
+- Check the result with simple values before trying harder cases.
+- Prefer clear code while learning; clever code can wait.
 
-Use `type()` to inspect a value:
+## Common Mistakes
 
-```python
-print(type(name))
-```
+- Copying the example without changing it.
+- Ignoring error messages instead of reading the first useful line.
+- Mixing several new ideas in one experiment.
+- Forgetting to run the program after each small change.
 
-Practice: create variables for a book title, page count, and whether you finished it.
+## Practice
+
+1. Recreate the example from memory.
+2. Change the names, values, or inputs and run it again.
+3. Write a short note explaining what changed.
+4. Connect the idea to one shared topic from the root README.
+
+## Next Step
+
+Return to this level's README and continue with the next numbered lesson.
+
+

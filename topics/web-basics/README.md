@@ -1,14 +1,16 @@
-# Web Basics
+﻿# Web Basics
 
-Web development uses HTML for structure, CSS for style, and JavaScript for behavior.
+Web Basics is a shared programming topic that transfers across languages and tools.
 
-## Core Ideas
+## Lessons
 
-- HTML describes page content.
-- CSS controls layout and appearance.
-- JavaScript reacts to user actions.
-- The browser loads files and renders the page.
+1. [Foundations](01_foundations.md)
+2. [Core Concepts](02_core_concepts.md)
+3. [Practical Patterns](03_practical_patterns.md)
+4. [Common Mistakes](04_common_mistakes.md)
+5. [Practice Project](05_practice_project.md)
 
-## Practice
+## Goal
 
-Sketch a simple page with a heading, paragraph, button, and list of links.
+Use this topic in at least one language track and one small project.
+

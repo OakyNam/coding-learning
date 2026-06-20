@@ -1,20 +1,21 @@
-# JavaScript Advanced
+﻿# JavaScript Advanced
 
-This level focuses on advanced runtime behavior and production JavaScript.
+This level contains detailed lessons for JavaScript. Work through them in order, run the examples, and keep a notes file with what you learn.
 
-## Planned Lessons
+## Lessons
 
-1. Closures
-2. Event loop
-3. Advanced async patterns
-4. Modules and bundling
-5. TypeScript overview
-6. Performance
-7. Security in web apps
-8. Testing strategy
-9. Node.js services
-10. Deployment
+1. [Closures](01_closures.md)
+2. [Event Loop](02_event_loop.md)
+3. [Advanced Async Patterns](03_advanced_async_patterns.md)
+4. [Modules and Bundling](04_modules_and_bundling.md)
+5. [TypeScript Overview](05_typescript_overview.md)
+6. [Performance](06_performance.md)
+7. [Security in Web Apps](07_security_in_web_apps.md)
+8. [Testing Strategy](08_testing_strategy.md)
+9. [Node.js Services](09_node_js_services.md)
+10. [Deployment](10_deployment.md)
 
-## Goal
+## Completion Goal
 
-You should be able to reason about browser and Node.js behavior in larger systems.
+By the end of this level, you should be able to explain each topic, modify the examples, and build a small project that uses several lessons together.
+

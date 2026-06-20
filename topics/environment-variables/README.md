@@ -1,20 +1,16 @@
-# Environment Variables
+﻿# Environment Variables
 
-Environment variables store configuration outside source code.
+Environment Variables is a shared programming topic that transfers across languages and tools.
 
-## Core Ideas
+## Lessons
 
-- They are useful for secrets, URLs, ports, and feature flags.
-- Different environments can use different values.
-- Public repos should include examples, not real secrets.
+1. [Foundations](01_foundations.md)
+2. [Core Concepts](02_core_concepts.md)
+3. [Practical Patterns](03_practical_patterns.md)
+4. [Common Mistakes](04_common_mistakes.md)
+5. [Practice Project](05_practice_project.md)
 
-## Example
+## Goal
 
-```bash
-API_URL=https://example.com
-PORT=3000
-```
+Use this topic in at least one language track and one small project.
 
-## Practice
-
-Create a sample `.env.example` with placeholder values for a local app.

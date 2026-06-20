@@ -1,25 +1,50 @@
-# 02 - Project and File Structure
+﻿# 02 - Project and File Structure
 
-A beginner C# console project usually contains:
+## Learning Goal
 
-```text
-HelloCSharp/
-  HelloCSharp.csproj
-  Program.cs
+Learn project and file structure in C# well enough to read examples, edit them, and use the idea in a small program.
+
+## Why It Matters
+
+This lesson helps you move from recognizing the idea to using it in real programs. Read the example, trace what each line does, and then change the code so the idea becomes yours.
+
+## Core Idea
+
+In C#, this topic shows up often at the beginner level. Focus on the shape of the problem first: what data enters, what work happens, and what result should come out.
+
+## Example
+
+```
+var items = new[] { "api", "json", "test" };
+foreach (var item in items)
+{
+    Console.WriteLine(item.ToUpper());
+}
 ```
 
-`Program.cs` contains the starting code. The `.csproj` file stores project settings.
+## How To Think About It
 
-Run the project:
+- Name the input before writing the solution.
+- Keep each step small enough to explain out loud.
+- Check the result with simple values before trying harder cases.
+- Prefer clear code while learning; clever code can wait.
 
-```bash
-dotnet run
-```
+## Common Mistakes
 
-Build without running:
+- Copying the example without changing it.
+- Ignoring error messages instead of reading the first useful line.
+- Mixing several new ideas in one experiment.
+- Forgetting to run the program after each small change.
 
-```bash
-dotnet build
-```
+## Practice
 
-Practice: create a new console project and find both files.
+1. Recreate the example from memory.
+2. Change the names, values, or inputs and run it again.
+3. Write a short note explaining what changed.
+4. Connect the idea to one shared topic from the root README.
+
+## Next Step
+
+Return to this level's README and continue with the next numbered lesson.
+
+

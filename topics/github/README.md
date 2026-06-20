@@ -1,21 +1,16 @@
-# GitHub
+﻿# GitHub
 
-GitHub hosts Git repositories and adds collaboration tools such as pull requests, issues, and code review.
+GitHub is a shared programming topic that transfers across languages and tools.
 
-## Core Ideas
+## Lessons
 
-- A remote is a repository hosted somewhere else.
-- A pull request proposes changes for review.
-- Issues track work, bugs, and ideas.
+1. [Foundations](01_foundations.md)
+2. [Core Concepts](02_core_concepts.md)
+3. [Practical Patterns](03_practical_patterns.md)
+4. [Common Mistakes](04_common_mistakes.md)
+5. [Practice Project](05_practice_project.md)
 
-## Common Commands
+## Goal
 
-```bash
-git remote -v
-git push origin main
-git pull origin main
-```
+Use this topic in at least one language track and one small project.
 
-## Practice
-
-Create a repository, push a local commit, and view the commit on GitHub.

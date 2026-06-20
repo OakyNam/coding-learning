@@ -1,20 +1,50 @@
-# 02 - Project and File Structure
+﻿# 02 - Project and File Structure
 
-A tiny C project can start with one source file.
+## Learning Goal
 
-```text
-hello-c/
-  README.md
-  main.c
+Learn project and file structure in C well enough to read examples, edit them, and use the idea in a small program.
+
+## Why It Matters
+
+This lesson helps you move from recognizing the idea to using it in real programs. Read the example, trace what each line does, and then change the code so the idea becomes yours.
+
+## Core Idea
+
+In C, this topic shows up often at the beginner level. Focus on the shape of the problem first: what data enters, what work happens, and what result should come out.
+
+## Example
+
+```
+#include <stdio.h>
+int main(void) {
+    printf("learning C\\n");
+    return 0;
+}
 ```
 
-As projects grow, split declarations into `.h` header files and implementations into `.c` source files.
+## How To Think About It
 
-```text
-calculator/
-  main.c
-  calculator.c
-  calculator.h
-```
+- Name the input before writing the solution.
+- Keep each step small enough to explain out loud.
+- Check the result with simple values before trying harder cases.
+- Prefer clear code while learning; clever code can wait.
 
-Practice: create a folder with `main.c` and compile it from the terminal.
+## Common Mistakes
+
+- Copying the example without changing it.
+- Ignoring error messages instead of reading the first useful line.
+- Mixing several new ideas in one experiment.
+- Forgetting to run the program after each small change.
+
+## Practice
+
+1. Recreate the example from memory.
+2. Change the names, values, or inputs and run it again.
+3. Write a short note explaining what changed.
+4. Connect the idea to one shared topic from the root README.
+
+## Next Step
+
+Return to this level's README and continue with the next numbered lesson.
+
+

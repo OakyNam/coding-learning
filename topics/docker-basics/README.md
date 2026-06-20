@@ -1,20 +1,16 @@
-# Docker Basics
+﻿# Docker Basics
 
-Docker packages an application with the environment it needs to run.
+Docker Basics is a shared programming topic that transfers across languages and tools.
 
-## Core Ideas
+## Lessons
 
-- An image is a packaged template.
-- A container is a running instance of an image.
-- A `Dockerfile` describes how to build an image.
+1. [Foundations](01_foundations.md)
+2. [Core Concepts](02_core_concepts.md)
+3. [Practical Patterns](03_practical_patterns.md)
+4. [Common Mistakes](04_common_mistakes.md)
+5. [Practice Project](05_practice_project.md)
 
-## Example
+## Goal
 
-```dockerfile
-FROM alpine
-CMD ["echo", "Hello from Docker"]
-```
+Use this topic in at least one language track and one small project.
 
-## Practice
-
-Explain why a team might use Docker to run the same app on multiple machines.

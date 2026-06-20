@@ -1,21 +1,16 @@
-# Package Managers
+﻿# Package Managers
 
-Package managers install libraries and tools for a language or platform.
+Package Managers is a shared programming topic that transfers across languages and tools.
 
-## Examples
+## Lessons
 
-- Python: `pip`
-- JavaScript: `npm`
-- C#: `dotnet`
-- Java: Maven or Gradle
-- C: system package managers or build tools
+1. [Foundations](01_foundations.md)
+2. [Core Concepts](02_core_concepts.md)
+3. [Practical Patterns](03_practical_patterns.md)
+4. [Common Mistakes](04_common_mistakes.md)
+5. [Practice Project](05_practice_project.md)
 
-## Core Ideas
+## Goal
 
-- Dependencies are third-party code your project needs.
-- Lock files help make installs repeatable.
-- Remove packages you no longer use.
+Use this topic in at least one language track and one small project.
 
-## Practice
-
-Find the package manager used by one language track and write its install command pattern.

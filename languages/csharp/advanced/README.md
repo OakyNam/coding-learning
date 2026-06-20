@@ -1,20 +1,21 @@
-# C# Advanced
+﻿# C# Advanced
 
-This level focuses on production C# and deeper .NET concepts.
+This level contains detailed lessons for C#. Work through them in order, run the examples, and keep a notes file with what you learn.
 
-## Planned Lessons
+## Lessons
 
-1. Generics in depth
-2. Reflection and attributes
-3. Advanced LINQ
-4. Performance and memory
-5. Concurrency patterns
-6. Middleware pipelines
-7. Configuration and logging
-8. Packaging libraries
-9. Cloud deployment
-10. Architecture patterns
+1. [Generics in Depth](01_generics_in_depth.md)
+2. [Reflection and Attributes](02_reflection_and_attributes.md)
+3. [Advanced LINQ](03_advanced_linq.md)
+4. [Performance and Memory](04_performance_and_memory.md)
+5. [Concurrency Patterns](05_concurrency_patterns.md)
+6. [Middleware Pipelines](06_middleware_pipelines.md)
+7. [Configuration and Logging](07_configuration_and_logging.md)
+8. [Packaging Libraries](08_packaging_libraries.md)
+9. [Cloud Deployment](09_cloud_deployment.md)
+10. [Architecture Patterns](10_architecture_patterns.md)
 
-## Goal
+## Completion Goal
 
-You should be able to design, tune, and deploy larger .NET applications.
+By the end of this level, you should be able to explain each topic, modify the examples, and build a small project that uses several lessons together.
+

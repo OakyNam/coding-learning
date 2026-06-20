@@ -1,15 +1,16 @@
-# HTTP and APIs
+﻿# HTTP and APIs
 
-HTTP is the protocol browsers and many applications use to communicate with servers. APIs expose operations that programs can call.
+HTTP and APIs is a shared programming topic that transfers across languages and tools.
 
-## Core Ideas
+## Lessons
 
-- `GET` reads data.
-- `POST` creates data.
-- `PUT` or `PATCH` updates data.
-- `DELETE` removes data.
-- Status codes describe results.
+1. [Foundations](01_foundations.md)
+2. [Core Concepts](02_core_concepts.md)
+3. [Practical Patterns](03_practical_patterns.md)
+4. [Common Mistakes](04_common_mistakes.md)
+5. [Practice Project](05_practice_project.md)
 
-## Practice
+## Goal
 
-Describe an API endpoint for listing courses and choose the HTTP method it should use.
+Use this topic in at least one language track and one small project.
+

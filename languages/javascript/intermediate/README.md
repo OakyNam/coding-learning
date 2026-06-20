@@ -1,20 +1,21 @@
-# JavaScript Intermediate
+﻿# JavaScript Intermediate
 
-This level moves from syntax into real application patterns.
+This level contains detailed lessons for JavaScript. Work through them in order, run the examples, and keep a notes file with what you learn.
 
-## Planned Lessons
+## Lessons
 
-1. DOM basics
-2. Events
-3. Array methods
-4. Objects and prototypes
-5. Error handling
-6. Async JavaScript and promises
-7. Fetch and APIs
-8. npm scripts
-9. Testing
-10. Project organization
+1. [DOM Basics](01_dom_basics.md)
+2. [Events](02_events.md)
+3. [Array Methods](03_array_methods.md)
+4. [Objects and Prototypes](04_objects_and_prototypes.md)
+5. [Error Handling](05_error_handling.md)
+6. [Async JavaScript and Promises](06_async_javascript_and_promises.md)
+7. [Fetch and APIs](07_fetch_and_apis.md)
+8. [npm Scripts](08_npm_scripts.md)
+9. [Testing](09_testing.md)
+10. [Project Organization](10_project_organization.md)
 
-## Goal
+## Completion Goal
 
-You should be able to build a small interactive app that calls an API.
+By the end of this level, you should be able to explain each topic, modify the examples, and build a small project that uses several lessons together.
+

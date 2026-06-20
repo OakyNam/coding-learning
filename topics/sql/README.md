@@ -1,22 +1,16 @@
-# SQL
+﻿# SQL
 
-SQL is used to create, query, and update relational databases.
+SQL is a shared programming topic that transfers across languages and tools.
 
-## Core Ideas
+## Lessons
 
-- Tables store rows and columns.
-- `SELECT` reads data.
-- `WHERE` filters rows.
-- `JOIN` combines related tables.
+1. [Foundations](01_foundations.md)
+2. [Core Concepts](02_core_concepts.md)
+3. [Practical Patterns](03_practical_patterns.md)
+4. [Common Mistakes](04_common_mistakes.md)
+5. [Practice Project](05_practice_project.md)
 
-## Example
+## Goal
 
-```sql
-SELECT name, email
-FROM users
-WHERE active = true;
-```
+Use this topic in at least one language track and one small project.
 
-## Practice
-
-Write a query that returns all products with a price greater than 20.

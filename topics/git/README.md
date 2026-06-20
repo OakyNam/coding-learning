@@ -1,22 +1,16 @@
-# Git
+﻿# Git
 
-Git tracks changes in files so you can review history, create branches, and recover earlier versions.
+Git is a shared programming topic that transfers across languages and tools.
 
-## Core Ideas
+## Lessons
 
-- A repository stores project history.
-- A commit is a saved snapshot.
-- A branch is a movable line of work.
+1. [Foundations](01_foundations.md)
+2. [Core Concepts](02_core_concepts.md)
+3. [Practical Patterns](03_practical_patterns.md)
+4. [Common Mistakes](04_common_mistakes.md)
+5. [Practice Project](05_practice_project.md)
 
-## Common Commands
+## Goal
 
-```bash
-git status
-git add README.md
-git commit -m "docs: update readme"
-git log --oneline
-```
+Use this topic in at least one language track and one small project.
 
-## Practice
-
-Create a small file, commit it, edit it, and use `git diff` to inspect the change.

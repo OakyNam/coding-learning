@@ -1,15 +1,16 @@
-# Security Basics
+﻿# Security Basics
 
-Security means protecting users, data, systems, and trust.
+Security Basics is a shared programming topic that transfers across languages and tools.
 
-## Core Ideas
+## Lessons
 
-- Validate input.
-- Do not store secrets in source code.
-- Use least privilege.
-- Keep dependencies updated.
-- Treat user data carefully.
+1. [Foundations](01_foundations.md)
+2. [Core Concepts](02_core_concepts.md)
+3. [Practical Patterns](03_practical_patterns.md)
+4. [Common Mistakes](04_common_mistakes.md)
+5. [Practice Project](05_practice_project.md)
 
-## Practice
+## Goal
 
-List three secrets that should never be committed to a public repository.
+Use this topic in at least one language track and one small project.
+

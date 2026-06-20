@@ -1,6 +1,6 @@
-# JavaScript Beginner
+﻿# JavaScript Beginner
 
-Start here to learn JavaScript with small scripts and browser-friendly examples.
+This level contains detailed lessons for JavaScript. Work through them in order, run the examples, and keep a notes file with what you learn.
 
 ## Lessons
 
@@ -14,3 +14,8 @@ Start here to learn JavaScript with small scripts and browser-friendly examples.
 8. [Objects and Maps](08_objects_and_maps.md)
 9. [Functions](09_functions.md)
 10. [Modules and Packages](10_modules_and_packages.md)
+
+## Completion Goal
+
+By the end of this level, you should be able to explain each topic, modify the examples, and build a small project that uses several lessons together.
+

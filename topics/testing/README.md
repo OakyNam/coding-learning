@@ -1,20 +1,16 @@
-# Testing
+﻿# Testing
 
-Testing checks that code behaves the way you expect.
+Testing is a shared programming topic that transfers across languages and tools.
 
-## Core Ideas
+## Lessons
 
-- Unit tests check small pieces of code.
-- Integration tests check pieces working together.
-- A good test has clear input and expected output.
+1. [Foundations](01_foundations.md)
+2. [Core Concepts](02_core_concepts.md)
+3. [Practical Patterns](03_practical_patterns.md)
+4. [Common Mistakes](04_common_mistakes.md)
+5. [Practice Project](05_practice_project.md)
 
-## Example
+## Goal
 
-```text
-Given Add(2, 3)
-Expect 5
-```
+Use this topic in at least one language track and one small project.
 
-## Practice
-
-Write three test cases for a function that checks whether a number is even.

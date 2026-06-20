@@ -1,20 +1,50 @@
-# 08 - Dictionaries and Objects
+﻿# 08 - Dictionaries and Objects
 
-A dictionary stores key-value pairs.
+## Learning Goal
 
-```csharp
-Dictionary<string, int> ages = new Dictionary<string, int>();
-ages["Ali"] = 25;
-ages["Mona"] = 30;
+Learn dictionaries and objects in C# well enough to read examples, edit them, and use the idea in a small program.
+
+## Why It Matters
+
+This lesson helps you move from recognizing the idea to using it in real programs. Read the example, trace what each line does, and then change the code so the idea becomes yours.
+
+## Core Idea
+
+In C#, this topic shows up often at the beginner level. Focus on the shape of the problem first: what data enters, what work happens, and what result should come out.
+
+## Example
+
 ```
-
-Read safely:
-
-```csharp
-if (ages.TryGetValue("Ali", out int age))
+var items = new[] { "api", "json", "test" };
+foreach (var item in items)
 {
-    Console.WriteLine(age);
+    Console.WriteLine(item.ToUpper());
 }
 ```
 
-Practice: create a dictionary that maps product names to prices.
+## How To Think About It
+
+- Name the input before writing the solution.
+- Keep each step small enough to explain out loud.
+- Check the result with simple values before trying harder cases.
+- Prefer clear code while learning; clever code can wait.
+
+## Common Mistakes
+
+- Copying the example without changing it.
+- Ignoring error messages instead of reading the first useful line.
+- Mixing several new ideas in one experiment.
+- Forgetting to run the program after each small change.
+
+## Practice
+
+1. Recreate the example from memory.
+2. Change the names, values, or inputs and run it again.
+3. Write a short note explaining what changed.
+4. Connect the idea to one shared topic from the root README.
+
+## Next Step
+
+Return to this level's README and continue with the next numbered lesson.
+
+

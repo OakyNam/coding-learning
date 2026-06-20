@@ -1,6 +1,6 @@
-# C Beginner
+﻿# C Beginner
 
-Start here to learn C through small compiled programs.
+This level contains detailed lessons for C. Work through them in order, run the examples, and keep a notes file with what you learn.
 
 ## Lessons
 
@@ -14,3 +14,8 @@ Start here to learn C through small compiled programs.
 8. [Structs and Objects](08_structs_and_objects.md)
 9. [Functions](09_functions.md)
 10. [Headers and Libraries](10_headers_and_libraries.md)
+
+## Completion Goal
+
+By the end of this level, you should be able to explain each topic, modify the examples, and build a small project that uses several lessons together.
+

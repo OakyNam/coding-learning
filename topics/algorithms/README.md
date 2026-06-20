@@ -1,19 +1,16 @@
-# Algorithms
+﻿# Algorithms
 
-An algorithm is a step-by-step process for solving a problem.
+Algorithms is a shared programming topic that transfers across languages and tools.
 
-## Core Ideas
+## Lessons
 
-- Correctness means the algorithm gives the right answer.
-- Complexity describes how work grows as input grows.
-- Clear steps usually matter more than clever tricks.
+1. [Foundations](01_foundations.md)
+2. [Core Concepts](02_core_concepts.md)
+3. [Practical Patterns](03_practical_patterns.md)
+4. [Common Mistakes](04_common_mistakes.md)
+5. [Practice Project](05_practice_project.md)
 
-## Starter Problems
+## Goal
 
-- Find the largest number in a list.
-- Count how many times a value appears.
-- Search for an item by name.
+Use this topic in at least one language track and one small project.
 
-## Practice
-
-Write plain English steps for finding the smallest number in a list.

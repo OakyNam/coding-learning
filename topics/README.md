@@ -1,4 +1,4 @@
-# Topics
+﻿# Topics
 
 These topics are language-independent skills that make programming easier to understand and apply.
 
@@ -17,7 +17,7 @@ These topics are language-independent skills that make programming easier to und
 
 ## Data
 
-- [JSON](json/README.md)
+- [JSON and JSONPath Querying](json/README.md)
 - [Regex](regex/README.md)
 - [SQL](sql/README.md)
 - [Data Structures](data-structures/README.md)
@@ -37,3 +37,4 @@ These topics are language-independent skills that make programming easier to und
 ## Architecture
 
 - [Object-Oriented Programming](oop/README.md)
+

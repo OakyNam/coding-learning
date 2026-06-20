@@ -1,4 +1,4 @@
-# Coding Learning
+﻿# Coding Learning
 
 A Markdown-first curriculum for learning programming across languages and shared software topics.
 
@@ -11,13 +11,16 @@ Each language has beginner, intermediate, and advanced paths.
 - [C](languages/c/README.md)
 - [JavaScript](languages/javascript/README.md)
 - [Java](languages/java/README.md)
+- [Bash](languages/bash/README.md)
+- [Perl](languages/perl/README.md)
+- [PHP](languages/php/README.md)
 
 ## Topics
 
-Shared topics build skills that transfer across languages.
+Shared topics build skills that transfer across languages. JSON includes a dedicated JSONPath querying track.
 
 - [Topics overview](topics/README.md)
-- [JSON](topics/json/README.md)
+- [JSON and JSONPath Querying](topics/json/README.md)
 - [Regex](topics/regex/README.md)
 - [Git](topics/git/README.md)
 - [GitHub](topics/github/README.md)
@@ -39,6 +42,8 @@ Shared topics build skills that transfer across languages.
 ## How To Study
 
 1. Pick one language and finish its beginner track.
-2. Study the shared topics as they appear in real projects.
-3. Move to intermediate when you can read, edit, and explain small programs.
-4. Use advanced tracks to deepen architecture, performance, and deployment skills.
+2. Study shared topics as they appear in real projects.
+3. Spend extra time on JSON querying because APIs, configuration, and logs often depend on it.
+4. Move to intermediate when you can read, edit, and explain small programs.
+5. Use advanced tracks to deepen architecture, performance, and deployment skills.
+

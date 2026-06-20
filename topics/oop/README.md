@@ -1,14 +1,16 @@
-# Object-Oriented Programming
+﻿# Object-Oriented Programming
 
-Object-oriented programming models software with objects that combine data and behavior.
+Object-Oriented Programming is a shared programming topic that transfers across languages and tools.
 
-## Core Ideas
+## Lessons
 
-- A class describes a kind of object.
-- An object is an instance of a class.
-- Methods define behavior.
-- Encapsulation keeps related data and behavior together.
+1. [Foundations](01_foundations.md)
+2. [Core Concepts](02_core_concepts.md)
+3. [Practical Patterns](03_practical_patterns.md)
+4. [Common Mistakes](04_common_mistakes.md)
+5. [Practice Project](05_practice_project.md)
 
-## Practice
+## Goal
 
-Design a `Book` class with title, author, page count, and a method that prints a summary.
+Use this topic in at least one language track and one small project.
+

@@ -1,20 +1,49 @@
-# 07 - Arrays and Collections
+﻿# 07 - Arrays and Collections
 
-Arrays store ordered values.
+## Learning Goal
 
-```javascript
-const names = ["Ali", "Mona", "Sam"];
-console.log(names[0]);
+Learn arrays and collections in JavaScript well enough to read examples, edit them, and use the idea in a small program.
 
-names.push("Nora");
+## Why It Matters
+
+This lesson helps you move from recognizing the idea to using it in real programs. Read the example, trace what each line does, and then change the code so the idea becomes yours.
+
+## Core Idea
+
+In JavaScript, this topic shows up often at the beginner level. Focus on the shape of the problem first: what data enters, what work happens, and what result should come out.
+
+## Example
+
+```
+const items = ["api", "json", "test"];
+for (const item of items) {
+  console.log(item.toUpperCase());
+}
 ```
 
-Useful methods:
+## How To Think About It
 
-```javascript
-names.includes("Ali");
-names.length;
-names.map(name => name.toUpperCase());
-```
+- Name the input before writing the solution.
+- Keep each step small enough to explain out loud.
+- Check the result with simple values before trying harder cases.
+- Prefer clear code while learning; clever code can wait.
 
-Practice: create an array of prices and calculate the total with a loop.
+## Common Mistakes
+
+- Copying the example without changing it.
+- Ignoring error messages instead of reading the first useful line.
+- Mixing several new ideas in one experiment.
+- Forgetting to run the program after each small change.
+
+## Practice
+
+1. Recreate the example from memory.
+2. Change the names, values, or inputs and run it again.
+3. Write a short note explaining what changed.
+4. Connect the idea to one shared topic from the root README.
+
+## Next Step
+
+Return to this level's README and continue with the next numbered lesson.
+
+
