@@ -1,4 +1,4 @@
-﻿# Curriculum Rewrite TODO
+# Curriculum Rewrite TODO
 
 Status values: `needs-audit`, `audit-dispatched`, `audit-reviewed`, `rewrite-dispatched`, `rewrite-reviewed`, `complete`.
 
@@ -248,10 +248,10 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [ ] `languages\python\advanced\04_async_python.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\advanced\05_performance_profiling.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\advanced\06_packaging_and_publishing.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\python\advanced\07_application_configuration.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\python\advanced\08_logging_and_observability.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [x] `languages\python\advanced\07_application_configuration.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\python\advanced\08_logging_and_observability.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [ ] `languages\python\advanced\09_architecture_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\python\advanced\10_deployment_basics.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [x] `languages\python\advanced\10_deployment_basics.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [ ] `languages\python\advanced\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\beginner\01_setup_and_install.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\beginner\02_project_and_file_structure.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -264,7 +264,7 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [ ] `languages\python\beginner\09_functions.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\beginner\10_modules_and_packages.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\beginner\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\python\intermediate\01_virtual_environments_and_dependency_files.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [x] `languages\python\intermediate\01_virtual_environments_and_dependency_files.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [ ] `languages\python\intermediate\02_reading_and_writing_files.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\intermediate\03_exceptions_and_error_handling.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\intermediate\04_classes_and_objects.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -288,7 +288,7 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [x] `topics\data-structures\03_practical_patterns.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `topics\data-structures\04_common_mistakes.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `topics\data-structures\05_practice_project.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [ ] `topics\data-structures\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
+- [x] `topics\data-structures\README.md` | type: readme | owner: codex-reviewed | status: complete | sources: audit-reviewed
 - [ ] `topics\debugging\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\debugging\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\debugging\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
