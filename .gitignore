@@ -1,0 +1,24 @@
+# Operating system
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+.agents/
+.codex/
+
+# Build and dependency folders
+node_modules/
+bin/
+obj/
+target/
+dist/
+build/
+__pycache__/
+*.pyc
+
+# Environment files
+.env
+.env.*
+!.env.example
