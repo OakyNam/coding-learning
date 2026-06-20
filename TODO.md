@@ -25,7 +25,7 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [x] `languages\bash\beginner\08_functions.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\beginner\09_scripts_and_permissions.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\beginner\10_path_and_reusable_commands.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [ ] `languages\bash\beginner\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
+- [x] `languages\bash\beginner\README.md` | type: readme | owner: codex-reviewed | status: complete | sources: audit-reviewed
 - [ ] `languages\bash\intermediate\01_pipes_and_redirection.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\bash\intermediate\02_exit_codes_and_status_checks.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\bash\intermediate\03_arguments_and_flags.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
