@@ -6,7 +6,6 @@ Thumbs.db
 .vscode/
 .idea/
 .agents/
-.codex/
 
 # Build and dependency folders
 node_modules/
