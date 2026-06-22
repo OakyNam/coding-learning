@@ -1,49 +1,292 @@
-﻿# 09 - Robust Scripts
+# 09 - Robust Scripts
 
 ## Learning Goal
 
-Learn robust scripts in Bash well enough to read examples, edit them, and use the idea in a small program.
+Write Bash scripts that fail early, report useful errors, handle spaces in filenames, clean up temp files, and return meaningful exit statuses.
 
 ## Why It Matters
 
-This lesson helps you move from recognizing the idea to using it in real programs. Read the example, trace what each line does, and then change the code so the idea becomes yours.
+Small shell scripts often start as quick commands pasted into a file. That is fine for experiments, but real scripts need to behave predictably when input is missing, filenames contain spaces, a command fails, or a temporary directory needs to be removed.
+
+A robust Bash script is not one that can never fail. It is one that fails clearly, cleans up after itself, and tells other programs whether the work succeeded.
 
 ## Core Idea
 
-In Bash, this topic shows up often at the intermediate level. Focus on the shape of the problem first: what data enters, what work happens, and what result should come out.
+A robust script makes its assumptions visible:
+
+- Declare the interpreter with a shebang.
+- Enable shell options intentionally.
+- Validate arguments before doing work.
+- Quote expansions so spaces and glob characters are preserved.
+- Send status and error messages to STDERR.
+- Handle failures with clear messages.
+- Clean temporary resources.
+- Use arrays for command arguments and file lists.
+- Avoid parsing `ls`.
+
+The goal is to make each risky part of the script explicit: inputs, filenames, command failures, temporary files, and exit status.
+
+## The Robust Script Starter Pattern
+
+```bash
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+usage() {
+  printf 'Usage: %s SOURCE_DIR DEST_DIR EXTENSION\n' "${0##*/}" >&2
+}
+
+die() {
+  printf 'error: %s\n' "$*" >&2
+  exit 1
+}
+```
+
+The shebang asks the environment to run the script with Bash. That matters because this lesson uses Bash features such as arrays and `shopt`.
+
+`set -e` asks Bash to exit when an unhandled simple command fails. It is useful, but it is not magic. Some contexts, such as commands tested by `if`, `while`, `until`, `&&`, and `||`, change how `-e` behaves.
+
+`set -u` treats an unset variable as an error. This catches misspelled variable names, but it also means optional variables need defaults such as `${name:-}`.
+
+`set -o pipefail` makes a pipeline fail if any command in the pipeline fails, not only the last command.
+
+`set -E` makes an `ERR` trap inherited by shell functions, command substitutions, and subshells. Even with `-E`, prefer explicit checks for failures you expect:
+
+```bash
+if ! mkdir -p "$dest_dir"; then
+  die "could not create destination directory: $dest_dir"
+fi
+```
+
+Shell options help catch mistakes early. They do not replace clear validation, readable error messages, or deliberate handling of expected failures.
 
 ## Example
 
-```
-items=(api json test)
-for item in "${items[@]}"; do
-  echo "${item^^}"
+This script safely archives direct child files from a source directory. It accepts `SOURCE_DIR DEST_DIR EXTENSION`, supports `txt` or `.txt`, handles spaces in filenames, writes the final archive path to STDOUT, and sends status or errors to STDERR.
+
+```bash
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+usage() {
+  printf 'Usage: %s SOURCE_DIR DEST_DIR EXTENSION\n' "${0##*/}" >&2
+}
+
+die() {
+  printf 'error: %s\n' "$*" >&2
+  exit 1
+}
+
+if (($# != 3)); then
+  usage
+  exit 2
+fi
+
+source_dir=$1
+dest_dir=$2
+extension=$3
+extension=${extension#.}
+
+[[ -d $source_dir ]] || die "source directory does not exist: $source_dir"
+[[ -n $extension ]] || die "extension must not be empty"
+
+if ! mkdir -p "$dest_dir"; then
+  die "could not create destination directory: $dest_dir"
+fi
+
+tmp_dir=$(mktemp -d) || die "could not create temporary directory"
+cleanup() {
+  rm -rf "$tmp_dir"
+}
+trap cleanup EXIT
+
+shopt -s nullglob
+files=("$source_dir"/*."$extension")
+
+regular_files=()
+for file in "${files[@]}"; do
+  if [[ -f $file ]]; then
+    regular_files+=("$file")
+  fi
 done
+
+((${#regular_files[@]} > 0)) || die "no .$extension files found in: $source_dir"
+
+manifest="$tmp_dir/manifest.txt"
+: > "$manifest"
+
+for file in "${regular_files[@]}"; do
+  cp -- "$file" "$tmp_dir/" || die "could not copy file: $file"
+  printf '%s\n' "${file##*/}" >> "$manifest"
+done
+
+source_name=${source_dir%/}
+source_name=${source_name##*/}
+timestamp=$(date +%Y%m%d-%H%M%S)
+archive="$dest_dir/$source_name-$timestamp.tar.gz"
+
+if ! tar -czf "$archive" -C "$tmp_dir" .; then
+  die "could not create archive: $archive"
+fi
+
+printf 'archived %d file(s)\n' "${#regular_files[@]}" >&2
+printf '%s\n' "$archive"
 ```
 
-## How To Think About It
+Notice the separation of output streams: the archive path goes to STDOUT so another command can capture it, while progress and errors go to STDERR for humans.
 
-- Name the input before writing the solution.
-- Keep each step small enough to explain out loud.
-- Check the result with simple values before trying harder cases.
-- Prefer clear code while learning; clever code can wait.
+## How To Think About Robustness
+
+Start by asking what can go wrong:
+
+- Are the required arguments present?
+- Does the source directory exist?
+- Can the destination directory be created?
+- What happens when no files match?
+- Do filenames with spaces still work?
+- Will temporary files be removed after success and failure?
+- Does the script return a nonzero exit status when it cannot complete?
+
+Then make each answer visible in the script. Use `if ! command; then ... fi` around failures you expect and want to explain. Use arrays for lists of paths so each filename stays one item, even when it contains spaces. Use globs or `find` for files; do not parse `ls`.
 
 ## Common Mistakes
 
-- Copying the example without changing it.
-- Ignoring error messages instead of reading the first useful line.
-- Mixing several new ideas in one experiment.
-- Forgetting to run the program after each small change.
+- Writing `cp $file "$dest_dir/"` instead of `cp -- "$file" "$dest_dir/"`.
+- Assuming `set -e` catches every failure in every context.
+- Forgetting `pipefail`, so `grep pattern missing.txt | sort` can appear successful because `sort` succeeded.
+- Using `for file in $(ls "$dir")`, which breaks on spaces and parses output meant for humans.
+- Creating predictable temp paths such as `/tmp/my-script`.
+- Sending errors to STDOUT instead of STDERR.
+- Referencing optional variables under `set -u` without a default, such as `$name` instead of `${name:-}`.
+- Using `((count++))` with `set -e`; when `count` is `0`, the arithmetic command returns status `1`. Prefer `((count += 1))`.
 
-## Practice
+## Exercise
 
-1. Recreate the example from memory.
-2. Change the names, values, or inputs and run it again.
-3. Write a short note explaining what changed.
-4. Connect the idea to one shared topic from the root README.
+Write `safe_archive.sh`.
+
+Requirements:
+
+- Accept exactly three arguments: `SOURCE_DIR DEST_DIR EXTENSION`.
+- Accept an extension with or without a leading dot, such as `txt` or `.txt`.
+- Verify that the source directory exists.
+- Create the destination directory if needed.
+- Archive only direct matching regular files, not recursive matches.
+- Correctly handle filenames with spaces.
+- Exit nonzero when no files match.
+- Stage files in a temporary directory created with `mktemp -d`.
+- Include a `manifest.txt` file in the archive.
+- Create `DEST_DIR/<source-name>-<timestamp>.tar.gz`.
+- Clean up the temporary staging directory on success or failure.
+- Send errors and status messages to STDERR.
+- Print only the final archive path to STDOUT.
+- Do not parse `ls`.
+
+Manual tests:
+
+```bash
+mkdir -p demo-src demo-out
+printf 'alpha\n' > 'demo-src/one.txt'
+printf 'beta\n' > 'demo-src/two words.txt'
+printf 'ignore\n' > 'demo-src/skip.md'
+
+bash safe_archive.sh demo-src demo-out txt
+bash safe_archive.sh demo-src demo-out .txt
+bash safe_archive.sh missing demo-out txt
+bash safe_archive.sh demo-src demo-out csv
+```
+
+Expected results:
+
+- The first two commands print an archive path to STDOUT and status to STDERR.
+- The created archive contains `one.txt`, `two words.txt`, and `manifest.txt`.
+- The missing source test exits nonzero and reports an error to STDERR.
+- The no-match test exits nonzero and reports an error to STDERR.
+
+## Worked Answer
+
+```bash
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+usage() {
+  printf 'Usage: %s SOURCE_DIR DEST_DIR EXTENSION\n' "${0##*/}" >&2
+}
+
+die() {
+  printf 'error: %s\n' "$*" >&2
+  exit 1
+}
+
+if (($# != 3)); then
+  usage
+  exit 2
+fi
+
+source_dir=$1
+dest_dir=$2
+extension=$3
+extension=${extension#.}
+
+[[ -d $source_dir ]] || die "source directory does not exist: $source_dir"
+[[ -n $extension ]] || die "extension must not be empty"
+
+if ! mkdir -p "$dest_dir"; then
+  die "could not create destination directory: $dest_dir"
+fi
+
+tmp_dir=$(mktemp -d) || die "could not create temporary directory"
+cleanup() {
+  rm -rf "$tmp_dir"
+}
+trap cleanup EXIT
+
+shopt -s nullglob
+matches=("$source_dir"/*."$extension")
+
+files=()
+for file in "${matches[@]}"; do
+  if [[ -f $file ]]; then
+    files+=("$file")
+  fi
+done
+
+((${#files[@]} > 0)) || die "no .$extension files found in: $source_dir"
+
+manifest="$tmp_dir/manifest.txt"
+: > "$manifest"
+
+for file in "${files[@]}"; do
+  cp -- "$file" "$tmp_dir/" || die "could not copy file: $file"
+  printf '%s\n' "${file##*/}" >> "$manifest"
+done
+
+source_name=${source_dir%/}
+source_name=${source_name##*/}
+timestamp=$(date +%Y%m%d-%H%M%S)
+archive="$dest_dir/$source_name-$timestamp.tar.gz"
+
+if ! tar -czf "$archive" -C "$tmp_dir" .; then
+  die "could not create archive: $archive"
+fi
+
+printf 'archived %d file(s)\n' "${#files[@]}" >&2
+printf '%s\n' "$archive"
+```
+
+Expected behavior:
+
+- With matching files, the script exits `0`, prints the archive path to STDOUT, and prints a short status message to STDERR.
+- With a missing source directory, invalid argument count, empty extension, destination creation failure, or no matching files, the script exits nonzero and prints the problem to STDERR.
+- The temporary staging directory is removed because the `EXIT` trap runs whether the script succeeds or fails.
+- Filenames with spaces are preserved because path expansions are quoted and file lists are stored in arrays.
 
 ## Next Step
 
-Return to this level's README and continue with the next numbered lesson.
+Return to this level's README and continue with the next numbered lesson. As you write future Bash scripts, start from the starter pattern and add validation for the specific risks in that script.
 
+## Sources Used
 
+- GNU Bash Manual for shell options, traps, arrays, quoting, and `shopt`: https://www.gnu.org/software/bash/manual/bash.html
+- ShellCheck SC2086 for why unquoted expansions cause word splitting and globbing: https://www.shellcheck.net/wiki/SC2086
+- Google Shell Style Guide for clear error handling, quoting, and safe temporary-file practices: https://google.github.io/styleguide/shellguide.html
+- GNU coreutils `mktemp` manual for safe temporary file and directory creation: https://www.gnu.org/software/coreutils/manual/html_node/mktemp-invocation.html

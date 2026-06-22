@@ -31,11 +31,11 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [x] `languages\bash\intermediate\03_arguments_and_flags.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\intermediate\04_text_processing_basics.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\intermediate\05_grep_sed_and_awk.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [ ] `languages\bash\intermediate\06_environment_and_configuration.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\intermediate\07_process_control.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\intermediate\08_cron_and_scheduling.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\intermediate\09_robust_scripts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\intermediate\10_project_automation_scripts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [x] `languages\bash\intermediate\06_environment_and_configuration.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\bash\intermediate\07_process_control.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\bash\intermediate\08_cron_and_scheduling.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\bash\intermediate\09_robust_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\bash\intermediate\10_project_automation_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [ ] `languages\bash\intermediate\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\bash\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\c\advanced\01_memory_layout.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
