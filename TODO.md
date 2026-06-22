@@ -11,9 +11,9 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [x] `languages\bash\advanced\05_parallel_work.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\advanced\06_advanced_text_pipelines.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\advanced\07_security_for_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [ ] `languages\bash\advanced\08_ci_automation.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\advanced\09_deployment_scripts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\advanced\10_script_architecture.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [x] `languages\bash\advanced\08_ci_automation.md` | type: lesson | owner: worker-agent-godel-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\bash\advanced\09_deployment_scripts.md` | type: lesson | owner: worker-agent-bacon-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\bash\advanced\10_script_architecture.md` | type: lesson | owner: worker-agent-galileo-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\advanced\README.md` | type: readme | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\beginner\01_setup_and_shell_basics.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\beginner\02_commands_files_and_directories.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
