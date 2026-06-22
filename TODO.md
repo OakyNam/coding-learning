@@ -7,10 +7,10 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [x] `languages\bash\advanced\01_strict_mode.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\advanced\02_traps_and_signals.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\advanced\03_portable_shell_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [ ] `languages\bash\advanced\04_performance.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\advanced\05_parallel_work.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\advanced\06_advanced_text_pipelines.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\advanced\07_security_for_scripts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [x] `languages\bash\advanced\04_performance.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\bash\advanced\05_parallel_work.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\bash\advanced\06_advanced_text_pipelines.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\bash\advanced\07_security_for_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [ ] `languages\bash\advanced\08_ci_automation.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\bash\advanced\09_deployment_scripts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\bash\advanced\10_script_architecture.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
