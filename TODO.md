@@ -4,9 +4,9 @@ Status values: `needs-audit`, `audit-dispatched`, `audit-reviewed`, `rewrite-dis
 
 This inventory is generated from the repo file list. Lesson files need exercises and worked answers; README/workflow/support files need clarity and accurate navigation.
 
-- [ ] `languages\bash\advanced\01_strict_mode.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\advanced\02_traps_and_signals.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\advanced\03_portable_shell_scripts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [x] `languages\bash\advanced\01_strict_mode.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\bash\advanced\02_traps_and_signals.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\bash\advanced\03_portable_shell_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [ ] `languages\bash\advanced\04_performance.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\bash\advanced\05_parallel_work.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\bash\advanced\06_advanced_text_pipelines.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -14,7 +14,7 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [ ] `languages\bash\advanced\08_ci_automation.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\bash\advanced\09_deployment_scripts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\bash\advanced\10_script_architecture.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\advanced\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
+- [x] `languages\bash\advanced\README.md` | type: readme | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\beginner\01_setup_and_shell_basics.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\beginner\02_commands_files_and_directories.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\beginner\03_variables_and_quoting.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
@@ -37,7 +37,7 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [x] `languages\bash\intermediate\09_robust_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\intermediate\10_project_automation_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [ ] `languages\bash\intermediate\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\bash\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
+- [x] `languages\bash\README.md` | type: readme | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [ ] `languages\c\advanced\01_memory_layout.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\c\advanced\02_undefined_behavior.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\c\advanced\03_function_pointers.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
