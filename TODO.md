@@ -83,19 +83,19 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [ ] `languages\csharp\advanced\09_cloud_deployment.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\csharp\advanced\10_architecture_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\csharp\advanced\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\beginner\01_setup_and_install.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\beginner\02_project_and_file_structure.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\beginner\03_variables_and_data_types.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\beginner\04_input_and_output.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\beginner\05_control_flow.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\beginner\06_loops.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\beginner\07_arrays_lists_and_collections.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\beginner\08_dictionaries_and_objects.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\beginner\09_methods.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\beginner\10_namespaces_and_packages.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\beginner\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\intermediate\01_classes_records_and_structs.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\intermediate\02_interfaces.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\csharp\beginner\01_setup_and_install.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\02_project_and_file_structure.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\03_variables_and_data_types.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\04_input_and_output.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\05_control_flow.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\06_loops.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\07_arrays_lists_and_collections.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\08_dictionaries_and_objects.md` | type: lesson | owner: review-agent-reviewed-by-codex | status: rewrite-reviewed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\09_methods.md` | type: lesson | owner: review-agent-reviewed-by-codex | status: rewrite-reviewed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\10_namespaces_and_packages.md` | type: lesson | owner: review-agent | status: rewrite-reviewed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\README.md` | type: readme | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
+- [ ] `languages\csharp\intermediate\01_classes_records_and_structs.md` | type: lesson | owner: worker-agent | status: rewrite-dispatched | sources: official-docs-reviewed
+- [ ] `languages\csharp\intermediate\02_interfaces.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
 - [ ] `languages\csharp\intermediate\03_collections_and_linq.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\csharp\intermediate\04_exceptions.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\csharp\intermediate\05_file_io.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -105,7 +105,7 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [ ] `languages\csharp\intermediate\09_dependency_injection.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\csharp\intermediate\10_building_apis_with_asp_net_core.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\csharp\intermediate\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\csharp\README.md` | type: readme | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
 - [ ] `languages\java\advanced\01_streams.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\java\advanced\02_advanced_generics.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\java\advanced\03_concurrency.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -325,9 +325,9 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [ ] `topics\http-and-apis\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\http-and-apis\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\http-and-apis\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\json\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\json\02_json_structure.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\json\03_jsonpath_basics.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\json\01_foundations.md` | type: lesson | owner: audit-agent-james | status: audit-dispatched | sources: pending
+- [x] `topics\json\02_json_structure.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `topics\json\03_jsonpath_basics.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [ ] `topics\json\04_querying_nested_data.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\json\05_querying_arrays.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\json\06_filters_and_conditions.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -335,7 +335,7 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [ ] `topics\json\08_querying_json_in_languages.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\json\09_common_query_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\json\10_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\json\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
+- [x] `topics\json\README.md` | type: readme | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [ ] `topics\markdown\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\markdown\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\markdown\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending

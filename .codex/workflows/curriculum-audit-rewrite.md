@@ -32,7 +32,7 @@ Do not edit files.
 Research what this lesson or README should teach using authoritative sources.
 Return:
 1. Current file quality problems.
-2. Detailed rewrite outline.
+2. Detailed rewrite outline. with lesson for the topic included. the outline should be detailed enough to show, explain, and teach the concept.
 3. Practical exercise or project prompt if this is a lesson file.
 4. Complete worked answer if this is a lesson file.
 5. Authoritative sources used.
