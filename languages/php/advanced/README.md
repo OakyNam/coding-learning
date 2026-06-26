@@ -14,6 +14,9 @@ This level contains detailed lessons for PHP. Work through them in order, run th
 8. [Deployment](08_deployment.md)
 9. [Framework Overview](09_framework_overview.md)
 10. [Architecture](10_architecture.md)
+11. [Defensive Input Validation](11_defensive_input_validation.md)
+12. [Serialization And Structured Data](12_serialization_and_structured_data.md)
+13. [Logging And Observability](13_logging_and_observability.md)
 
 ## Completion Goal
 

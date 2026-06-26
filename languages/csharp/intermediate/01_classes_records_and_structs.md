@@ -43,7 +43,7 @@ Most application objects should start as classes. Reach for structs only when th
 
 A `class` is a reference type. A variable of a class type stores a reference to an object. If you assign one class variable to another, both variables point to the same object.
 
-```csharp
+```text
 Order first = new Order("A100");
 Order second = first;
 
@@ -65,7 +65,7 @@ Paid
 
 A `struct` is a value type. A variable of a struct type stores the value directly. If you assign one struct variable to another, C# copies the value.
 
-```csharp
+```text
 Money original = new Money(12.00m, "USD");
 Money copy = original;
 copy = copy with { Amount = 15.00m };
@@ -87,7 +87,7 @@ Changing `copy` does not change `original` because `Money` is a small value type
 
 Records are designed for data-focused types. A `record class` is still a reference type, but it gets generated value equality. Two separate record objects can compare as equal when their stored values match.
 
-```csharp
+```text
 Product mug1 = new Product("Travel Mug", new Money(18.00m, "USD"));
 Product mug2 = new Product("Travel Mug", new Money(18.00m, "USD"));
 
@@ -108,7 +108,7 @@ Product { Name = Travel Mug, Price = 18.00 USD }
 
 Records also support `with` expressions, which create a copy with selected changes:
 
-```csharp
+```text
 Product saleMug = mug1 with { Price = new Money(14.00m, "USD") };
 
 Console.WriteLine(mug1);
@@ -250,7 +250,7 @@ Use access modifiers to show what other code is allowed to touch:
 
 In the `Order` class:
 
-```csharp
+```text
 private readonly List<Product> _items = new List<Product>();
 public string Status { get; private set; }
 ```
@@ -277,7 +277,7 @@ public class Customer
 
 Records often use positional syntax:
 
-```csharp
+```text
 public record class Product(string Name, Money Price);
 ```
 

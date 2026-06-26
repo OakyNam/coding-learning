@@ -9,6 +9,7 @@ GitHub is a shared programming topic that transfers across languages and tools.
 3. [Practical Patterns](03_practical_patterns.md)
 4. [Common Mistakes](04_common_mistakes.md)
 5. [Practice Project](05_practice_project.md)
+6. [GitHub Actions](06_github_actions.md)
 
 ## Goal
 

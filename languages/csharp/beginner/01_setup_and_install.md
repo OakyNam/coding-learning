@@ -24,7 +24,7 @@ The .NET runtime runs apps that are already built. If you only install a runtime
 
 The .NET SDK, short for Software Development Kit, includes the runtime plus the developer tools. The SDK gives you the `dotnet` command, project templates, build tools, and everything else you need for this course.
 
-For this course, install a current supported .NET SDK. As of this writing, .NET 10, .NET 9, and .NET 8 are supported on current Windows versions. Choose the latest supported SDK unless your class, job, or project tells you to use a specific version.
+For this course, install the latest supported .NET SDK shown on the official [.NET download page](https://dotnet.microsoft.com/download/dotnet). Support dates change, so use the [.NET support policy](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) to confirm whether a version is still supported. Use a specific SDK only when your class, job, or project requires it.
 
 You also need:
 
@@ -45,13 +45,19 @@ On Windows:
 
 Closing and reopening the terminal matters because installers often update your `PATH`. The `PATH` is how your terminal finds commands like `dotnet`.
 
-On macOS or Linux, use the official install instructions for your operating system from Microsoft Learn. The important beginner rule is the same: install the SDK, not only the runtime.
+On macOS with Apple Silicon:
+
+1. Follow Microsoft's [Install .NET on macOS](https://learn.microsoft.com/en-us/dotnet/core/install/macos) instructions.
+2. Choose the current supported **Arm64** SDK installer for Apple Silicon Macs.
+3. Install the SDK, then close and reopen Terminal so `zsh` can find `dotnet`.
+
+The important beginner rule is the same on every operating system: install the SDK, not only the runtime.
 
 ## Verify the Install
 
 Open a new terminal and run:
 
-```powershell
+```shell
 dotnet --version
 ```
 
@@ -65,7 +71,7 @@ The exact number can be different. That is okay as long as it is a supported SDK
 
 Run:
 
-```powershell
+```shell
 dotnet --info
 ```
 
@@ -73,7 +79,7 @@ This prints more detail, including the installed SDK, runtimes, operating system
 
 Run:
 
-```powershell
+```shell
 dotnet --list-sdks
 ```
 
@@ -84,14 +90,15 @@ If `dotnet` is not recognized:
 - Close and reopen the terminal.
 - Restart your computer if the command still does not appear.
 - Confirm that you installed the SDK, not only the runtime.
-- On Windows, check that .NET is installed under a folder such as `C:\Program Files\dotnet`.
+- Check the install instructions for your operating system and rerun the installer if necessary.
+- Use `dotnet --info` in a new terminal after the command is available to confirm the SDK, architecture, and install location that .NET detects.
 - If you installed Visual Studio or VS Code tooling, confirm it installed or can find a .NET SDK.
 
 ## Create Your First C# Project
 
 Choose a folder where you keep practice projects. Then run these commands:
 
-```powershell
+```shell
 mkdir csharp-playground
 cd csharp-playground
 dotnet new console -n HelloCSharp
@@ -107,7 +114,7 @@ Here is what each command does:
 
 Now run the app:
 
-```powershell
+```shell
 dotnet run
 ```
 
@@ -138,7 +145,7 @@ Console.WriteLine("My setup works.");
 
 Save the file, then run:
 
-```powershell
+```shell
 dotnet run
 ```
 
@@ -194,7 +201,7 @@ The dotnet command works.
 
 One complete command sequence is:
 
-```powershell
+```shell
 dotnet --version
 dotnet --info
 dotnet --list-sdks
@@ -222,7 +229,7 @@ Console.WriteLine("The dotnet command works.");
 
 Run the project again:
 
-```powershell
+```shell
 dotnet run
 ```
 
@@ -236,19 +243,22 @@ The dotnet command works.
 
 The command that created the project was:
 
-```powershell
+```shell
 dotnet new console -n SetupCheck
 ```
 
 The command that ran the project was:
 
-```powershell
+```shell
 dotnet run
 ```
 
 ## Sources
 
 - Microsoft Learn: Install .NET on Windows - <https://learn.microsoft.com/en-us/dotnet/core/install/windows>
+- Microsoft Learn: Install .NET on macOS - <https://learn.microsoft.com/en-us/dotnet/core/install/macos>
+- .NET: Download .NET - <https://dotnet.microsoft.com/download/dotnet>
+- .NET: Support policy - <https://dotnet.microsoft.com/platform/support/policy/dotnet-core>
 - Microsoft Learn: .NET CLI overview - <https://learn.microsoft.com/en-us/dotnet/core/tools/>
 - Microsoft Learn: `dotnet` command - <https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet>
 - Microsoft Learn: `dotnet new` - <https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-new>

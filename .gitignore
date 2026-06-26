@@ -5,7 +5,6 @@ Thumbs.db
 # Editors
 .vscode/
 .idea/
-.agents/
 
 # Build and dependency folders
 node_modules/

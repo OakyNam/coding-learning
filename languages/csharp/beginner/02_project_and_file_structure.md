@@ -21,7 +21,7 @@ Knowing the structure helps you avoid editing generated files by accident. Most 
 
 From a terminal, run:
 
-```bash
+```shell
 dotnet new console -n ProjectTour
 cd ProjectTour
 ```
@@ -133,7 +133,7 @@ When you build or run the project, .NET compiles both `Program.cs` and `Greeting
 
 Use `dotnet build` to compile the project:
 
-```bash
+```shell
 dotnet build
 ```
 
@@ -141,7 +141,7 @@ This checks your code and writes compiled output under `bin/`. It also uses inte
 
 Use `dotnet run` to build if needed and then run the app:
 
-```bash
+```shell
 dotnet run
 ```
 
@@ -173,7 +173,7 @@ Create and inspect a small console project.
 
 Commands:
 
-```bash
+```shell
 dotnet new console -n ProjectTour
 cd ProjectTour
 ```
@@ -215,7 +215,7 @@ public static class Greeting
 
 Build and run:
 
-```bash
+```shell
 dotnet build
 dotnet run
 ```

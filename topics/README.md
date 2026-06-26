@@ -12,6 +12,7 @@ These topics are language-independent skills that make programming easier to und
 
 - [Git](git/README.md)
 - [GitHub](github/README.md)
+- [GitLab](gitlab/README.md)
 - [Package Managers](package-managers/README.md)
 - [Docker Basics](docker-basics/README.md)
 

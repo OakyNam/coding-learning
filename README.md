@@ -24,6 +24,7 @@ Shared topics build skills that transfer across languages. JSON includes a dedic
 - [Regex](topics/regex/README.md)
 - [Git](topics/git/README.md)
 - [GitHub](topics/github/README.md)
+- [GitLab](topics/gitlab/README.md)
 - [SQL](topics/sql/README.md)
 - [Terminal](topics/terminal/README.md)
 - [Markdown](topics/markdown/README.md)

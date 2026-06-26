@@ -14,6 +14,9 @@ This level contains detailed lessons for JavaScript. Work through them in order,
 8. [Testing Strategy](08_testing_strategy.md)
 9. [Node.js Services](09_node_js_services.md)
 10. [Deployment](10_deployment.md)
+11. [Defensive Input Validation](11_defensive_input_validation.md)
+12. [Serialization And Structured Data](12_serialization_and_structured_data.md)
+13. [Logging And Observability](13_logging_and_observability.md)
 
 ## Completion Goal
 

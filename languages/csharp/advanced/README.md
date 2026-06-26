@@ -14,6 +14,8 @@ This level contains detailed lessons for C#. Work through them in order, run the
 8. [Packaging Libraries](08_packaging_libraries.md)
 9. [Cloud Deployment](09_cloud_deployment.md)
 10. [Architecture Patterns](10_architecture_patterns.md)
+11. [Defensive Input Validation](11_defensive_input_validation.md)
+12. [Serialization And Structured Data](12_serialization_and_structured_data.md)
 
 ## Completion Goal
 

@@ -14,6 +14,9 @@ This level contains detailed lessons for C. Work through them in order, run the 
 8. [Portability](08_portability.md)
 9. [Secure C Patterns](09_secure_c_patterns.md)
 10. [Systems Project Design](10_systems_project_design.md)
+11. [Defensive Input Validation](11_defensive_input_validation.md)
+12. [Serialization And Structured Data](12_serialization_and_structured_data.md)
+13. [Logging And Observability](13_logging_and_observability.md)
 
 ## Completion Goal
 

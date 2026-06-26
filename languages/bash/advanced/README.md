@@ -36,6 +36,9 @@ Bash-specific features can make scripts clearer and safer, especially arrays, `[
 8. [CI Automation](08_ci_automation.md): Put scripts under repeatable checks so regressions are caught early.
 9. [Deployment Scripts](09_deployment_scripts.md): Apply the earlier safety and reliability habits to higher-risk release workflows.
 10. [Script Architecture](10_script_architecture.md): Finish by organizing larger scripts into maintainable command-line tools.
+11. [Defensive Input Validation](11_defensive_input_validation.md): Validate external values before they affect shell behavior.
+12. [Structured Data Interchange](12_structured_data_interchange.md): Exchange JSON and CSV without unsafe text parsing.
+13. [Logging And Observability](13_logging_and_observability.md): Make automation failures diagnosable without leaking secrets.
 
 ## Lesson Outcomes
 

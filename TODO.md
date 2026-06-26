@@ -1,43 +1,45 @@
 # Curriculum Rewrite TODO
 
-Status values: `needs-audit`, `audit-dispatched`, `audit-reviewed`, `rewrite-dispatched`, `rewrite-reviewed`, `complete`.
+Status values: `needs-audit`, `audit-dispatched`, `audit-reviewed`, `rewrite-dispatched`, `rewrite-reviewed`, `compatibility-review-needed`, `compatibility-review-dispatched`, `compatibility-reviewed`, `complete`.
 
 This inventory is generated from the repo file list. Lesson files need exercises and worked answers; README/workflow/support files need clarity and accurate navigation.
 
-- [x] `languages\bash\advanced\01_strict_mode.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\advanced\02_traps_and_signals.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\advanced\03_portable_shell_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\advanced\04_performance.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\advanced\05_parallel_work.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\advanced\06_advanced_text_pipelines.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\advanced\07_security_for_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\advanced\08_ci_automation.md` | type: lesson | owner: worker-agent-godel-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\advanced\09_deployment_scripts.md` | type: lesson | owner: worker-agent-bacon-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\advanced\10_script_architecture.md` | type: lesson | owner: worker-agent-galileo-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\advanced\README.md` | type: readme | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\beginner\01_setup_and_shell_basics.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\beginner\02_commands_files_and_directories.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\beginner\03_variables_and_quoting.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\beginner\04_input_and_output.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\beginner\05_conditionals.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\beginner\06_loops.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\beginner\07_arrays.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\beginner\08_functions.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\beginner\09_scripts_and_permissions.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\beginner\10_path_and_reusable_commands.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\beginner\README.md` | type: readme | owner: codex-reviewed | status: complete | sources: audit-reviewed
-- [x] `languages\bash\intermediate\01_pipes_and_redirection.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\intermediate\02_exit_codes_and_status_checks.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\intermediate\03_arguments_and_flags.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\intermediate\04_text_processing_basics.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\intermediate\05_grep_sed_and_awk.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\intermediate\06_environment_and_configuration.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\intermediate\07_process_control.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\intermediate\08_cron_and_scheduling.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\intermediate\09_robust_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [x] `languages\bash\intermediate\10_project_automation_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+Compatibility baseline: files accepted before this gate must be re-reviewed for Windows 10/11 PowerShell and macOS Apple Silicon (`arm64`, `zsh`) instructions. Mermaid diagrams may be used when they clarify an accurate user-to-code data flow and render in GitHub and the VS Code Mermaid extension.
+
+- [ ] `languages\bash\advanced\01_strict_mode.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\advanced\02_traps_and_signals.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\advanced\03_portable_shell_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\advanced\04_performance.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\advanced\05_parallel_work.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\advanced\06_advanced_text_pipelines.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\advanced\07_security_for_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\advanced\08_ci_automation.md` | type: lesson | owner: worker-agent-godel-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\advanced\09_deployment_scripts.md` | type: lesson | owner: worker-agent-bacon-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\advanced\10_script_architecture.md` | type: lesson | owner: worker-agent-galileo-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\advanced\README.md` | type: readme | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\beginner\01_setup_and_shell_basics.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\beginner\02_commands_files_and_directories.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\beginner\03_variables_and_quoting.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\beginner\04_input_and_output.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\beginner\05_conditionals.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\beginner\06_loops.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\beginner\07_arrays.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\beginner\08_functions.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\beginner\09_scripts_and_permissions.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\beginner\10_path_and_reusable_commands.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\beginner\README.md` | type: readme | owner: codex-reviewed | status: complete | sources: audit-reviewed
+- [ ] `languages\bash\intermediate\01_pipes_and_redirection.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\intermediate\02_exit_codes_and_status_checks.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\intermediate\03_arguments_and_flags.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\intermediate\04_text_processing_basics.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\intermediate\05_grep_sed_and_awk.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\intermediate\06_environment_and_configuration.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\intermediate\07_process_control.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\intermediate\08_cron_and_scheduling.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\intermediate\09_robust_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\intermediate\10_project_automation_scripts.md` | type: lesson | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [ ] `languages\bash\intermediate\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [x] `languages\bash\README.md` | type: readme | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\bash\README.md` | type: readme | owner: worker-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [ ] `languages\c\advanced\01_memory_layout.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\c\advanced\02_undefined_behavior.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\c\advanced\03_function_pointers.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -83,29 +85,29 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [ ] `languages\csharp\advanced\09_cloud_deployment.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\csharp\advanced\10_architecture_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\csharp\advanced\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\beginner\01_setup_and_install.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
-- [ ] `languages\csharp\beginner\02_project_and_file_structure.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
-- [ ] `languages\csharp\beginner\03_variables_and_data_types.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
-- [ ] `languages\csharp\beginner\04_input_and_output.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
-- [ ] `languages\csharp\beginner\05_control_flow.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
-- [ ] `languages\csharp\beginner\06_loops.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
-- [ ] `languages\csharp\beginner\07_arrays_lists_and_collections.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
-- [ ] `languages\csharp\beginner\08_dictionaries_and_objects.md` | type: lesson | owner: review-agent-reviewed-by-codex | status: rewrite-reviewed | sources: official-docs-reviewed
-- [ ] `languages\csharp\beginner\09_methods.md` | type: lesson | owner: review-agent-reviewed-by-codex | status: rewrite-reviewed | sources: official-docs-reviewed
-- [ ] `languages\csharp\beginner\10_namespaces_and_packages.md` | type: lesson | owner: review-agent | status: rewrite-reviewed | sources: official-docs-reviewed
-- [ ] `languages\csharp\beginner\README.md` | type: readme | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
-- [ ] `languages\csharp\intermediate\01_classes_records_and_structs.md` | type: lesson | owner: worker-agent | status: rewrite-dispatched | sources: official-docs-reviewed
-- [ ] `languages\csharp\intermediate\02_interfaces.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
-- [ ] `languages\csharp\intermediate\03_collections_and_linq.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\intermediate\04_exceptions.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\intermediate\05_file_io.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\intermediate\06_nullable_reference_types.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\intermediate\07_unit_testing.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\intermediate\08_async_and_tasks.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\intermediate\09_dependency_injection.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\intermediate\10_building_apis_with_asp_net_core.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\csharp\beginner\01_setup_and_install.md` | type: lesson | owner: review-agent-reviewed-by-codex | status: compatibility-reviewed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\02_project_and_file_structure.md` | type: lesson | owner: review-agent-reviewed-by-codex | status: compatibility-reviewed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\03_variables_and_data_types.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\04_input_and_output.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\05_control_flow.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\06_loops.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\07_arrays_lists_and_collections.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\08_dictionaries_and_objects.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\09_methods.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\10_namespaces_and_packages.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\beginner\README.md` | type: readme | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\intermediate\01_classes_records_and_structs.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\intermediate\02_interfaces.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\intermediate\03_collections_and_linq.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\intermediate\04_exceptions.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\intermediate\05_file_io.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\intermediate\06_nullable_reference_types.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\intermediate\07_unit_testing.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\intermediate\08_async_and_tasks.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\intermediate\09_dependency_injection.md` | type: lesson | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
+- [ ] `languages\csharp\intermediate\10_building_apis_with_asp_net_core.md` | type: lesson | owner: review-agent-reviewed-by-codex | status: compatibility-reviewed | sources: official-docs-reviewed
 - [ ] `languages\csharp\intermediate\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\csharp\README.md` | type: readme | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
+- [ ] `languages\csharp\README.md` | type: readme | owner: compatibility-review-pending | status: compatibility-review-needed | sources: official-docs-reviewed
 - [ ] `languages\java\advanced\01_streams.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\java\advanced\02_advanced_generics.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\java\advanced\03_concurrency.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -242,6 +244,29 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [ ] `languages\php\intermediate\10_small_web_apps.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\php\intermediate\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\php\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\bash\advanced\11_defensive_input_validation.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\bash\advanced\12_structured_data_interchange.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\bash\advanced\13_logging_and_observability.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\c\advanced\11_defensive_input_validation.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\c\advanced\12_serialization_and_structured_data.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\c\advanced\13_logging_and_observability.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\csharp\advanced\11_defensive_input_validation.md` | type: lesson | owner: review-agent-reviewed-by-codex | status: rewrite-reviewed | sources: official-docs-reviewed
+- [ ] `languages\csharp\advanced\12_serialization_and_structured_data.md` | type: lesson | owner: review-agent-reviewed-by-codex | status: rewrite-reviewed | sources: official-docs-reviewed
+- [ ] `languages\java\advanced\11_defensive_input_validation.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\java\advanced\12_serialization_and_structured_data.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\java\advanced\13_logging_and_observability.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\javascript\advanced\11_defensive_input_validation.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\javascript\advanced\12_serialization_and_structured_data.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\javascript\advanced\13_logging_and_observability.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\perl\advanced\11_defensive_input_validation.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\perl\advanced\12_serialization_and_structured_data.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\perl\advanced\13_logging_and_observability.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\php\advanced\11_defensive_input_validation.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\php\advanced\12_serialization_and_structured_data.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\php\advanced\13_logging_and_observability.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\python\advanced\11_defensive_input_validation.md` | type: lesson | owner: writer-agent | status: rewrite-dispatched | sources: official-docs-reviewed
+- [ ] `languages\python\advanced\12_serialization_and_structured_data.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
+- [ ] `topics\sql\06_sql_injection_and_parameterized_queries.md` | type: lesson | owner: review-agent-reviewed-by-codex | status: rewrite-reviewed | sources: official-docs-reviewed
 - [ ] `languages\python\advanced\01_iterators_and_generators.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\advanced\02_decorators.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\advanced\03_context_managers.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -318,7 +343,14 @@ This inventory is generated from the repo file list. Lesson files need exercises
 - [ ] `topics\github\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\github\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\github\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\github\06_github_actions.md` | type: lesson | owner: review-agent | status: rewrite-dispatched | sources: official-docs-reviewed
 - [ ] `topics\github\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\gitlab\01_projects_and_merge_requests.md` | type: lesson | owner: audit-agent-reviewed-by-codex | status: audit-reviewed | sources: official-docs-reviewed
+- [ ] `topics\gitlab\02_gitlab_ci_cd_pipelines.md` | type: lesson | owner: audit-agent | status: audit-dispatched | sources: pending
+- [ ] `topics\gitlab\03_gitlab_runners.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\gitlab\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\gitlab\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\gitlab\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\http-and-apis\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\http-and-apis\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\http-and-apis\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending

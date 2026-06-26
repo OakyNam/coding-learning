@@ -14,6 +14,8 @@ This level contains detailed lessons for Python. Work through them in order, run
 8. [Logging and Observability](08_logging_and_observability.md)
 9. [Architecture Patterns](09_architecture_patterns.md)
 10. [Deployment Basics](10_deployment_basics.md)
+11. [Defensive Input Validation](11_defensive_input_validation.md)
+12. [Serialization And Structured Data](12_serialization_and_structured_data.md)
 
 ## Completion Goal
 

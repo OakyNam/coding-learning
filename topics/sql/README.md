@@ -9,6 +9,7 @@ SQL is a shared programming topic that transfers across languages and tools.
 3. [Practical Patterns](03_practical_patterns.md)
 4. [Common Mistakes](04_common_mistakes.md)
 5. [Practice Project](05_practice_project.md)
+6. [SQL Injection And Parameterized Queries](06_sql_injection_and_parameterized_queries.md)
 
 ## Goal
 
