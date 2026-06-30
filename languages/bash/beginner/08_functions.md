@@ -4,6 +4,14 @@
 
 Write small Bash functions that accept arguments, keep temporary variables local, report success or failure with exit status, and can be reused from a script.
 
+## Platform Note
+
+This lesson uses Bash functions.
+
+- On Windows 10/11, run these examples inside WSL or Git Bash, not directly in PowerShell.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- The worked answer runs with `bash check_paths.sh`, so it does not depend on executable permission or platform-specific file modes.
+
 ## Why It Matters
 
 Functions let you give a name to a repeated task. Instead of copying the same test, message, or loop many times, you define it once and call it like a command.
@@ -220,6 +228,62 @@ Try it with paths that exist and paths that do not exist.
 
 ## Worked Answer
 
+Create the script:
+
+```bash
+cat > check_paths.sh <<'EOF'
+#!/usr/bin/env bash
+
+print_header() {
+  echo "Path status report"
+  echo "------------------"
+}
+
+show_path_status() {
+  local path="$1"
+
+  if [[ -f "$path" ]]; then
+    echo "file: $path"
+    return 0
+  elif [[ -d "$path" ]]; then
+    echo "directory: $path"
+    return 0
+  else
+    echo "missing: $path"
+    return 1
+  fi
+}
+
+main() {
+  local path
+  local missing_count=0
+
+  if [[ $# -eq 0 ]]; then
+    echo "Usage: $0 PATH..."
+    return 1
+  fi
+
+  print_header
+
+  for path in "$@"; do
+    if ! show_path_status "$path"; then
+      missing_count=$((missing_count + 1))
+    fi
+  done
+
+  if [[ "$missing_count" -gt 0 ]]; then
+    return 1
+  fi
+
+  return 0
+}
+
+main "$@"
+EOF
+```
+
+The script contents should be:
+
 ```bash
 #!/usr/bin/env bash
 
@@ -273,8 +337,7 @@ main "$@"
 Run it:
 
 ```bash
-chmod +x check_paths.sh
-./check_paths.sh check_paths.sh . missing.txt
+bash check_paths.sh check_paths.sh . missing.txt
 echo "$?"
 ```
 
@@ -301,4 +364,7 @@ Continue to `09_scripts_and_permissions.md` and practice turning small Bash prog
 - GNU Bash Reference Manual: Positional Parameters: https://www.gnu.org/software/bash/manual/html_node/Positional-Parameters.html
 - GNU Bash Reference Manual: Special Parameters: https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html
 - GNU Bash Reference Manual: Bourne Shell Builtins (`return`): https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html
-- man7.org bash(1), including `local` and function scoping details: https://man7.org/linux/man-pages/man1/bash.1.html
+- GNU Bash Reference Manual: Bash Builtins (`local`): https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html
+- Microsoft WSL documentation: https://learn.microsoft.com/windows/wsl/
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal default shell documentation: https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac

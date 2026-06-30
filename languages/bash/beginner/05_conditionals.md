@@ -4,6 +4,14 @@
 
 Use Bash `if` statements to choose actions based on command success, strings, integers, and files.
 
+## Platform Note
+
+This lesson uses Bash conditionals.
+
+- On Windows 10/11, run these examples inside WSL or Git Bash, not directly in PowerShell.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- The examples use relative files such as `notes.txt` and `check_path.sh`.
+
 ## Core Idea
 
 In Bash, an `if` statement does not check a special Boolean value. It runs a command or test and looks at that command's exit status.
@@ -16,7 +24,7 @@ That can feel backward if you come from some other languages, where `0` often me
 You can see the last command's exit status with `$?`:
 
 ```bash
-grep -q "root" /etc/passwd
+printf 'ready\n' | grep -q "ready"
 echo "$?"
 ```
 
@@ -409,30 +417,70 @@ bash check_path.sh missing.txt
 
 ## Worked Answer
 
+Create the script:
+
 ```bash
+cat > check_path.sh <<'EOF'
 #!/usr/bin/env bash
 
 if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 PATH"
+  printf 'Usage: %s PATH\n' "$0" >&2
   exit 1
 fi
 
 path=$1
 
 if [[ -d $path ]]; then
-  echo "$path is a directory."
+  printf '%s is a directory.\n' "$path"
 elif [[ -f $path ]]; then
-  echo "$path is a regular file."
+  printf '%s is a regular file.\n' "$path"
 
   if [[ -s $path ]]; then
-    echo "$path is non-empty."
+    printf '%s is non-empty.\n' "$path"
   else
-    echo "$path is empty."
+    printf '%s is empty.\n' "$path"
   fi
 elif [[ -e $path ]]; then
-  echo "$path exists, but it is not a regular file or directory."
+  printf '%s exists, but it is not a regular file or directory.\n' "$path"
 else
-  echo "$path does not exist."
+  printf '%s does not exist.\n' "$path"
+fi
+EOF
+```
+
+Run it with Bash:
+
+```bash
+bash check_path.sh .
+bash check_path.sh missing.txt
+```
+
+The script contents should be:
+
+```bash
+#!/usr/bin/env bash
+
+if [[ $# -ne 1 ]]; then
+  printf 'Usage: %s PATH\n' "$0" >&2
+  exit 1
+fi
+
+path=$1
+
+if [[ -d $path ]]; then
+  printf '%s is a directory.\n' "$path"
+elif [[ -f $path ]]; then
+  printf '%s is a regular file.\n' "$path"
+
+  if [[ -s $path ]]; then
+    printf '%s is non-empty.\n' "$path"
+  else
+    printf '%s is empty.\n' "$path"
+  fi
+elif [[ -e $path ]]; then
+  printf '%s exists, but it is not a regular file or directory.\n' "$path"
+else
+  printf '%s does not exist.\n' "$path"
 fi
 ```
 
@@ -456,4 +504,7 @@ After that, continue to the next beginner Bash lesson.
 
 - GNU Bash Reference Manual, Conditional Constructs: https://www.gnu.org/software/bash/manual/html_node/Conditional-Constructs.html
 - GNU Bash Reference Manual, Bash Conditional Expressions: https://www.gnu.org/software/bash/manual/html_node/Bash-Conditional-Expressions.html
-- Linux manual page for `bash`, exit status and conditional behavior: https://man7.org/linux/man-pages/man1/bash.1.html
+- GNU Bash Reference Manual, Pipelines and exit status: https://www.gnu.org/software/bash/manual/html_node/Pipelines.html
+- Microsoft WSL documentation: https://learn.microsoft.com/windows/wsl/
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal default shell documentation: https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac

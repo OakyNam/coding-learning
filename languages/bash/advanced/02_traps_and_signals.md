@@ -2,33 +2,31 @@
 
 ## Learning Goal
 
-Write Bash scripts that clean temporary resources and background child processes when they exit normally, fail, or receive `INT`/`TERM`.
+Write Bash scripts that clean up temporary resources and background child processes when they finish normally, fail, or receive `INT` or `TERM`.
 
 ## Why It Matters
 
-Long-running shell scripts often create temporary directories, open log files, start background workers, or hold locks. If the script exits without cleanup, the next run may inherit stale files or orphaned child processes.
+Long-running scripts often create temporary directories, write logs, start background workers, or hold locks. If the script exits without cleanup, the next run can inherit stale files or leave child processes running after the parent is gone.
 
 Signals and traps let a script say, "before I leave, run this cleanup code." They are especially useful for scripts that supervise other commands, create temporary workspaces, or need predictable behavior when a user presses Ctrl-C.
 
-## Mental Model
+## Signal Mental Model
 
 A signal is a small notification sent to a process. Common examples are:
 
-- `INT`: interrupt, often sent by Ctrl-C.
+- `INT`: interrupt. Terminal Ctrl-C commonly sends this to the foreground process group.
 - `TERM`: polite termination request, often sent by `kill PID` or service managers.
 - `KILL`: immediate termination request that cannot be caught, ignored, or cleaned up.
-- `STOP`: suspension request that also cannot be caught or ignored.
+- `STOP`: suspension request that cannot be caught or ignored.
 
-Bash `trap` installs shell code to run when the shell receives a signal or a Bash pseudo-signal.
+Bash `trap` installs shell code to run when the shell receives a signal or a Bash pseudo-signal. Important pseudo-signals are:
 
-Important pseudo-signals:
-
-- `EXIT`: runs when the shell exits, whether the exit is success, failure, or a handled signal.
+- `EXIT`: runs when the shell exits, whether from success, failure, or an explicit `exit`.
 - `ERR`: runs when a command failure would cause the shell to exit under `errexit`.
 
 Trap actions run in the shell process, not in a separate cleanup process. That means they can read and change shell variables, including arrays of child PIDs. It also means a cleanup function can accidentally overwrite `$?`, so preserve the original status first.
 
-## Basic Syntax
+## Basic Trap Syntax
 
 ```bash
 trap 'echo "leaving"' EXIT
@@ -45,7 +43,7 @@ trap '' TERM
 trap -l
 ```
 
-The first argument is code for Bash to evaluate when the signal arrives. Single quotes are common because they delay variable expansion until the trap actually runs:
+The first argument is code for Bash to evaluate when the trap runs. Single quotes are common because they delay variable expansion until the trap actually runs:
 
 ```bash
 tmpdir=$(mktemp -d)
@@ -78,9 +76,9 @@ printf 'result\n' > "$tmpdir/output.txt"
 
 The first line in `cleanup` saves the original exit status. Without `local status=$?`, a successful `rm` could hide an earlier failure, or a failed cleanup command could replace the script's real result.
 
-Use `|| true` for cleanup commands whose failure should not replace the original status. Cleanup should be best effort unless the cleanup result is the main thing the script is reporting.
+Use `|| true` for cleanup commands whose failure should not replace the original status. Cleanup should usually be best effort unless the cleanup result is the main thing the script is reporting.
 
-## ERR Trap
+## ERR Trap And `set -E`
 
 `ERR` is a Bash pseudo-signal. It runs when a command failure would trigger `errexit`.
 
@@ -88,16 +86,21 @@ Use `|| true` for cleanup commands whose failure should not replace the original
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
+
 on_error() {
   local status=$?
-  printf 'failed with status %s at line %s\n' "$status" "$LINENO" >&2
+  printf 'failed with status %s\n' "$status" >&2
   exit "$status"
 }
 
 trap on_error ERR
 
-cp missing-file.txt /tmp/example
+cp missing-file.txt "$tmpdir/output.txt"
 ```
+
+This handler reports the status without claiming the exact source line of the failing command. Bash exposes `LINENO`, but inside an error handler it is easy to report the handler's current context or a nearby call site rather than a precise failing command line. If you include line information in production scripts, test it against the specific structure you use.
 
 `set -E` enables `errtrace`, which lets the `ERR` trap be inherited by shell functions, command substitutions, and subshells. Without it, failures inside functions often surprise learners because the top-level `ERR` trap may not run where they expect.
 
@@ -113,11 +116,9 @@ grep -q 'needle' file.txt || echo 'not found'
 
 Those `grep` failures are part of control flow, so Bash does not treat them like unhandled script failures.
 
-## INT And TERM
+## INT, TERM, And Exit Status
 
-`INT` usually means the user pressed Ctrl-C. A script that exits because of `INT` conventionally exits with status `130`, which is `128 + 2` because `SIGINT` is signal 2.
-
-`TERM` usually means a polite request to stop. A script that exits because of `TERM` conventionally exits with status `143`, which is `128 + 15` because `SIGTERM` is signal 15.
+On Linux, macOS, and common Bash environments, `SIGINT` is signal 2 and `SIGTERM` is signal 15. A program that exits after receiving a signal conventionally uses `128 + signal_number`, so handled `INT` is commonly reported as `130`, and handled `TERM` is commonly reported as `143`. Treat those as useful conventions, not a universal guarantee across every operating system and shell environment.
 
 ```bash
 on_int() {
@@ -133,6 +134,8 @@ trap on_term TERM
 ```
 
 If an `EXIT` trap is also installed, calling `exit 130` or `exit 143` from the signal trap will still run the `EXIT` cleanup.
+
+Terminal Ctrl-C and `kill` are related but not identical. Ctrl-C is generated by the terminal and commonly goes to the foreground process group, which can include the shell script and its current foreground child. By contrast, `kill "$script_pid"` targets one process ID unless you explicitly send to a process group.
 
 ## Background Child Cleanup
 
@@ -176,7 +179,7 @@ wait "${pids[@]}"
 Key details:
 
 - `$!` is the PID of the most recent background pipeline.
-- Use an array so multiple children can be cleaned up together.
+- Use an array so multiple child PIDs can be cleaned up together.
 - Send `TERM` first so children get a polite shutdown chance.
 - `wait` after `kill` so the script reaps children before exiting.
 - Ignore `kill` and `wait` cleanup failures so the original status survives.
@@ -188,8 +191,8 @@ Traps are powerful, but they are not instant magic.
 
 - `SIGKILL` and `SIGSTOP` cannot be caught, ignored, or handled. No Bash cleanup trap can run for them.
 - A trap runs between Bash commands, not in the middle of arbitrary machine code. If Bash is waiting for an external foreground command, trap timing depends on the command and Bash's wait behavior.
-- A signal sent to the shell is not always sent to every child. Terminal-generated Ctrl-C is commonly delivered to the foreground process group, but `kill "$script_pid"` targets only that process.
-- Children can ignore `TERM`, exit before cleanup reaches them, or start their own descendants. That is why cleanup code should tolerate missing PIDs and failed waits.
+- A signal sent to the shell is not always sent to every child. Terminal-generated Ctrl-C commonly reaches the foreground process group, while `kill "$script_pid"` targets only that one process.
+- Children can ignore `TERM`, exit before cleanup reaches them, or start their own descendants. Cleanup code should tolerate missing PIDs and failed waits.
 - `EXIT` is reliable for normal shell exits, explicit `exit`, and failures handled by `errexit`, but it cannot help if the process is forcibly killed.
 
 ## Common Mistakes
@@ -216,18 +219,33 @@ Requirements:
 - Store worker PIDs in a PID array using `$!`.
 - Install traps for `EXIT`, `ERR`, `INT`, and `TERM`.
 - On cleanup, terminate workers with `kill -TERM`, wait for them, remove the temporary directory, and preserve the original exit status.
+- Disable traps inside cleanup to prevent recursive cleanup.
 - Use conventional signal statuses: `130` for `INT`, `143` for `TERM`.
 - Ignore cleanup failures so the original status survives.
 - Add a `--fail` path that starts the workers and then intentionally fails.
+- Do not use Bash-specific timestamp formatting built into `printf`; use `date` for the timestamp.
 
-Try these runs:
+Windows PowerShell runs:
+
+```powershell
+bash ./supervised_job.sh
+bash ./supervised_job.sh --fail
+bash ./supervised_job.sh
+```
+
+PowerShell is launching an installed Bash, such as WSL, Git for Windows, MSYS2, or similar. Bash syntax is not native PowerShell syntax.
+
+macOS Apple Silicon / zsh runs:
 
 ```bash
-bash supervised_job.sh
-bash supervised_job.sh --fail
-bash supervised_job.sh
-# Press Ctrl-C during the final run.
+bash ./supervised_job.sh
+bash ./supervised_job.sh --fail
+bash ./supervised_job.sh
 ```
+
+Terminal defaults to zsh on current macOS, but this lesson runs Bash explicitly. This lesson has no Apple Silicon (`arm64`) architecture-specific dependency because it uses Bash, `mktemp`, `date`, `rm`, `kill`, and `wait`; architecture only matters if installing alternate Bash.
+
+During the final run, press Ctrl-C while the script is sleeping to test the `INT` path.
 
 ## Worked Answer
 
@@ -270,7 +288,8 @@ worker() {
   local log_file=$2
 
   while true; do
-    printf '%s heartbeat %(%Y-%m-%dT%H:%M:%S%z)T\n' "$name" -1 >> "$log_file"
+    timestamp=$(date '+%Y-%m-%dT%H:%M:%S%z')
+    printf '%s heartbeat %s\n' "$name" "$timestamp" >> "$log_file"
     sleep 1
   done
 }
@@ -303,12 +322,13 @@ printf 'worker logs were written in %s\n' "$tmpdir"
 
 Explanation:
 
-- `tmpdir=$(mktemp -d)` creates a unique temporary workspace.
+- `tmpdir=$(mktemp -d)` creates a unique temporary workspace using the Bash runtime environment's temporary-file behavior.
 - `pids+=("$!")` records each background worker immediately after it starts.
 - `cleanup` saves `$?` before running any other command.
 - `trap - EXIT ERR INT TERM` prevents trap recursion during cleanup.
 - `kill -TERM` asks workers to stop, and `wait` reaps them.
 - `2>/dev/null || true` makes cleanup tolerate workers that already exited.
+- `rm -rf "$tmpdir" || true` removes the temporary directory without replacing the original status.
 - `on_int` and `on_term` convert handled signals to the conventional statuses `130` and `143`.
 - The `--fail` path runs `false`, which triggers the `ERR` trap because the script uses `set -E` and `errexit`.
 
@@ -323,3 +343,6 @@ Return to this level's README and continue with the next numbered lesson. As you
 - GNU Bash Manual, Signals - https://www.gnu.org/software/bash/manual/html_node/Signals.html
 - GNU Bash Manual, Job Control Builtins: `wait` - https://www.gnu.org/software/bash/manual/html_node/Job-Control-Builtins.html
 - Linux manual page `signal(7)` - https://man7.org/linux/man-pages/man7/signal.7.html
+- Apple manual page `signal(3)` - https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/signal.3.html
+- Apple Terminal User Guide, Change the default shell - https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac
+- Bash NEWS - https://tiswww.case.edu/php/chet/bash/NEWS

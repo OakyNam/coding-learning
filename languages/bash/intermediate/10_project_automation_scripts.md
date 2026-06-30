@@ -18,6 +18,15 @@ Common project tasks include:
 
 Bash is a good fit for small wrappers around existing tools. It is especially useful when the script mostly coordinates commands such as `bash -n`, `shellcheck`, `pytest`, `npm test`, `make`, `cp`, `rm`, or project-specific helper scripts. If the automation grows into complex data processing, a general-purpose language may become easier to test and maintain.
 
+## Platform Note
+
+This lesson uses Bash project scripts and common Unix-style utilities.
+
+- On Windows 10/11, run these examples inside WSL or Git Bash, not directly in PowerShell.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- The examples use `bash project.sh ...` so they work before you practice executable permissions.
+- Commands such as `cp`, `rm`, and `find` can differ slightly between GNU and BSD implementations. The script uses conservative options and project-rooted paths.
+
 ## Script Skeleton
 
 A project automation script should make its contract visible near the top: strict-enough shell settings, usage text, logging, failure helpers, a command runner, and one `main "$@"` call at the bottom.
@@ -235,7 +244,8 @@ Create `project.sh` in a small Bash project.
 
 Requirements:
 
-- Support `./project.sh check`, `./project.sh test`, `./project.sh build`, `./project.sh clean`, and `./project.sh help`.
+- Support `check`, `test`, `build`, `clean`, and `help` commands.
+- Run the script as `bash project.sh COMMAND` while practicing this lesson.
 - Support flags `-n` for dry-run, `-v` for verbose output, and `-h` for help.
 - Work from any current directory.
 - Resolve the project root from the script location using `BASH_SOURCE[0]`, `dirname`, and `pwd`.
@@ -261,6 +271,7 @@ my-project/
 ## Worked Answer
 
 ```bash
+cat > project.sh <<'EOF'
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
@@ -418,26 +429,27 @@ main() {
 }
 
 main "$@"
+EOF
 ```
 
 Expected checks:
 
 ```bash
 bash -n project.sh
-./project.sh help
-./project.sh -n check
-./project.sh -n build
-./project.sh -n clean
-(cd /tmp && /path/to/my-project/project.sh -n check)
+bash project.sh help
+bash project.sh -n check
+bash project.sh -n build
+bash project.sh -n clean
+(cd .. && bash "$OLDPWD/project.sh" -n check)
 ```
 
 Expected behavior:
 
 - `bash -n project.sh` reports no syntax errors.
-- `./project.sh help` prints usage and exits successfully.
-- `./project.sh -n check` prints the `bash -n` commands it would run.
-- `./project.sh -n build` prints the `mkdir` and `cp` commands without creating `build/`.
-- `./project.sh -n clean` prints the project-rooted `rm -rf` command without deleting anything.
+- `bash project.sh help` prints usage and exits successfully.
+- `bash project.sh -n check` prints the `bash -n` commands it would run.
+- `bash project.sh -n build` prints the `mkdir` and `cp` commands without creating `build/`.
+- `bash project.sh -n clean` prints the project-rooted `rm -rf` command without deleting anything.
 - Running the script from another directory still checks files in the project, not in the caller's directory.
 
 ## Next Step
@@ -453,3 +465,6 @@ Add one project-specific command, such as `format` or `package`, using the same 
 - GNU Bash Reference Manual, Arrays: https://www.gnu.org/software/bash/manual/html_node/Arrays.html
 - ShellCheck SC2086, Double quote to prevent globbing and word splitting: https://www.shellcheck.net/wiki/SC2086
 - Google Shell Style Guide: https://google.github.io/styleguide/shellguide.html
+- Microsoft Learn, "Install WSL": https://learn.microsoft.com/windows/wsl/install
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal User Guide, "Change the default shell": https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac

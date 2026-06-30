@@ -16,6 +16,14 @@ Most useful shell work is not one huge command. It is small commands connected t
 
 Pipes and redirection are the tools that make that possible.
 
+## Platform Note
+
+This lesson uses Bash pipeline and redirection syntax.
+
+- On Windows 10/11, run these examples inside WSL or Git Bash, not directly in PowerShell.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- Run commands from a scratch directory so files such as `notes.txt`, `server.log`, and `errors.log` stay together and are easy to delete later.
+
 ## Standard Streams and File Descriptors
 
 Every command starts with three standard streams open:
@@ -372,3 +380,6 @@ Continue with `02_exit_codes_and_status_checks.md`. Pipes and redirection move d
 - GNU Bash Reference Manual, "Redirections": https://www.gnu.org/software/bash/manual/html_node/Redirections.html
 - GNU Bash Reference Manual, "Lists of Commands": https://www.gnu.org/software/bash/manual/html_node/Lists.html
 - GNU Coreutils manual, "`uniq` invocation": https://www.gnu.org/software/coreutils/manual/html_node/uniq-invocation.html
+- Microsoft Learn, "Install WSL": https://learn.microsoft.com/windows/wsl/install
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal User Guide, "Change the default shell": https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac

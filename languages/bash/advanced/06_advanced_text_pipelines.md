@@ -2,38 +2,35 @@
 
 ## Learning Goal
 
-Build reliable Bash text pipelines that combine small tools, handle errors correctly, preserve important records such as headers, and safely process filenames and log data.
+Build robust Bash text pipelines that keep data and diagnostics separate, detect failures, process streams incrementally, preserve headers, handle filenames safely, and recognize when plain text tools are the wrong parser.
 
-## Why Pipelines Matter
+## Streams And Pipelines
 
-A pipeline connects the output of one command to the input of the next command:
+Unix-style command-line tools usually communicate through three streams:
 
-```bash
-cmd1 | cmd2
-```
+- `stdin`: input read by a command.
+- `stdout`: normal output written by a command.
+- `stderr`: diagnostic and error output written by a command.
 
-Most Unix text tools follow the same stream model:
-
-- `stdin` is the command's input stream.
-- `stdout` is the normal output stream.
-- `stderr` is the error and diagnostic stream.
-
-That lets you build larger programs out of smaller pieces:
+A pipeline connects the `stdout` of one command to the `stdin` of the next:
 
 ```bash
-grep 'ERROR' app.log | cut -d' ' -f1-3 | sort | uniq -c
+grep 'ERROR' app.log | sort | uniq -c
 ```
-
-In that pipeline, `grep` selects lines, `cut` extracts fields, `sort` groups equal lines together, and `uniq -c` counts adjacent duplicates.
 
 Redirection changes where streams come from or go:
 
 ```bash
 grep 'ERROR' < app.log > errors.txt
-grep 'ERROR' app.log 2> grep-errors.txt
+grep 'ERROR' app.log 2> grep-diagnostics.txt
 ```
 
-The first command reads from `app.log` and writes normal output to `errors.txt`. The second writes diagnostics to `grep-errors.txt`.
+Keep machine-readable output on `stdout` and progress, warnings, usage messages, and errors on `stderr`. That lets another command or script consume the data without also parsing human diagnostics:
+
+```bash
+printf 'scanning %s\n' "$log_dir" >&2
+printf '%s\t%s\t%s\n' "$count" "$status" "$file"
+```
 
 Bash also supports `|&`, which pipes both `stdout` and `stderr` into the next command:
 
@@ -41,295 +38,220 @@ Bash also supports `|&`, which pipes both `stdout` and `stderr` into the next co
 make |& tee build.log
 ```
 
-Use `|&` only when you really want normal output and diagnostics mixed together. Many scripts should keep `stdout` for machine-readable results and `stderr` for progress or errors.
+Use `|&` only when mixing normal output and diagnostics is intentional. It is useful for build logs, but it is usually wrong for data pipelines.
 
-## Pipeline Exit Statuses
+## Pipeline Status And Failure Detection
 
-By default, a Bash pipeline returns the exit status of the last command:
+By default, Bash reports the exit status of the last command in a pipeline:
 
 ```bash
-grep 'ERROR' app.log | sort
-echo "$?"
+grep 'ERROR' missing.log | sort
+printf 'pipeline status: %s\n' "$?"
 ```
 
-If `grep` fails but `sort` succeeds, the pipeline can still report success because `sort` is the last command. This is often surprising in scripts.
-
-Use `set -o pipefail` when the script should fail if any command in a pipeline fails:
+If `grep` fails but `sort` succeeds, the pipeline can still appear successful because `sort` is the last command. In scripts that need pipeline failures to matter, enable `pipefail`:
 
 ```bash
 set -o pipefail
 grep 'ERROR' missing.log | sort
 ```
 
-With `pipefail`, the pipeline returns a failure status if any command in the pipeline fails. The returned status is the status of the rightmost failed command, or `0` if all commands succeed.
+With `pipefail`, a pipeline returns `0` only when every command succeeds. If one or more commands fail, Bash returns the status of the rightmost failed command.
 
-Bash also stores each command's status in the special array `PIPESTATUS`:
+Bash also stores each command's status in `PIPESTATUS`:
 
 ```bash
 grep 'ERROR' app.log | sort | uniq -c
-printf 'grep=%s sort=%s uniq=%s\n' "${PIPESTATUS[0]}" "${PIPESTATUS[1]}" "${PIPESTATUS[2]}"
-```
-
-Timing caveat: read or copy `PIPESTATUS` immediately after the pipeline. Running another command, even a simple `echo`, changes it.
-
-```bash
-grep 'ERROR' app.log | sort
 statuses=("${PIPESTATUS[@]}")
-printf 'grep status was %s\n' "${statuses[0]}"
+printf 'grep=%s sort=%s uniq=%s\n' "${statuses[0]}" "${statuses[1]}" "${statuses[2]}"
 ```
 
-One more important nuance: `grep` exits with status `1` when it searched successfully but found no matches. That is not the same as a broken command. Status `2` usually means an actual error such as an unreadable file or invalid option.
+Copy `PIPESTATUS` immediately after the pipeline. Running another command, including `printf`, replaces it with the status information for that newer command.
+
+`grep` has a useful special case:
+
+- `0`: at least one selected line was found.
+- `1`: no lines were selected.
+- `2`: an error occurred.
+
+That means "no matches" is not the same thing as a broken command.
 
 ## Core Text Tools
 
-`grep` filters lines by pattern:
+Use small tools for line-oriented text:
 
 ```bash
-grep -n 'ERROR' app.log
 grep -E 'status=(500|503)' app.log
-```
-
-`cut` extracts fields or character ranges from simple delimited text:
-
-```bash
-cut -d' ' -f1 app.log
-cut -f1,3 table.tsv
-```
-
-`tr` translates or deletes characters:
-
-```bash
-printf 'Api Server\n' | tr '[:upper:]' '[:lower:]'
-printf 'a,b,c\n' | tr ',' '\n'
-```
-
-`sort` orders lines:
-
-```bash
-sort names.txt
-sort -n numbers.txt
-sort -t $'\t' -k2,2nr report.tsv
-```
-
-`uniq` works on adjacent duplicate lines, so it is commonly used after `sort`:
-
-```bash
-sort status-codes.txt | uniq -c
-```
-
-`awk` is good for field-based reports and small transformations:
-
-```bash
-awk '$9 >= 500 { print $9, $1 }' access.log
-awk -F'\t' '{ count[$2]++ } END { for (key in count) print count[key], key }' report.tsv
-```
-
-`sed` is good for stream editing:
-
-```bash
-sed 's/status=/code=/' app.log
+cut -f1,3 report.tsv
+tr '[:upper:]' '[:lower:]' < names.txt
+sort -t $'\t' -k2,2 report.tsv
+uniq -c repeated-lines.txt
+awk -F '\t' '{ counts[$2]++ } END { for (key in counts) print counts[key], key }' report.tsv
 sed -n '1,5p' app.log
 ```
 
-These tools are strongest on regular, line-oriented text. Once the input has real quoting, escaping, nesting, or embedded delimiters, choose a parser made for that format.
+Important details:
+
+- `uniq` only combines adjacent duplicate records, so it is normally used after `sort`.
+- Locale can affect ordering and character classes. Use `LC_ALL=C` when bytewise reproducibility matters.
+- GNU, BSD, and macOS versions of `sed`, `awk`, `grep`, `sort`, `find`, and `xargs` are not identical. Check local manuals before relying on non-POSIX options.
+
+For example, this portable `awk` pattern avoids gawk-only capture arrays:
+
+```bash
+awk '
+  match($0, /status=[0-9][0-9][0-9]/) {
+    status = substr($0, RSTART + 7, 3)
+    print status
+  }
+' app.log
+```
+
+The `match` call sets `RSTART`, and `substr` extracts the three digits after `status=`.
 
 ## Build Pipelines Incrementally
 
-Do not write a long pipeline all at once. Build one stage, inspect the output, then add the next stage.
-
-Start with a small sample:
+Build long pipelines one stage at a time. Inspect each stage before adding the next one:
 
 ```bash
 head -n 20 app.log
-```
-
-Select the records you care about:
-
-```bash
-grep -E 'status=(500|503)' app.log | head
-```
-
-Extract the fields:
-
-```bash
-grep -E 'status=(500|503)' app.log |
-  awk 'match($0, /status=([0-9]{3})/, code) { print code[1] }' |
+grep -E 'status=[0-9][0-9][0-9]' app.log | head
+grep -E 'status=[0-9][0-9][0-9]' app.log |
+  awk 'match($0, /status=[0-9][0-9][0-9]/) { print substr($0, RSTART + 7, 3) }' |
   head
 ```
 
-Count them:
+Then add counting and sorting:
 
 ```bash
-grep -E 'status=(500|503)' app.log |
-  awk 'match($0, /status=([0-9]{3})/, code) { print code[1] }' |
+grep -E 'status=[0-9][0-9][0-9]' app.log |
+  awk 'match($0, /status=[0-9][0-9][0-9]/) { print substr($0, RSTART + 7, 3) }' |
   sort |
   uniq -c |
-  sort -nr
+  sort -k1,1nr -k2,2n
 ```
 
-Use `tail` when the newest records are at the end:
-
-```bash
-tail -n 1000 app.log | grep 'ERROR'
-```
-
-Use `tee` when you want to inspect or save an intermediate stage:
+Use `tee` to save or inspect an intermediate stream while still passing it onward:
 
 ```bash
 grep 'ERROR' app.log |
-  tee errors.sample |
-  awk 'match($0, /status=([0-9]{3})/, code) { print code[1] }' |
-  sort |
-  uniq -c
+  tee error-lines.sample |
+  awk 'match($0, /status=[0-9][0-9][0-9]/) { print substr($0, RSTART + 7, 3) }'
 ```
-
-`tee` writes a copy to a file while still passing the stream to the next command.
 
 ## Preserving Headers
 
-Sorting a whole file with a header usually moves the header into the data. Keep the header separate, sort the body, and print both:
+Sorting a whole file with a header usually moves the header into the data. Read the header first, print it, then sort the remaining body:
 
 ```bash
 {
   IFS= read -r header
   printf '%s\n' "$header"
-  sort -t $'\t' -k2,2
+  LC_ALL=C sort -t $'\t' -k2,2
 } < report.tsv
 ```
 
-Inside the group, `read` consumes the first line from `report.tsv`. Then `sort` reads the remaining lines from the same input stream.
+This pattern is appropriate for simple line-oriented TSV. It is not a complete CSV parser. Real CSV can contain quoted commas, escaped quotes, and embedded newlines, so use Python's `csv` module for real CSV. JSON has nesting and quoting rules too, so use a JSON parser such as `jq` for JSON. Those are conceptual recommendations here; this lesson's exercise does not require either tool.
 
-For a comma-separated file, this pattern is only safe for simple comma-delimited text with no quoted commas or embedded newlines. For real CSV, use Python's `csv` module.
+## Filename Safety
 
-## Stable Sorting
+Filenames can contain spaces, quotes, backslashes, tabs, and newlines. Do not use command substitution to loop over `find` output:
 
-When two records have the same sort key, normal `sort` may use the rest of the line as a final tie-breaker. A stable sort preserves the original order of records that compare equal on the selected keys.
-
-Use `sort -s` when equal keys should stay in input order:
-
-```bash
-sort -s -t $'\t' -k2,2 users.tsv
+```text
+for file in $(find logs -name '*.log'); do
+  ...
+done
 ```
 
-This matters when an earlier pipeline stage already put records into a meaningful order:
+That splits names on whitespace and can corrupt filenames.
+
+Use NUL-delimited filenames from `find -print0` and read them with `read -r -d ''`:
 
 ```bash
-sort -s -t $'\t' -k3,3 status-report.tsv
-```
-
-The locale can affect sorting and character classes. For bytewise, predictable sorting in scripts, set `LC_ALL=C` around the command or near the top of the script:
-
-```bash
-LC_ALL=C sort -s names.txt
-```
-
-## Null-Delimited Filenames
-
-Filenames can contain spaces, tabs, quotes, backslashes, and newlines. Newline-delimited filename pipelines are fragile.
-
-Use null-delimited records for filenames:
-
-```bash
-find logs -type f -name '*.log' -print0
-```
-
-Pass those names to commands with `xargs -0`:
-
-```bash
-find logs -type f -name '*.log' -print0 |
-  xargs -0 grep -H 'ERROR'
-```
-
-Use a Bash loop with `read -r -d ''` when you need per-file logic:
-
-```bash
-find logs -type f -name '*.log' -print0 |
+find "$log_dir" -type f -name '*.log' -print0 |
   while IFS= read -r -d '' file; do
     printf 'checking %s\n' "$file" >&2
     grep -H 'ERROR' "$file"
   done
 ```
 
-Use `sort -z` for null-delimited records:
+Always quote path variables such as `"$file"` and `"$log_dir"`.
 
-```bash
-find logs -type f -name '*.log' -print0 |
-  sort -z |
-  xargs -0 grep -H 'ERROR'
+Some systems provide `sort -z` for NUL-delimited records, but it is non-POSIX. If you use it, check that the local `sort` supports it. The worked answer below avoids `sort -z`.
+
+This lesson's final report is TSV, so the worked script rejects filenames containing tabs or newlines before writing TSV. For arbitrary filenames, use a NUL-delimited output format or a structured format such as JSON instead of TSV.
+
+## Data Flow
+
+```mermaid
+flowchart LR
+  A[find *.log] --> B[read -d '' filenames]
+  B --> C[awk scans each log line]
+  C --> D[awk counts status plus file]
+  D --> E[sort report rows]
+  E --> F[TSV on stdout]
+  B -. diagnostics .-> G[stderr]
 ```
 
-Null-delimited filenames protect the filename stream. If the file contents are normal log lines, the content stream is still newline-delimited after `grep`.
+The filename stream is NUL-delimited until each file is opened. The log content stream is line-oriented, and the final report is tab-delimited text.
 
-## CSV Logs JSON And Tool Choice Caveats
+## Platform Notes
 
-Simple line-oriented logs and TSV files are a good fit for `grep`, `cut`, `sort`, `uniq`, `awk`, and `sed`.
+These examples are Bash examples.
 
-Real CSV is more complicated than splitting on commas. Quoted fields can contain commas, quotes, and newlines. Use Python's `csv` module for real CSV:
-
-```bash
-python3 - <<'PY'
-import csv
-import sys
-
-for row in csv.DictReader(sys.stdin):
-    print(row["status"], row["source"])
-PY
-```
-
-JSON is structured data, not line fields. Use `jq` for JSON:
-
-```bash
-jq -r 'select(.status >= 500) | [.status, .source] | @tsv' events.json
-```
-
-Locale settings can affect `sort`, `tr`, bracket expressions, and character ordering. Use `LC_ALL=C` when bytewise behavior is desired and appropriate:
-
-```bash
-LC_ALL=C grep -E 'status=[0-9]{3}' app.log | LC_ALL=C sort
-```
+- Windows PowerShell cannot run Bash syntax directly. On Windows, run the scripts in WSL or Git Bash.
+- macOS on Apple Silicon uses `zsh` as the default interactive shell, but you can still run Bash scripts with `bash script-name`.
+- Do not translate Bash examples into PowerShell environment-variable syntax. In Bash, use forms such as `LC_ALL=C sort file.txt`.
+- Use project-relative paths such as `logs` or `./summarize_errors.sh`; avoid hard-coded home-directory or drive-letter paths.
+- The exercise needs only Bash plus standard text tools. It does not require Homebrew, GNU coreutils, Python, or `jq`.
+- Apple Silicon has no special pure-shell architecture issue for this lesson.
 
 ## Common Mistakes
 
-- Assuming a pipeline failed because `grep` returned `1`; `grep` uses `1` for no matches.
-- Forgetting that a pipeline's default status is the status of the last command.
-- Reading `PIPESTATUS` too late, after another command has already overwritten it.
-- Using `set -e` and expecting it to explain which pipeline stage failed; inspect statuses when the distinction matters.
-- Mixing `stdout` and `stderr` with `|&` when the next command expects clean data.
-- Sorting a header line together with the data rows.
+- Assuming a pipeline failed only when the last command failed.
+- Reading `PIPESTATUS` after another command has overwritten it.
+- Treating `grep` status `1` as the same thing as status `2`.
+- Sending diagnostics to `stdout` in a script whose output is meant for another program.
+- Using `|&` when the next stage expects clean data.
 - Expecting `uniq -c` to count duplicates that are not adjacent.
-- Parsing real CSV with `cut -d,` or simple `awk -F,`.
-- Parsing JSON with `grep` and `sed` instead of `jq`.
-- Passing filenames through whitespace-delimited loops such as `for file in $(find ...)`.
-- Forgetting to quote filename variables such as `"$file"`.
-- Relying on default locale sorting when the script needs repeatable bytewise order.
+- Sorting a header row together with data rows.
+- Depending on locale-specific ordering when bytewise order is required.
+- Using gawk-only `awk` extensions in scripts meant to run with other awk implementations.
+- Parsing real CSV or JSON with simple field splitting.
+- Looping over `for file in $(find ...)`.
+- Forgetting to quote paths.
+- Emitting TSV for filenames that may contain tabs or newlines.
 
 ## Exercise
 
-Write a script named `summarize_errors.sh`.
+Write `summarize_errors.sh`.
 
-The script should:
+Requirements:
 
-- Recursively find `*.log` files under a directory argument.
-- Handle filenames with spaces safely.
-- Keep machine-readable output on `stdout`.
-- Send progress or diagnostic messages to `stderr`.
+- Accept exactly one directory argument.
+- Recursively find `*.log` files under that directory.
+- Support filenames with spaces.
+- Reject filenames containing tabs or newlines before producing TSV.
+- Treat logs as simple line-oriented text.
+- Extract status codes written as `status=500`, `status=404`, and similar three-digit values.
+- Count matches by status code and source file.
+- Write only final TSV data to `stdout`.
+- Write usage, progress, and error diagnostics to `stderr`.
 - Use `set -o pipefail`.
-- Explain, in comments or notes, how `PIPESTATUS` should be captured immediately after a pipeline.
-- Treat the logs as simple line-oriented text, not JSON or CSV.
-- Report rows in this format:
+- Copy `PIPESTATUS` immediately after the main pipeline.
+- Sort final output by count descending, status code ascending, then source file ascending.
+- Produce rows in this exact format:
 
 ```text
-count status_code source_file
+count<TAB>status_code<TAB>source_file
 ```
-
-The script should find log lines containing a status code in the form `status=500`, `status=404`, and so on. Count matches by status code and source file. Sort the output by descending count, then by status code.
 
 Example output:
 
 ```text
-12 500 logs/api server.log
-7 503 logs/worker.log
-2 404 logs/api server.log
+12	500	logs/api server.log
+7	503	logs/worker.log
+2	404	logs/api server.log
 ```
 
 ## Worked Answer
@@ -354,8 +276,16 @@ fi
 
 printf 'scanning log files under %s\n' "$log_dir" >&2
 
+while IFS= read -r -d '' file; do
+  case $file in
+    *$'\t'*|*$'\n'*)
+      printf 'error: TSV output cannot safely represent filename: %s\n' "$file" >&2
+      exit 2
+      ;;
+  esac
+done < <(find "$log_dir" -type f -name '*.log' -print0)
+
 find "$log_dir" -type f -name '*.log' -print0 |
-  sort -z |
   while IFS= read -r -d '' file; do
     awk -v source_file="$file" '
       match($0, /status=[0-9][0-9][0-9]/) {
@@ -374,31 +304,41 @@ find "$log_dir" -type f -name '*.log' -print0 |
     END {
       for (key in counts) {
         split(key, parts, SUBSEP)
-        print counts[key], parts[1], parts[2]
+        printf "%d\t%s\t%s\n", counts[key], parts[1], parts[2]
       }
     }
   ' |
-  sort -k1,1nr -k2,2n
+  LC_ALL=C sort -t $'\t' -k1,1nr -k2,2n -k3,3
 
 statuses=("${PIPESTATUS[@]}")
 
 # PIPESTATUS must be copied immediately after the pipeline. Any command run before
-# the assignment above would replace the array with statuses for that newer command.
-if (( statuses[0] != 0 || statuses[1] != 0 || statuses[2] != 0 || statuses[3] != 0 || statuses[4] != 0 )); then
-  printf 'error: pipeline failed: find=%s sort_files=%s scan_loop=%s count_awk=%s final_sort=%s\n' \
-    "${statuses[0]}" "${statuses[1]}" "${statuses[2]}" "${statuses[3]}" "${statuses[4]}" >&2
+# this assignment would replace the array with statuses for that newer command.
+if (( statuses[0] != 0 || statuses[1] != 0 || statuses[2] != 0 || statuses[3] != 0 )); then
+  printf 'error: pipeline failed: find=%s scan_loop=%s count_awk=%s final_sort=%s\n' \
+    "${statuses[0]}" "${statuses[1]}" "${statuses[2]}" "${statuses[3]}" >&2
   exit 1
 fi
 ```
 
 Notes:
 
-- `find -print0`, `sort -z`, and `read -r -d ''` keep filenames safe even when names contain spaces.
-- The scan loop passes each filename to `awk` with `-v source_file="$file"`, avoiding fragile parsing of `grep -H` output.
-- The first `awk` script uses `match` and `substr` to extract the status code from each log line.
-- `stdout` contains only the final report rows.
-- Progress, usage errors, and warnings go to `stderr`.
-- This script is for simple line-oriented logs. Use `jq` for JSON logs and Python's `csv` module for real CSV.
+- `find -print0` and `read -r -d ''` keep the filename input stream safe for names with spaces.
+- The preflight loop rejects tabs and newlines in filenames before any TSV rows are written because the required report format is TSV.
+- The first `awk` scans each log line and prints `status<TAB>source_file`.
+- The second `awk` counts by the pair of status code and file.
+- The final `sort` uses tab-delimited fields: count descending, status ascending, file ascending.
+- `LC_ALL=C` makes the final bytewise ordering reproducible where that matters.
+- Diagnostics go to `stderr`; final TSV rows go to `stdout`.
+
+To run it from Bash:
+
+```bash
+chmod +x summarize_errors.sh
+./summarize_errors.sh logs
+```
+
+On Windows, run those Bash commands inside WSL or Git Bash, not directly in PowerShell.
 
 ## Next Step
 
@@ -412,11 +352,17 @@ Return to this level's README and continue with the next numbered lesson.
 - GNU Bash Manual, Bash Builtins (`read -r -d`): https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html
 - GNU Coreutils Manual, `sort`: https://www.gnu.org/software/coreutils/manual/html_node/sort-invocation.html
 - GNU Coreutils Manual, `uniq`: https://www.gnu.org/software/coreutils/manual/html_node/uniq-invocation.html
-- GNU Coreutils Manual, `cut`: https://www.gnu.org/software/coreutils/manual/html_node/cut-invocation.html
-- GNU Coreutils Manual, `tr`: https://www.gnu.org/software/coreutils/manual/html_node/tr-invocation.html
+- GNU Grep Manual, Exit Status: https://www.gnu.org/software/grep/manual/html_node/Exit-Status.html
 - GNU Findutils Manual, Safe File Name Handling: https://www.gnu.org/software/findutils/manual/html_node/find_html/Safe-File-Name-Handling.html
-- GNU Grep Manual, Usage and exit statuses: https://www.gnu.org/software/grep/manual/html_node/Usage.html
-- GNU Awk User's Guide, Fields: https://www.gnu.org/software/gawk/manual/html_node/Fields.html
-- GNU sed Manual, The `s` Command: https://www.gnu.org/software/sed/manual/html_node/The-_0022s_0022-Command.html
+- POSIX `sort`: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/sort.html
+- POSIX `awk`: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html
+- Apple Support, Mac startup shell defaults to zsh: https://support.apple.com/en-us/102360
+- Microsoft Learn, Windows Subsystem for Linux: https://learn.microsoft.com/windows/wsl/
+- Git for Windows, Git Bash included with Git for Windows: https://gitforwindows.org/
 - Python documentation, `csv` module: https://docs.python.org/3/library/csv.html
 - jq Manual: https://jqlang.github.io/jq/manual/
+- macOS `sort` manual mirror: https://keith.github.io/xcode-man-pages/sort.1.html
+- macOS `xargs` manual mirror: https://keith.github.io/xcode-man-pages/xargs.1.html
+- macOS `find` manual mirror: https://keith.github.io/xcode-man-pages/find.1.html
+
+Reviewer caveat: the macOS manual links above are mirrors of Apple command man pages, included so reviewers can compare BSD/macOS behavior against GNU and POSIX documentation.

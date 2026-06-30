@@ -13,6 +13,14 @@ By the end of this lesson, you should be able to:
 - Capture command output with `$(...)`
 - Provide a default value with `${var:-default}`
 
+## Platform Note
+
+This lesson teaches Bash syntax.
+
+- On Windows 10/11, run these examples inside WSL or Git Bash, not directly in PowerShell.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- The examples use project-relative files and variables, so they do not depend on a hard-coded Windows or macOS path.
+
 ## Variables Store Text
 
 A Bash variable is a name that points to a value.
@@ -364,7 +372,7 @@ echo "${nickname:-friend}"
 
 ## Exercise
 
-Write a script that:
+Create a script named `report-name.sh` that:
 
 1. Sets `user_name="Ada Lovelace"`
 2. Stores today's date in a variable with `today="$(date +%F)"`
@@ -383,6 +391,35 @@ The exact date will be the date when you run the script.
 
 ## Worked Answer
 
+Create the file:
+
+```bash
+cat > report-name.sh <<'EOF'
+#!/usr/bin/env bash
+
+user_name="Ada Lovelace"
+today="$(date +%F)"
+report_file="${user_name}_${today}_report.txt"
+
+echo 'Template: ${user_name}_${today}_report.txt'
+echo "Report: $report_file"
+EOF
+```
+
+Inspect it before running:
+
+```bash
+cat report-name.sh
+```
+
+Run it with Bash:
+
+```bash
+bash report-name.sh
+```
+
+The script contents should be:
+
 ```bash
 #!/usr/bin/env bash
 
@@ -392,6 +429,13 @@ report_file="${user_name}_${today}_report.txt"
 
 echo 'Template: ${user_name}_${today}_report.txt'
 echo "Report: $report_file"
+```
+
+Expected output shape:
+
+```text
+Template: ${user_name}_${today}_report.txt
+Report: Ada Lovelace_current-date_report.txt
 ```
 
 ## Explanation
@@ -423,3 +467,6 @@ Then remove the quotes only when you can explain exactly why you need Bash to sp
 - [GNU Bash Reference Manual: Word Splitting](https://www.gnu.org/software/bash/manual/bash.html#Word-Splitting)
 - [GNU Bash Reference Manual: Filename Expansion](https://www.gnu.org/software/bash/manual/bash.html#Filename-Expansion)
 - [GNU Bash Reference Manual: Command Substitution](https://www.gnu.org/software/bash/manual/bash.html#Command-Substitution)
+- [Microsoft WSL documentation](https://learn.microsoft.com/windows/wsl/)
+- [Git for Windows](https://gitforwindows.org/)
+- [Apple Terminal default shell documentation](https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac)

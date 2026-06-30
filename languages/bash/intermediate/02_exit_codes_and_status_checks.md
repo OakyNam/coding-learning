@@ -13,6 +13,14 @@ Every command returns a status code when it finishes. Bash uses that status to d
 
 That does not always mean "broken." For example, `grep` returns `1` when it searched successfully but found no matching lines. Your script needs to know when a nonzero status means an expected result and when it means a real error.
 
+## Platform Note
+
+This lesson uses Bash status-checking syntax.
+
+- On Windows 10/11, run these examples inside WSL or Git Bash, not directly in PowerShell.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- The worked answer runs scripts with `bash check_logs.sh ...` so the lesson behaves consistently even before you practice executable permissions.
+
 ## Reading The Most Recent Status
 
 Bash stores the status of the most recent foreground pipeline in the special parameter `$?`.
@@ -216,7 +224,10 @@ Requirements:
 
 ## Worked Answer
 
+Run this in Bash from a scratch directory to create the script:
+
 ```bash
+cat > check_logs.sh <<'EOF'
 #!/usr/bin/env bash
 
 if [ "$#" -ne 1 ]; then
@@ -249,6 +260,7 @@ case "$grep_status" in
     exit 1
     ;;
 esac
+EOF
 ```
 
 This answer saves `grep` status immediately because the script needs to distinguish three cases:
@@ -262,7 +274,7 @@ This answer saves `grep` status immediately because the script needs to distingu
 Wrong number of arguments:
 
 ```bash
-$ ./check_logs.sh
+$ bash check_logs.sh
 usage: check_logs.sh LOGFILE
 $ echo $?
 2
@@ -271,7 +283,7 @@ $ echo $?
 Missing file:
 
 ```bash
-$ ./check_logs.sh missing.log
+$ bash check_logs.sh missing.log
 missing file: missing.log
 $ echo $?
 1
@@ -281,7 +293,7 @@ File with an error:
 
 ```bash
 $ printf 'INFO started\nERROR database unavailable\n' > app.log
-$ ./check_logs.sh app.log
+$ bash check_logs.sh app.log
 ERROR lines found:
 ERROR database unavailable
 $ echo $?
@@ -292,7 +304,7 @@ File with no errors:
 
 ```bash
 $ printf 'INFO started\nINFO done\n' > app.log
-$ ./check_logs.sh app.log
+$ bash check_logs.sh app.log
 no errors found
 $ echo $?
 0
@@ -310,3 +322,6 @@ Practice rewriting one `$?` check as a direct `if command; then` check, then con
 - GNU Bash Manual: [Pipelines](https://www.gnu.org/software/bash/manual/bash.html#Pipelines)
 - GNU Bash Manual: [Bourne Shell Builtins](https://www.gnu.org/software/bash/manual/bash.html#Bourne-Shell-Builtins)
 - POSIX Shell Command Language: [Exit Status for Commands](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_08)
+- Microsoft Learn, "Install WSL": https://learn.microsoft.com/windows/wsl/install
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal User Guide, "Change the default shell": https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac

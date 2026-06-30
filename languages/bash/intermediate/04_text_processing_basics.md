@@ -19,6 +19,15 @@ That gives Bash a simple text-processing model:
 
 Later lessons cover `grep`, `sed`, and `awk`. This lesson builds the foundation first: stream shape, fields, sorted input, and predictable output.
 
+## Platform Note
+
+This lesson uses Bash pipelines and GNU-style text utilities.
+
+- On Windows 10/11, run these examples inside WSL or Git Bash, not directly in PowerShell.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- Some command output spacing, especially from `uniq -c`, can vary slightly by implementation. Focus on the counts and values.
+- Run commands from a scratch directory so generated files such as `access.log` and `summarize-log.sh` stay easy to inspect and remove.
+
 ## Sample File
 
 Create a small log file to use in the examples:
@@ -324,9 +333,10 @@ Use only the tools from this lesson for text processing: `head`, `tail`, `wc`, `
 
 ## Worked Answer
 
-Create `summarize-log.sh`:
+Run this in Bash from the same directory as `access.log` to create `summarize-log.sh`:
 
 ```bash
+cat > summarize-log.sh <<'EOF'
 #!/usr/bin/env bash
 
 log_file="access.log"
@@ -349,13 +359,13 @@ cut -d ' ' -f2 "$log_file" | LC_ALL=C sort | uniq -c
 
 printf '\nEntries per status code:\n'
 cut -d ' ' -f3 "$log_file" | LC_ALL=C sort | uniq -c
+EOF
 ```
 
-Make it executable and run it:
+Run it with Bash:
 
 ```bash
-chmod +x summarize-log.sh
-./summarize-log.sh
+bash summarize-log.sh
 ```
 
 Expected output:
@@ -414,3 +424,6 @@ Continue to `05_grep_sed_and_awk.md` when you are ready to filter by patterns, r
 - GNU Coreutils Manual: [uniq invocation](https://www.gnu.org/software/coreutils/manual/html_node/uniq-invocation.html)
 - GNU Coreutils Manual: [cut invocation](https://www.gnu.org/software/coreutils/manual/html_node/cut-invocation.html)
 - GNU Coreutils Manual: [tr invocation](https://www.gnu.org/software/coreutils/manual/html_node/tr-invocation.html)
+- Microsoft Learn, "Install WSL": https://learn.microsoft.com/windows/wsl/install
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal User Guide, "Change the default shell": https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac

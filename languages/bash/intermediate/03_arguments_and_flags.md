@@ -13,6 +13,14 @@ Bash gives you two common tools:
 - Positional parameters such as `$1`, `$2`, `$#`, and `"$@"`.
 - Option parsing, either manually with `case` and `shift`, or with the Bash/POSIX `getopts` builtin for short options.
 
+## Platform Note
+
+This lesson uses Bash argument expansion and option parsing.
+
+- On Windows 10/11, run these examples inside WSL or Git Bash, not directly in PowerShell.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- The worked examples use `bash script.sh ...` so they behave consistently before you practice executable permissions.
+
 ## Positional Parameters
 
 When a script is called, Bash stores its command-line words in positional parameters.
@@ -29,13 +37,13 @@ echo "arg count: $#"
 If the file is named `show_args.sh` and you run:
 
 ```bash
-./show_args.sh alpha beta
+bash show_args.sh alpha beta
 ```
 
 the output is:
 
 ```text
-script name: ./show_args.sh
+script name: show_args.sh
 first arg: alpha
 second arg: beta
 arg count: 2
@@ -98,7 +106,7 @@ printf 'one string: <%s>\n' "$*"
 With:
 
 ```bash
-./demo.sh "two words" "*.txt"
+bash demo.sh "two words" "*.txt"
 ```
 
 `"$@"` produces two values, `two words` and `*.txt`. `"$*"` produces one value, usually `two words *.txt`.
@@ -319,7 +327,7 @@ Requirements:
 Example behavior:
 
 ```bash
-./tag_files.sh -p draft report.txt notes.md
+bash tag_files.sh -p draft report.txt notes.md
 ```
 
 Expected output:
@@ -332,7 +340,7 @@ draft_notes.md
 With uppercase and verbose mode:
 
 ```bash
-./tag_files.sh -v -u -p draft "report final.txt"
+bash tag_files.sh -v -u -p draft "report final.txt"
 ```
 
 Expected output:
@@ -345,21 +353,24 @@ DRAFT_REPORT FINAL.TXT
 Invalid use:
 
 ```bash
-./tag_files.sh -p
+bash tag_files.sh -p
 ```
 
 Expected error output:
 
 ```text
 Error: -p requires a value
-Usage: ./tag_files.sh -p PREFIX [-u] [-v] FILE...
+Usage: tag_files.sh -p PREFIX [-u] [-v] FILE...
 ```
 
 Expected status: `2`.
 
 ## Worked Answer
 
+Run this in Bash from a scratch directory to create the script:
+
 ```bash
+cat > tag_files.sh <<'EOF'
 #!/usr/bin/env bash
 
 usage() {
@@ -421,6 +432,7 @@ for file in "$@"; do
 
   printf '%s\n' "$tagged"
 done
+EOF
 ```
 
 ## Teaching Notes
@@ -443,3 +455,6 @@ Write a second version that supports a manual long option, such as `--prefix PRE
 - GNU Bash Reference Manual, Bourne Shell Builtins (`getopts`, `shift`): https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html
 - GNU Bash Reference Manual, Quoting: https://www.gnu.org/software/bash/manual/html_node/Quoting.html
 - POSIX `getopts`: https://pubs.opengroup.org/onlinepubs/9799919799/utilities/getopts.html
+- Microsoft Learn, "Install WSL": https://learn.microsoft.com/windows/wsl/install
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal User Guide, "Change the default shell": https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac

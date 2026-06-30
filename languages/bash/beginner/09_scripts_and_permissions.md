@@ -4,6 +4,14 @@
 
 Write a small Bash script, pass it arguments, understand how it exits, and use file permissions to run it both with `bash script.sh` and directly as `./script.sh`.
 
+## Platform Note
+
+This lesson uses Bash scripts and Unix-style file permissions.
+
+- On Windows 10/11, WSL is the clearest environment for `chmod`, `ls -l`, and `./script.sh` behavior. Git Bash can run the Bash examples, but its permission display depends on the Windows filesystem and Git Bash environment.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- `bash script.sh` is the most portable beginner way to run your own script because it does not require executable permission.
+
 ## Why It Matters
 
 A shell script is a plain text file full of shell commands. Scripts let you save a command sequence, give it inputs, check for errors, and run it again later. Permissions decide whether the operating system will let you read, change, or execute that file.
@@ -244,6 +252,70 @@ Test with at least one file and one directory.
 
 ## Worked Answer
 
+Create the script:
+
+```bash
+cat > path_report.sh <<'EOF'
+#!/usr/bin/env bash
+
+if [ "$#" -ne 1 ]; then
+  echo "Usage: path_report.sh PATH" >&2
+  exit 1
+fi
+
+path=$1
+
+if [ ! -e "$path" ]; then
+  echo "Missing path: $path" >&2
+  exit 2
+fi
+
+if [ -f "$path" ]; then
+  echo "Type: file"
+elif [ -d "$path" ]; then
+  echo "Type: directory"
+else
+  echo "Type: other"
+fi
+
+if [ -r "$path" ]; then
+  echo "Readable: yes"
+else
+  echo "Readable: no"
+fi
+
+if [ -w "$path" ]; then
+  echo "Writable: yes"
+else
+  echo "Writable: no"
+fi
+
+if [ -x "$path" ]; then
+  if [ -d "$path" ]; then
+    echo "Executable/searchable: yes"
+  else
+    echo "Executable: yes"
+  fi
+else
+  if [ -d "$path" ]; then
+    echo "Executable/searchable: no"
+  else
+    echo "Executable: no"
+  fi
+fi
+
+exit 0
+EOF
+```
+
+Inspect it before running:
+
+```bash
+cat path_report.sh
+```
+
+The script contents should be:
+
 ```bash
 #!/usr/bin/env bash
 
@@ -359,6 +431,8 @@ Your full `ls -l` output includes owner, group, size, and date too, so it may lo
 -rwxr--r-- 1 learner staff 650 Jun 20 10:15 path_report.sh
 ```
 
+In WSL, Linux, and macOS, the execute bit should be visible in `ls -l`. In Git Bash on Windows, the exact permission display can depend on the filesystem and Git settings; `bash path_report.sh ...` remains the reliable beginner fallback.
+
 Now run it directly:
 
 ```bash
@@ -382,12 +456,13 @@ Next, learn how `PATH` lets you run reusable commands without typing `./` or a f
 
 ## Sources Used
 
-- GNU Bash Manual: Shell Scripts.
-- GNU Bash Manual: Special Parameters.
-- GNU Bash Manual: Exit Status.
-- GNU Coreutils Manual: File Permissions.
-- GNU Coreutils Manual: Structure of File Modes.
-- GNU Coreutils Manual: Symbolic Modes.
-- GNU Coreutils Manual: Numeric Modes.
-- Linux manual page `chmod(1)` from man7.org.
-- Linux manual page `execve(2)` from man7.org.
+- GNU Bash Manual, shell scripts: https://www.gnu.org/software/bash/manual/html_node/Shell-Scripts.html
+- GNU Bash Manual, special parameters: https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html
+- GNU Bash Manual, exit status: https://www.gnu.org/software/bash/manual/html_node/Exit-Status.html
+- GNU Coreutils Manual, file permissions: https://www.gnu.org/software/coreutils/manual/html_node/File-permissions.html
+- GNU Coreutils Manual, structure of file modes: https://www.gnu.org/software/coreutils/manual/html_node/Mode-Structure.html
+- GNU Coreutils Manual, symbolic modes: https://www.gnu.org/software/coreutils/manual/html_node/Symbolic-Modes.html
+- GNU Coreutils Manual, numeric modes: https://www.gnu.org/software/coreutils/manual/html_node/Numeric-Modes.html
+- Microsoft WSL documentation: https://learn.microsoft.com/windows/wsl/
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal default shell documentation: https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac

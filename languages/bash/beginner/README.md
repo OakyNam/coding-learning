@@ -15,6 +15,14 @@ Before starting, you should have:
 
 You do not need prior Bash scripting experience.
 
+## Environment Notes
+
+These lessons teach Bash, not PowerShell or zsh.
+
+- On Windows 10/11, use WSL, Git Bash, or another Bash environment. PowerShell can launch WSL, but Bash examples should run inside Bash.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- Practice in a disposable project-relative folder such as `bash-practice` so file creation and deletion exercises stay safe.
+
 ## How To Use This Level
 
 - Work through the lessons in order.
@@ -27,34 +35,34 @@ You do not need prior Bash scripting experience.
 
 ## Lessons
 
-1. [Setup and Shell Basics](01_setup_and_shell_basics.md)
+1. [01 - Setup and Shell Basics](01_setup_and_shell_basics.md)
    Open and verify Bash, read prompts, run simple commands, understand paths, and run a first script.
 
-2. [Commands, Files, and Directories](02_commands_files_and_directories.md)
+2. [02 - Commands, Files, and Directories](02_commands_files_and_directories.md)
    Inspect where you are, move through directories, create files and folders, and remove test files safely.
 
-3. [Variables and Quoting](03_variables_and_quoting.md)
+3. [03 - Variables and Quoting](03_variables_and_quoting.md)
    Store values, expand variables, use single and double quotes, and avoid word-splitting surprises.
 
-4. [Input and Output](04_input_and_output.md)
+4. [04 - Input and Output](04_input_and_output.md)
    Print predictable output, read user input, redirect stdout/stderr, append to files, and use simple pipelines.
 
-5. [Conditionals](05_conditionals.md)
+5. [05 - Conditionals](05_conditionals.md)
    Use `if`, command exit status, string tests, integer tests, and file tests to choose what a script does.
 
-6. [Loops](06_loops.md)
+6. [06 - Loops](06_loops.md)
    Repeat commands with `for`, `while`, `until`, arithmetic loops, `break`, and `continue`.
 
-7. [Arrays](07_arrays.md)
+7. [07 - Arrays](07_arrays.md)
    Store multiple values, access elements by index, loop safely over array values, and preview associative arrays.
 
-8. [Functions](08_functions.md)
+8. [08 - Functions](08_functions.md)
    Group repeated logic, pass function arguments, use `local`, and return success or failure with exit status.
 
-9. [Scripts and Permissions](09_scripts_and_permissions.md)
+9. [09 - Scripts and Permissions](09_scripts_and_permissions.md)
    Create runnable scripts, pass arguments, check exit status, inspect permissions, and use `chmod u+x`.
 
-10. [PATH and Reusable Commands](10_path_and_reusable_commands.md)
+10. [10 - PATH and Reusable Commands](10_path_and_reusable_commands.md)
     Understand command lookup, add a personal command directory to `PATH`, and create a reusable command.
 
 ## Completion Goal
@@ -74,3 +82,10 @@ Your command should use variables, quoting, input/output, at least one condition
 ## What To Study Next
 
 Continue to intermediate Bash when you are ready to work with text-processing tools, process control, scheduling, robust scripts, and automation workflows.
+
+## References
+
+- [GNU Bash Manual](https://www.gnu.org/software/bash/manual/bash.html)
+- [Microsoft WSL documentation](https://learn.microsoft.com/windows/wsl/)
+- [Git for Windows](https://gitforwindows.org/)
+- [Apple Terminal default shell documentation](https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac)

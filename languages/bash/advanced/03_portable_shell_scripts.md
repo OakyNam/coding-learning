@@ -2,22 +2,44 @@
 
 ## Learning Goal
 
-Write small scripts that honestly target either POSIX `sh` or Bash, avoid Bash-only syntax under `#!/bin/sh`, check command availability portably, and test with ShellCheck and `dash`.
+Choose POSIX `sh` or Bash deliberately, write syntax that matches that target, check required commands with `command -v`, and test the script with the shell you claim it supports.
+
+## Target Contract
+
+A portable shell script keeps a contract:
+
+1. The shebang names the intended interpreter.
+2. The syntax matches that interpreter.
+3. The external commands and options are available where the script will run.
+4. The tests run under the same shell family the script claims to support.
+
+For POSIX `sh`, avoid Bash-only features such as:
+
+- arrays: `items=(one two)` and `"${items[@]}"`
+- `[[ ... ]]`
+- `source file.sh`
+- process substitution: `<(command)` or `>(command)`
+- here-strings: `command <<< "$value"`
+- Bash parameter case conversion: `${name^^}` or `${name,,}`
+- Bash-only `printf` formats such as `%q`
+
+For Bash, those features can be fine. The bug is pretending Bash is POSIX `sh`.
 
 ## What Portable Means
 
-A portable shell script is written for a specific shell language and runtime environment, then keeps that promise.
+The most common portable target is POSIX `sh`. POSIX defines a shell command language and standard utilities, but it is smaller than Bash and leaves out many Bash conveniences.
 
-The most common portable target is POSIX `sh`. POSIX `sh` is a standardized shell language supported by many Unix-like systems. It is smaller than Bash and does not include many Bash conveniences.
+The path `/bin/sh` does not always mean Bash. Depending on the system, `/bin/sh` might be `dash`, `ash`, `ksh`, another POSIX-oriented shell, or Bash running in POSIX mode.
 
-The path `/bin/sh` does not always mean Bash. Depending on the system, `/bin/sh` might be:
+Portability is not only shell syntax. A script can use valid POSIX `sh` syntax and still fail because it depends on a nonportable external utility option. GNU and BSD systems often differ in details for tools such as `sed`, `date`, `grep`, `xargs`, and `readlink`.
 
-- `dash`, common on Debian and Ubuntu systems
-- `ash`, common on BusyBox and Alpine-style systems
-- `ksh` or another POSIX-compatible shell
-- Bash running in a POSIX compatibility mode
-
-Portability is not only about shell syntax. It also includes the external commands and command options your script uses. A script can use POSIX shell syntax and still fail because it depends on a nonportable option such as a GNU-only flag.
+```mermaid
+flowchart LR
+    A[Choose target shell] --> B[Choose shebang]
+    B --> C[Use matching syntax]
+    C --> D[Check required commands]
+    D --> E[Lint and run under that shell]
+```
 
 ## Choose The Right Shebang
 
@@ -38,14 +60,16 @@ names=(api worker db)
 printf '%s\n' "${names[@]}"
 ```
 
-Use `#!/bin/bash` when the environment is controlled and Bash is known to live at that exact path:
+Use `#!/bin/bash` only in controlled environments where Bash is known to live at that exact path:
 
 ```bash
 #!/bin/bash
 set -euo pipefail
 ```
 
-Do not write `#!/bin/sh` and then use Bash-only syntax. That script may work on your machine and fail immediately on another system.
+Avoid recommending `#!/usr/bin/env sh` as a default. POSIX systems standardize `sh`; using `/bin/sh` is the normal portable contract for POSIX shell scripts.
+
+The shebang is used when a Unix-like system executes the file directly, such as `./script.sh`. If you run `sh script.sh`, the `sh` command interprets the file even if the shebang says Bash. If you run `bash script.sh`, Bash interprets the file even if the shebang says `sh`.
 
 ## Bash vs POSIX sh Examples
 
@@ -59,12 +83,23 @@ for tool in "${tools[@]}"; do
 done
 ```
 
-A POSIX `sh` script can often use positional parameters or a plain loop instead:
+A POSIX `sh` script can often use positional parameters:
 
 ```sh
 #!/bin/sh
-for tool in git curl awk; do
+set -- git curl awk
+for tool do
   printf '%s\n' "$tool"
+done
+```
+
+For data with spaces, use newline-delimited input instead of trying to fake arrays:
+
+```sh
+#!/bin/sh
+printf '%s\n' "build api" "run tests" "ship app" |
+while IFS= read -r task; do
+  printf 'task: %s\n' "$task"
 done
 ```
 
@@ -86,6 +121,14 @@ case $answer in
 esac
 ```
 
+Use `[ ... ]` for simple POSIX tests:
+
+```sh
+if [ "$answer" = "yes" ]; then
+  printf '%s\n' "confirmed"
+fi
+```
+
 Bash case conversion such as `${name^^}` is not POSIX:
 
 ```bash
@@ -93,7 +136,7 @@ name="api"
 printf '%s\n' "${name^^}"
 ```
 
-For portable scripts, avoid that expansion or use a standard external utility when appropriate:
+Use a standard external utility when appropriate:
 
 ```sh
 name="api"
@@ -112,7 +155,34 @@ Portable form:
 . ./config.sh
 ```
 
-## Portable Tests
+Bash here-strings are not POSIX:
+
+```bash
+grep 'ready' <<< "$status_text"
+```
+
+Portable form:
+
+```sh
+printf '%s\n' "$status_text" | grep 'ready'
+```
+
+Bash process substitution is not POSIX:
+
+```bash
+diff <(sort expected.txt) <(sort actual.txt)
+```
+
+Portable form:
+
+```sh
+sort expected.txt > expected.sorted
+sort actual.txt > actual.sorted
+diff expected.sorted actual.sorted
+rm -f expected.sorted actual.sorted
+```
+
+## Portable Tests And Quoting
 
 Use `[ ... ]` for portable tests:
 
@@ -138,7 +208,7 @@ if [ "$mode" = "prod" ]; then
 fi
 ```
 
-Avoid `-a` and `-o` inside `[ ... ]` because their behavior can be confusing and less portable. Use separate tests with shell operators:
+Avoid `-a` and `-o` inside `[ ... ]`. Use separate tests with shell operators:
 
 ```sh
 if [ -n "$user" ] && [ -n "$home" ]; then
@@ -146,7 +216,7 @@ if [ -n "$user" ] && [ -n "$home" ]; then
 fi
 ```
 
-To test whether a variable is set, even if it is set to an empty string, use parameter expansion:
+To test whether a variable is set, even if it is set to an empty string, use `${VAR+x}`:
 
 ```sh
 if [ -n "${VAR+x}" ]; then
@@ -162,50 +232,100 @@ if [ -n "$VAR" ]; then
 fi
 ```
 
-## Command Availability
+## Command Availability And External Utilities
 
-Use `command -v` to check whether a command is available:
+Use `command -v` to check whether a command exists:
 
 ```sh
 if command -v git >/dev/null 2>&1; then
   printf '%s\n' "git is available"
 else
-  printf '%s\n' "git is required" >&2
+  printf '%s\n' "error: git was not found in PATH" >&2
   exit 1
 fi
 ```
 
 The redirection keeps successful checks quiet and hides implementation-specific messages from failed lookups.
 
-Give clear errors. A portable script should fail in a way the user can understand:
+Finding a command does not prove that every option you plan to use is portable. Examples to watch:
 
-```sh
-if ! command -v curl >/dev/null 2>&1; then
-  printf '%s\n' "error: curl was not found in PATH" >&2
-  exit 1
-fi
+- `sed -i` differs between GNU `sed` and BSD/macOS `sed`.
+- `date -d` is common on GNU systems but not portable to macOS `date`.
+- `grep -P` is not a POSIX `grep` option.
+- `xargs -r` is common on GNU systems but not portable everywhere.
+- `readlink -f` is common on GNU systems but not portable to default macOS `readlink`.
+
+Prefer POSIX utility options when the script targets POSIX `sh`. If you intentionally require GNU utilities, say so in the script's documentation and test on that platform.
+
+## Setup And Run On Windows
+
+Windows PowerShell is not Bash and is not POSIX `sh`. Running `.\script.sh` from PowerShell does not give you Unix shebang behavior.
+
+For POSIX `sh`, `dash`, and Linux-style tooling on Windows, use WSL:
+
+```powershell
+wsl --install
 ```
 
-Remember that finding a command is only the first check. External utilities and their options may still be nonportable. For example, one system's `sed`, `date`, `grep`, or `xargs` may not support the same options as another system's version.
+Open the installed Linux distribution shell, then install test tools:
 
-## Testing Portability
+```bash
+sudo apt update
+sudo apt install shellcheck dash
+```
 
-For a POSIX `sh` script, test more than one thing:
+From PowerShell, you can ask WSL to run a POSIX shell command:
+
+```powershell
+wsl sh -lc "sh check-tools.sh sh printf"
+```
+
+Git Bash can be useful for Bash practice on Windows, but WSL is clearer when the lesson is POSIX `sh`, `dash`, and Linux command behavior.
+
+## Setup And Run On macOS Apple Silicon
+
+Terminal on modern macOS defaults to `zsh`, not POSIX `sh`. Launch scripts with the shell you mean:
+
+```bash
+sh check-tools.sh sh printf
+bash script-that-requires-bash.sh
+```
+
+Apple Silicon does not change pure shell syntax. It can matter for native tools because package managers and binaries may install in architecture-specific locations. Do not hard-code Homebrew paths in scripts; let `PATH` and `command -v` find tools.
+
+Homebrew can install ShellCheck and `dash`:
+
+```bash
+brew install shellcheck dash
+```
+
+## Line Endings
+
+Save shell scripts with LF line endings, not Windows CRLF line endings. A carriage return can become part of the interpreter path or command text, causing confusing failures. ShellCheck reports this as SC1017.
+
+## Testing Matrix
+
+For a POSIX `sh` script:
 
 ```sh
 shellcheck --shell=sh check-tools.sh
+sh -n check-tools.sh
 dash -n check-tools.sh
-dash ./check-tools.sh git sh
-sh ./check-tools.sh git sh
+sh ./check-tools.sh sh printf
+dash ./check-tools.sh sh printf
 ```
 
-`shellcheck --shell=sh` asks ShellCheck to warn about non-POSIX shell features.
+`shellcheck --shell=sh` asks ShellCheck to warn about non-POSIX features. `sh -n` and `dash -n` parse the script without running it. Running the script with `sh` and `dash` catches runtime behavior that syntax checks cannot.
 
-`dash -n` checks syntax with `dash` without running the script.
+For a Bash script:
 
-Running the script with `dash` or `sh` catches runtime behavior that syntax checks cannot.
+```sh
+shellcheck --shell=bash script.sh
+bash -n script.sh
+bash ./script.sh
+```
 
-`bash --posix` is useful, but it is not enough by itself. Bash in POSIX mode can still differ from smaller `/bin/sh` implementations, so test with a real POSIX-oriented shell such as `dash` when that is your target.
+`bash --posix` is useful for learning how Bash changes in POSIX mode, but it is not a substitute for testing with another POSIX-oriented shell such as `dash`.
 
 ## When Portability Is Not Worth It
 
@@ -214,11 +334,12 @@ Portability is useful when the script may run on different Unix-like systems or 
 Require Bash honestly when Bash features make a controlled-runtime script simpler or safer, including:
 
 - arrays
-- regular expression matching with `[[ string =~ regex ]]`
-- `[[ ... ]]` conditional expressions
 - associative arrays
+- `[[ ... ]]` conditionals
+- regular expression matching with `[[ string =~ regex ]]`
+- here-strings
 - process substitution
-- Bash-specific safety patterns such as `set -euo pipefail` with Bash-aware handling
+- Bash-specific safety patterns such as `set -euo pipefail`, used with Bash-aware error handling
 
 In that case, use a Bash shebang and make the dependency clear:
 
@@ -226,20 +347,23 @@ In that case, use a Bash shebang and make the dependency clear:
 #!/usr/bin/env bash
 ```
 
-Honest Bash is better than accidental Bash hidden behind `#!/bin/sh`.
+Honest Bash is fine. Accidental Bash hidden behind `#!/bin/sh` is the bug.
 
 ## Common Mistakes
 
 - Using `#!/bin/sh` with Bash arrays such as `items=(one two)` or `"${items[@]}"`.
-- Using `[[ ... ]]` in a script that claims to be POSIX `sh`.
+- Using `[[ ... ]]`, here-strings, or process substitution in a script that claims to be POSIX `sh`.
 - Using `==` inside `[ ... ]` instead of portable `=`.
 - Forgetting to quote variables in tests, such as `[ $name = admin ]`.
 - Using `source ./file.sh` instead of `. ./file.sh`.
 - Assuming `/bin/sh` is Bash because it is Bash on one machine.
 - Checking command availability with `which` instead of `command -v`.
+- Running `./script.sh` from PowerShell and expecting Unix shebang semantics.
+- Saving shell scripts with CRLF line endings.
+- Assuming macOS `zsh` is the same language as POSIX `sh`.
+- Assuming ShellCheck proves runtime portability.
 - Testing only with Bash and never running the script with `dash` or `/bin/sh`.
-- Using GNU-only command options in a script intended to run on minimal systems.
-- Treating `bash --posix` as a complete substitute for testing with another shell.
+- Using GNU-only command options in a script intended to run on macOS or minimal systems.
 
 ## Exercise
 
@@ -251,19 +375,19 @@ Requirements:
 - Accept command-line arguments as tool names.
 - If no tool names are given, print usage to standard error and exit with status `2`.
 - For each tool name, check availability with `command -v`.
-- Print `ok: TOOL` when a tool is found.
-- Print `missing: TOOL` when a tool is not found.
+- Print `ok: TOOL` to standard output when a tool is found.
+- Print `missing: TOOL` to standard error when a tool is not found.
 - Exit with status `0` if all tools are found.
 - Exit with status `1` if any tool is missing.
 - Use POSIX `sh` syntax only.
-- Include test commands for ShellCheck, `dash -n`, and runtime checks.
+- Include lint and run commands for WSL on Windows and `zsh` on macOS.
 
 Example runs:
 
 ```sh
-./check-tools.sh sh printf
-./check-tools.sh definitely-not-a-real-tool
-./check-tools.sh
+sh check-tools.sh sh printf
+sh check-tools.sh definitely-not-a-real-tool
+sh check-tools.sh
 ```
 
 ## Worked Answer
@@ -292,24 +416,6 @@ done
 exit "$status"
 ```
 
-Test commands:
-
-```sh
-chmod +x check-tools.sh
-shellcheck --shell=sh check-tools.sh
-dash -n check-tools.sh
-dash ./check-tools.sh sh printf
-sh ./check-tools.sh sh printf
-dash ./check-tools.sh definitely-not-a-real-tool
-dash ./check-tools.sh
-```
-
-Expected behavior:
-
-- `./check-tools.sh sh printf` prints `ok:` lines and exits `0` when both are available.
-- `./check-tools.sh definitely-not-a-real-tool` prints `missing: definitely-not-a-real-tool` and exits `1`.
-- `./check-tools.sh` prints usage to standard error and exits `2`.
-
 Why this is portable:
 
 - It uses `#!/bin/sh`.
@@ -319,16 +425,52 @@ Why this is portable:
 - It uses `command -v` instead of `which`.
 - It uses `printf` instead of relying on implementation-specific `echo` behavior.
 
+Windows PowerShell with WSL:
+
+```powershell
+wsl sh -lc "shellcheck --shell=sh check-tools.sh"
+wsl sh -lc "sh -n check-tools.sh"
+wsl sh -lc "dash -n check-tools.sh"
+wsl sh -lc "sh check-tools.sh sh printf"
+wsl sh -lc "dash check-tools.sh sh printf"
+wsl sh -lc "sh check-tools.sh definitely-not-a-real-tool"
+wsl sh -lc "sh check-tools.sh"
+```
+
+macOS Terminal with default `zsh`:
+
+```bash
+shellcheck --shell=sh check-tools.sh
+sh -n check-tools.sh
+dash -n check-tools.sh
+sh check-tools.sh sh printf
+dash check-tools.sh sh printf
+sh check-tools.sh definitely-not-a-real-tool
+sh check-tools.sh
+```
+
+Expected behavior:
+
+- `sh check-tools.sh sh printf` prints `ok:` lines and exits `0` when both are available.
+- `sh check-tools.sh definitely-not-a-real-tool` prints `missing: definitely-not-a-real-tool` to standard error and exits `1`.
+- `sh check-tools.sh` prints usage to standard error and exits `2`.
+
 ## Next Step
 
 Return to the advanced Bash README and continue with the next numbered lesson.
 
 ## Sources Used
 
-- POSIX Shell Command Language: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html
-- POSIX `test`: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/test.html
-- POSIX `command`: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/command.html
-- Bash Reference Manual, Bash POSIX Mode: https://www.gnu.org/software/bash/manual/bash.html#Bash-POSIX-Mode
-- ShellCheck SC2039: https://www.shellcheck.net/wiki/SC2039
+- POSIX.1-2024 Shell Command Language: https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html
+- POSIX.1-2024 `sh`: https://pubs.opengroup.org/onlinepubs/9799919799/utilities/sh.html
+- POSIX.1-2024 `test`: https://pubs.opengroup.org/onlinepubs/9799919799/utilities/test.html
+- POSIX.1-2024 `command`: https://pubs.opengroup.org/onlinepubs/9799919799/utilities/command.html
+- POSIX.1-2024 `printf`: https://pubs.opengroup.org/onlinepubs/9799919799/utilities/printf.html
+- Bash Reference Manual: https://www.gnu.org/software/bash/manual/bash.html
+- Microsoft Learn, Install WSL: https://learn.microsoft.com/en-us/windows/wsl/install
+- Apple Support, Change the default shell in Terminal on Mac: https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac
+- Apple Support, Intro to shell scripts in Terminal on Mac: https://support.apple.com/guide/terminal/intro-to-shell-scripts-apd53500956-7c5b-496b-a362-2845f2aab4bc/mac
+- Homebrew Documentation, Installation: https://docs.brew.sh/Installation
+- ShellCheck, Installing: https://github.com/koalaman/shellcheck#installing
+- ShellCheck SC1017: https://www.shellcheck.net/wiki/SC1017
 - ShellCheck SC3016: https://www.shellcheck.net/wiki/SC3016
-- Ubuntu DashAsBinSh: https://wiki.ubuntu.com/DashAsBinSh

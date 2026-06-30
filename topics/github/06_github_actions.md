@@ -21,7 +21,11 @@ flowchart LR
     Checks --> Status[Commit or pull request status]
 ```
 
-GitHub-hosted runner labels and image contents change over time. A `macos-latest` job tests the current macOS image selected by GitHub; do not assume that label always means an Apple Silicon runner. Check GitHub's runner documentation when your project needs a specific architecture or installed tool.
+GitHub-hosted runners are temporary machines maintained by GitHub. They are a good default for CI because each job starts on a fresh runner image selected by `runs-on`, such as `ubuntu-latest`, `windows-latest`, or `macos-latest`.
+
+Self-hosted runners are machines that you or your organization register with GitHub Actions. Use them when a workflow needs private network access, specialized hardware, licensed tools, or a controlled operating-system image. A self-hosted job uses labels instead of the standard hosted-runner labels. For example, `runs-on: [self-hosted, linux, x64]` queues the job on a runner that has all of those labels.
+
+Runner labels and image contents change over time. As of the current GitHub runner table, standard macOS Apple Silicon jobs use arm64 macOS labels such as `macos-latest`, `macos-14`, and `macos-15`, while Intel macOS labels are explicit, such as `macos-15-intel`. If a project depends on Apple Silicon behavior, choose a documented arm64 macOS label and confirm the runner architecture in the workflow log instead of assuming that every macOS label has the same CPU.
 
 ## A Small Cross-Platform Workflow
 
@@ -60,6 +64,7 @@ jobs:
         run: python --version
 
       - name: Write a small report
+        if: ${{ always() }}
         run: python -c "from pathlib import Path; import sys; Path('artifacts').mkdir(exist_ok=True); Path('artifacts/python-version.txt').write_text(sys.version, encoding='utf-8')"
 
       - name: Upload the report
@@ -71,7 +76,7 @@ jobs:
           if-no-files-found: warn
 ```
 
-The matrix expands `verify` into three jobs. `python --version` and the Python one-liner are intentionally portable, so they work with the default shell on each selected runner. The report is created under a repository-relative `artifacts` directory and uploaded even when an earlier step fails. The `always()` condition makes the upload attempt, while `if-no-files-found: warn` keeps a failed earlier report step from masking the original failure.
+The matrix expands `verify` into three jobs. `python --version` and the Python one-liner are intentionally portable, so they work with the default shell on each selected runner. The report is created under a repository-relative `artifacts` directory. The two `always()` conditions make GitHub attempt to write and upload the report even when the verification step fails. If Python setup itself fails, the report step may still fail because Python is unavailable; `if-no-files-found: warn` keeps the upload step from masking the original setup failure.
 
 The action tags in this example are readable major-version tags. Before using third-party actions or a sensitive production workflow, review the action and pin it more tightly, preferably to a full commit SHA.
 
@@ -126,9 +131,9 @@ Add `.github/workflows/ci.yml` to a small Python repository.
 
 ## Worked Answer
 
-Use the complete `ci.yml` workflow from [A Small Cross-Platform Workflow](#a-small-cross-platform-workflow). After committing and pushing it, open the repository's **Actions** tab. A run should show three `Verify on ...` jobs, one per matrix entry. Each successful job uploads a `python-version-...` artifact.
+Use the complete `ci.yml` workflow from [A Small Cross-Platform Workflow](#a-small-cross-platform-workflow). After committing and pushing it, open the repository's **Actions** tab. A run should show three `Verify on ...` jobs, one per matrix entry. Each job that reaches the Python report step uploads a `python-version-...` artifact, including jobs where `python --version` fails after Python has already been set up.
 
-If a project needs real tests, replace `Verify Python` with its documented test command only after confirming that command and its dependencies work across all selected runner shells. Keep platform-specific commands in clearly separate steps with an explicit shell when they cannot be made portable.
+If a project needs real tests, replace `Verify Python` with its documented test command only after confirming that command and its dependencies work across all selected runner shells. Keep platform-specific commands in clearly separate steps with an explicit shell when they cannot be made portable. If the project must test Apple Silicon-specific behavior, use a documented arm64 macOS runner label and keep any Intel-only checks in a separate job.
 
 ## Sources
 
@@ -136,6 +141,8 @@ If a project needs real tests, replace `Verify Python` with its documented test 
 - [Workflow syntax for GitHub Actions](https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions)
 - [GitHub-hosted runners](https://docs.github.com/en/actions/concepts/runners/github-hosted-runners)
 - [Choosing the runner for a job](https://docs.github.com/en/actions/writing-workflows/choosing-where-your-workflow-runs/choosing-the-runner-for-a-job)
+- [Self-hosted runners](https://docs.github.com/en/actions/concepts/runners/self-hosted-runners)
+- [Using labels with self-hosted runners](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/apply-labels)
 - [Automatic token authentication and permissions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication)
 - [Using secrets in GitHub Actions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions)
 - [Storing workflow data as artifacts](https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts)

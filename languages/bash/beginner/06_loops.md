@@ -4,6 +4,14 @@
 
 Learn how to repeat work in Bash with `for`, `while`, `until`, arithmetic loops, `break`, and `continue`, while avoiding the file-name and input-reading mistakes that make shell loops fragile.
 
+## Platform Note
+
+This lesson uses Bash loops.
+
+- On Windows 10/11, run these examples inside WSL or Git Bash, not directly in PowerShell.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- The examples use project-relative files such as `tasks.txt` and `task_report.sh`.
+
 ## Why Loops Matter
 
 A loop runs the same commands more than once. In Bash, loops are often used to handle command-line arguments, files that match a pattern, lines from a file, retry checks, and numbered steps.
@@ -300,6 +308,49 @@ Total: 3
 
 ## Worked Answer
 
+Create the script:
+
+```bash
+cat > task_report.sh <<'EOF'
+#!/usr/bin/env bash
+
+if [[ "$#" -ne 1 ]]; then
+  printf 'Usage: %s TASK_FILE\n' "$0" >&2
+  exit 1
+fi
+
+task_file=$1
+
+if [[ ! -f "$task_file" || ! -r "$task_file" ]]; then
+  printf 'Error: %s is not a readable regular file\n' "$task_file" >&2
+  exit 1
+fi
+
+count=0
+
+while IFS= read -r line || [[ -n "$line" ]]; do
+  if [[ "$line" == "STOP" ]]; then
+    break
+  fi
+
+  if [[ "$line" =~ ^[[:space:]]*$ ]]; then
+    continue
+  fi
+
+  if [[ "$line" =~ ^[[:space:]]*# ]]; then
+    continue
+  fi
+
+  ((count++))
+  printf '%d. %s\n' "$count" "$line"
+done < "$task_file"
+
+printf 'Total: %d\n' "$count"
+EOF
+```
+
+The script contents should be:
+
 ```bash
 #!/usr/bin/env bash
 
@@ -337,11 +388,25 @@ done < "$task_file"
 printf 'Total: %d\n' "$count"
 ```
 
-Run it like this:
+Create the sample input:
 
 ```bash
-chmod +x task_report.sh
-./task_report.sh tasks.txt
+cat > tasks.txt <<'EOF'
+# release checklist
+update changelog
+
+run tests
+  # this comment is indented
+tag release
+STOP
+deploy
+EOF
+```
+
+Run it with Bash:
+
+```bash
+bash task_report.sh tasks.txt
 ```
 
 The `break` stops at `STOP`, so `deploy` is never printed. The two `continue` commands skip blank lines and comments without ending the whole loop.
@@ -354,6 +419,9 @@ Next, learn arrays so you can store several values in one variable and loop over
 
 - GNU Bash Manual: [Looping Constructs](https://www.gnu.org/software/bash/manual/html_node/Looping-Constructs.html)
 - GNU Bash Manual: [Bourne Shell Builtins](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html)
+- GNU Bash Manual: [Redirections](https://www.gnu.org/software/bash/manual/html_node/Redirections.html)
 - ShellCheck Wiki: [SC2045 - Iterating over ls output is fragile](https://www.shellcheck.net/wiki/SC2045)
 - ShellCheck Wiki: [SC2044 - For loops over find output are fragile](https://www.shellcheck.net/wiki/SC2044)
-- Greg's Wiki: [BashFAQ/001 - Reading a file line by line](https://mywiki.wooledge.org/BashFAQ/001)
+- Microsoft WSL documentation: https://learn.microsoft.com/windows/wsl/
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal default shell documentation: https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac

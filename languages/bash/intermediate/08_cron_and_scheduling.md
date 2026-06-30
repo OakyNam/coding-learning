@@ -12,6 +12,15 @@ A scheduled command is often called a cron job. The schedule table that contains
 
 Cron is useful for repeated maintenance tasks, reports, backups, cleanup scripts, reminders, and other jobs that should run without someone typing the command manually.
 
+## Platform Note
+
+Cron is a Unix-style scheduler, so platform behavior matters.
+
+- On Windows 10/11, practice these examples inside WSL. Native Windows scheduling uses Task Scheduler, not cron.
+- Git Bash is useful for Bash syntax practice, but it does not provide the same always-on cron service model as a Linux system.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first for Bash-specific script examples. macOS includes cron, but Apple commonly steers scheduled jobs toward `launchd`.
+- The worked answer uses paths derived from `$HOME`. In an actual crontab, test with `crontab -l` and logs because cron environments are intentionally small.
+
 ## Cron Schedule Syntax
 
 Most user crontab entries use five time fields followed by the command:
@@ -31,11 +40,11 @@ The fields are:
 Common schedule examples:
 
 ```cron
-* * * * * /home/alex/bin/check.sh
-*/15 * * * * /home/alex/bin/check.sh
-0 2 * * * /home/alex/bin/nightly.sh
-30 9 * * 1-5 /home/alex/bin/weekday-report.sh
-0 0 1 * * /home/alex/bin/monthly.sh
+* * * * * $HOME/bin/check.sh
+*/15 * * * * $HOME/bin/check.sh
+0 2 * * * $HOME/bin/nightly.sh
+30 9 * * 1-5 $HOME/bin/weekday-report.sh
+0 0 1 * * $HOME/bin/monthly.sh
 ```
 
 These mean:
@@ -49,11 +58,11 @@ These mean:
 Many cron implementations also support nicknames:
 
 ```cron
-@hourly /home/alex/bin/hourly.sh
-@daily /home/alex/bin/daily.sh
-@weekly /home/alex/bin/weekly.sh
-@monthly /home/alex/bin/monthly.sh
-@reboot /home/alex/bin/startup.sh
+@hourly $HOME/bin/hourly.sh
+@daily $HOME/bin/daily.sh
+@weekly $HOME/bin/weekly.sh
+@monthly $HOME/bin/monthly.sh
+@reboot $HOME/bin/startup.sh
 ```
 
 ## Cron Runs Differently Than Your Terminal
@@ -73,7 +82,7 @@ That means a command that works in your terminal can fail under cron because:
 Use absolute paths for commands and files when possible:
 
 ```cron
-30 2 * * * /usr/bin/env bash /home/alex/bin/cleanup_reports.sh
+30 2 * * * /usr/bin/env bash $HOME/bin/cleanup_reports.sh
 ```
 
 Or set an explicit `PATH` near the top of the crontab:
@@ -82,7 +91,7 @@ Or set an explicit `PATH` near the top of the crontab:
 SHELL=/bin/bash
 PATH=/usr/local/bin:/usr/bin:/bin
 
-30 2 * * * /home/alex/bin/cleanup_reports.sh
+30 2 * * * $HOME/bin/cleanup_reports.sh
 ```
 
 For Bash scripts, include a Bash shebang:
@@ -119,7 +128,7 @@ find "$report_dir" -maxdepth 1 -type f -name '*.log' -mtime +7 -exec mv -t "$arc
 Then schedule the wrapper:
 
 ```cron
-30 2 * * * /usr/bin/env bash /home/alex/bin/cleanup_reports.sh
+30 2 * * * /usr/bin/env bash $HOME/bin/cleanup_reports.sh
 ```
 
 Wrapper scripts are easier to test manually, easier to log, and easier to put under version control.
@@ -131,7 +140,7 @@ Cron jobs do not display output in your terminal. Depending on the system, cron 
 Redirect both standard output and standard error to a log file:
 
 ```cron
-30 2 * * * /usr/bin/env bash /home/alex/bin/cleanup_reports.sh >> /home/alex/cron-lab/logs/cleanup.log 2>&1
+30 2 * * * /usr/bin/env bash $HOME/bin/cleanup_reports.sh >> $HOME/cron-lab/logs/cleanup.log 2>&1
 ```
 
 The `>>` appends standard output. The `2>&1` sends standard error to the same destination.
@@ -171,20 +180,20 @@ Debug cron jobs by making cron's environment less mysterious.
 First, run the script manually:
 
 ```bash
-/usr/bin/env bash /home/alex/bin/cleanup_reports.sh
+/usr/bin/env bash "$HOME/bin/cleanup_reports.sh"
 ```
 
 Make sure it is executable if you plan to run it directly:
 
 ```bash
-chmod +x /home/alex/bin/cleanup_reports.sh
-/home/alex/bin/cleanup_reports.sh
+chmod +x "$HOME/bin/cleanup_reports.sh"
+"$HOME/bin/cleanup_reports.sh"
 ```
 
 Then test with a minimal environment similar to cron:
 
 ```bash
-env -i HOME="$HOME" PATH=/usr/bin:/bin /usr/bin/env bash /home/alex/bin/cleanup.sh
+env -i HOME="$HOME" PATH=/usr/bin:/bin /usr/bin/env bash "$HOME/bin/cleanup_reports.sh"
 ```
 
 Check your job's logs and your system cron logs. The system log location varies by distribution, but common places include `/var/log/syslog`, `/var/log/cron`, and journal logs.
@@ -192,7 +201,7 @@ Check your job's logs and your system cron logs. The system log location varies 
 For timing problems, temporarily schedule the job every minute:
 
 ```cron
-* * * * * /usr/bin/env bash /home/alex/bin/cleanup_reports.sh >> /home/alex/cron-lab/logs/cleanup.log 2>&1
+* * * * * /usr/bin/env bash $HOME/bin/cleanup_reports.sh >> $HOME/cron-lab/logs/cleanup.log 2>&1
 ```
 
 After confirming it works, change the schedule back.
@@ -240,11 +249,11 @@ Then write a crontab entry that runs it every day at 02:30 and appends standard 
 
 ## Worked Answer
 
-Use `/home/alex` as a placeholder in these examples. Replace it with your own home directory.
-
-Create `/home/alex/bin/cleanup_reports.sh`:
+Create `$HOME/bin/cleanup_reports.sh`:
 
 ```bash
+mkdir -p "$HOME/bin"
+cat > "$HOME/bin/cleanup_reports.sh" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -279,32 +288,33 @@ done < <(find "$incoming_dir" -maxdepth 1 -type f -name '*.log' -mtime +7 -print
 
 printf '[%s] moved %d old log file(s) from %s to %s\n' \
   "$start_time" "$moved_count" "$incoming_dir" "$archive_dir" >> "$summary_log"
+EOF
 ```
 
 Make it executable:
 
 ```bash
-chmod +x /home/alex/bin/cleanup_reports.sh
+chmod +x "$HOME/bin/cleanup_reports.sh"
 ```
 
 Create sample files and test manually:
 
 ```bash
-mkdir -p /home/alex/cron-lab/incoming
-touch /home/alex/cron-lab/incoming/new.log
-touch -d '8 days ago' /home/alex/cron-lab/incoming/old.log
+mkdir -p "$HOME/cron-lab/incoming"
+touch "$HOME/cron-lab/incoming/new.log"
+touch -d '8 days ago' "$HOME/cron-lab/incoming/old.log"
 
-/usr/bin/env bash /home/alex/bin/cleanup_reports.sh
+/usr/bin/env bash "$HOME/bin/cleanup_reports.sh"
 
-ls -l /home/alex/cron-lab/incoming
-ls -l /home/alex/cron-lab/archive
-cat /home/alex/cron-lab/logs/cleanup-summary.log
+ls -l "$HOME/cron-lab/incoming"
+ls -l "$HOME/cron-lab/archive"
+cat "$HOME/cron-lab/logs/cleanup-summary.log"
 ```
 
 Test with a minimal environment similar to cron:
 
 ```bash
-env -i HOME="/home/alex" PATH=/usr/bin:/bin /usr/bin/env bash /home/alex/bin/cleanup_reports.sh
+env -i HOME="$HOME" PATH=/usr/bin:/bin /usr/bin/env bash "$HOME/bin/cleanup_reports.sh"
 ```
 
 Edit your crontab:
@@ -319,7 +329,7 @@ Add this entry:
 SHELL=/bin/bash
 PATH=/usr/local/bin:/usr/bin:/bin
 
-30 2 * * * /usr/bin/env bash /home/alex/bin/cleanup_reports.sh >> /home/alex/cron-lab/logs/cleanup-cron.log 2>&1
+30 2 * * * /usr/bin/env bash $HOME/bin/cleanup_reports.sh >> $HOME/cron-lab/logs/cleanup-cron.log 2>&1
 ```
 
 Inspect the installed crontab:
@@ -339,3 +349,6 @@ Return to the intermediate Bash README and continue with the next lesson.
 - GNU Bash manual for noninteractive shell startup behavior and `BASH_ENV`: https://www.gnu.org/software/bash/manual/bash.html
 - Linux `anacron(8)` manual page for delayed execution of periodic jobs on machines that are not always running: https://man7.org/linux/man-pages/man8/anacron.8.html
 - Linux `systemd.timer(5)` manual page for systemd timer units and scheduling alternatives: https://man7.org/linux/man-pages/man5/systemd.timer.5.html
+- Microsoft Learn, "Install WSL": https://learn.microsoft.com/windows/wsl/install
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal User Guide, "Change the default shell": https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac

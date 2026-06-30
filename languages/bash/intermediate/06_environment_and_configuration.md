@@ -10,6 +10,15 @@ Many command-line tools and deployment scripts are configured without editing co
 
 Environment configuration is powerful, but it is also easy to misuse. A missing export, an overwritten `PATH`, or a secret committed to a startup file can make a script fail in confusing ways.
 
+## Platform Note
+
+This lesson uses Bash environment behavior.
+
+- On Windows 10/11, run these examples inside WSL or Git Bash, not directly in PowerShell.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- Environment assignment before a command, such as `USER_NAME=Ada bash run_report.sh`, is Bash syntax. PowerShell uses a different environment-variable model.
+- Run commands from a scratch directory so generated files such as `run_report.sh`, `reports/`, and `tmp/` stay easy to inspect and remove.
+
 ## Shell Variables vs Environment Variables
 
 A shell variable belongs to the current Bash process:
@@ -86,7 +95,7 @@ Export a variable when child commands need it:
 
 ```bash
 export APP_MODE=dev
-./run.sh
+bash run.sh
 ```
 
 Remove a variable with `unset`:
@@ -107,7 +116,7 @@ export APP_MODE
 Put assignments before a command to set environment values only for that command:
 
 ```bash
-APP_MODE=test ./run.sh
+APP_MODE=test bash run.sh
 LC_ALL=C sort names.txt
 ```
 
@@ -245,8 +254,8 @@ fi
 Example runs:
 
 ```bash
-API_TOKEN=secret ./status.sh
-APP_MODE=test LOG_DIR=./tmp API_TOKEN=secret VERBOSE=1 ./status.sh
+API_TOKEN=secret bash status.sh
+APP_MODE=test LOG_DIR=./tmp API_TOKEN=secret VERBOSE=1 bash status.sh
 ```
 
 ## Common Mistakes
@@ -277,14 +286,12 @@ Requirements:
 Tests to try:
 
 ```bash
-chmod +x run_report.sh
+bash run_report.sh
 
-./run_report.sh
-
-USER_NAME=Ada ./run_report.sh
+USER_NAME=Ada bash run_report.sh
 cat ./reports/report-dev.txt
 
-USER_NAME=Ada APP_ENV=test REPORT_DIR=./tmp/reports VERBOSE=1 ./run_report.sh
+USER_NAME=Ada APP_ENV=test REPORT_DIR=./tmp/reports VERBOSE=1 bash run_report.sh
 cat ./tmp/reports/report-test.txt
 ```
 
@@ -295,6 +302,7 @@ The first run should fail with a clear message because `USER_NAME` is missing. T
 One complete valid solution:
 
 ```bash
+cat > run_report.sh <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -316,20 +324,21 @@ mkdir -p "$REPORT_DIR"
 if [ "$VERBOSE" = "1" ]; then
   printf 'Wrote report: %s\n' "$report_path"
 fi
+EOF
 ```
 
 Expected behavior:
 
 ```bash
-$ ./run_report.sh
+$ bash run_report.sh
 run_report.sh: line 4: USER_NAME: Set USER_NAME before running this script
 
-$ USER_NAME=Ada ./run_report.sh
+$ USER_NAME=Ada bash run_report.sh
 $ cat ./reports/report-dev.txt
 User: Ada
 Environment: dev
 
-$ USER_NAME=Ada APP_ENV=test REPORT_DIR=./tmp/reports VERBOSE=1 ./run_report.sh
+$ USER_NAME=Ada APP_ENV=test REPORT_DIR=./tmp/reports VERBOSE=1 bash run_report.sh
 Wrote report: ./tmp/reports/report-test.txt
 $ cat ./tmp/reports/report-test.txt
 User: Ada
@@ -350,3 +359,6 @@ Return to this level's README and continue with the next numbered lesson. As you
 - GNU Bash Reference Manual, Bourne Shell Builtins: https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html
 - Linux manual page, `environ(7)`: https://man7.org/linux/man-pages/man7/environ.7.html
 - GNU coreutils manual, `env` invocation: https://www.gnu.org/software/coreutils/manual/html_node/env-invocation.html
+- Microsoft Learn, "Install WSL": https://learn.microsoft.com/windows/wsl/install
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal User Guide, "Change the default shell": https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac

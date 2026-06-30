@@ -9,6 +9,14 @@ Learn how Bash programs receive input and produce output. By the end, you should
 - Redirect output and errors to files.
 - Connect simple commands with pipes.
 
+## Platform Note
+
+This lesson uses Bash syntax.
+
+- On Windows 10/11, run the examples inside WSL or Git Bash, not directly in PowerShell.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- The examples use files in the current practice directory, not hard-coded platform paths.
+
 ## Standard Streams
 
 Every command starts with three standard streams:
@@ -84,7 +92,7 @@ The options are important:
 - `-p` prints a prompt before reading.
 - `-r` tells Bash not to treat backslashes as special escape characters.
 
-Without `-r`, input such as `C:\Users\name` can be changed in surprising ways. For beginner scripts, `read -r` is the safer habit.
+Without `-r`, input containing backslashes can be changed in surprising ways. For beginner scripts, `read -r` is the safer habit.
 
 You can read more than one value, but one variable is usually easiest while learning:
 
@@ -231,6 +239,37 @@ Try writing it yourself before looking at the worked answer.
 
 ## Worked Answer
 
+Create the script:
+
+```bash
+cat > guestbook.sh <<'EOF'
+#!/usr/bin/env bash
+
+read -r -p "Name: " name
+read -r -p "Message: " message
+
+printf '%s: %s\n' "$name" "$message" >> guestbook.txt
+
+printf 'Saved entry for %s\n' "$name"
+printf 'Entries containing a:\n'
+cat guestbook.txt | grep 'a'
+EOF
+```
+
+Inspect it before running:
+
+```bash
+cat guestbook.sh
+```
+
+Run it with Bash:
+
+```bash
+bash guestbook.sh
+```
+
+The script contents should be:
+
 ```bash
 #!/usr/bin/env bash
 
@@ -277,6 +316,11 @@ Then continue to the next beginner Bash lesson.
 
 ## Sources Used
 
-- GNU Bash Manual, redirections and pipelines.
-- POSIX `printf` utility documentation.
+- GNU Bash Manual, redirections: https://www.gnu.org/software/bash/manual/html_node/Redirections.html
+- GNU Bash Manual, pipelines: https://www.gnu.org/software/bash/manual/html_node/Pipelines.html
+- GNU Bash Manual, Bash builtins including `read`: https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html
+- POSIX `printf` utility documentation: https://pubs.opengroup.org/onlinepubs/9799919799/utilities/printf.html
+- Microsoft WSL documentation: https://learn.microsoft.com/windows/wsl/
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal default shell documentation: https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac
 - GNU Coreutils documentation for `cat`, `ls`, and `wc`.

@@ -4,9 +4,17 @@
 
 Learn how Bash finds commands with `PATH`, how to inspect command lookup, and how to turn a small shell script into a reusable command.
 
+## Platform Note
+
+This lesson uses Bash command lookup.
+
+- On Windows 10/11, run these examples inside WSL or Git Bash, not directly in PowerShell. WSL gives the clearest Unix-style `PATH`, `chmod`, and startup-file behavior.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- Startup files differ between shells. This lesson uses `~/.bashrc` for future interactive Bash sessions; do not paste that into PowerShell.
+
 ## Why It Matters
 
-Typing a full path like `/home/you/bin/today-note` works, but it gets old quickly. `PATH` is the shell feature that lets you type short command names such as `ls`, `python`, or your own `today-note`.
+Typing a full path like `$HOME/bin/today-note` works, but it gets old quickly. `PATH` is the shell feature that lets you type short command names such as `ls`, `python`, or your own `today-note`.
 
 Understanding `PATH` also helps you debug confusing problems:
 
@@ -26,7 +34,7 @@ printf '%s\n' "$PATH"
 You might see output shaped like this:
 
 ```text
-/home/you/bin:/usr/local/bin:/usr/bin:/bin
+.../bin:.../usr/bin:.../bin
 ```
 
 When you type a command name with no slash in it, Bash searches those directories from left to right. The first matching executable file wins.
@@ -34,10 +42,10 @@ When you type a command name with no slash in it, Bash searches those directorie
 For example, if `PATH` is:
 
 ```text
-/home/you/bin:/usr/local/bin:/usr/bin:/bin
+$HOME/bin:system-command-directories
 ```
 
-and both `/home/you/bin/report` and `/usr/bin/report` exist, this runs the one in your home directory:
+and both `$HOME/bin/report` and another `report` command exist later in `PATH`, Bash runs the one in `$HOME/bin` first:
 
 ```bash
 report
@@ -57,7 +65,7 @@ These do not use `PATH`, because each command contains a slash:
 
 ```bash
 ./today-note
-/home/you/bin/today-note
+"$HOME/bin/today-note"
 scripts/build
 ```
 
@@ -76,7 +84,7 @@ Example output:
 
 ```text
 /usr/bin/ls
-/home/you/bin/today-note
+.../bin/today-note
 ```
 
 Use `type` when you want more detail:
@@ -117,16 +125,12 @@ mkdir -p "$HOME/bin"
 Create a script:
 
 ```bash
-nano "$HOME/bin/hello-name"
-```
-
-Put this in the file:
-
-```bash
+cat > "$HOME/bin/hello-name" <<'EOF'
 #!/usr/bin/env bash
 
 name=${1:-friend}
 printf 'Hello, %s!\n' "$name"
+EOF
 ```
 
 The first line is the shebang. It tells the system which interpreter should run the script when the file is executed directly. `#!/usr/bin/env bash` asks `env` to find `bash` through the current environment.
@@ -333,7 +337,8 @@ Example line added to `$HOME/today-notes.txt`:
 After creating it, move to another directory and verify Bash still finds it:
 
 ```bash
-cd /tmp
+mkdir -p bash-practice/path-test
+cd bash-practice/path-test
 command -v today-note
 type today-note
 today-note "verified from another directory"
@@ -350,12 +355,7 @@ mkdir -p "$HOME/bin"
 Create the script:
 
 ```bash
-nano "$HOME/bin/today-note"
-```
-
-Put this in the file:
-
-```bash
+cat > "$HOME/bin/today-note" <<'EOF'
 #!/usr/bin/env bash
 
 if [ "$#" -eq 0 ]; then
@@ -363,9 +363,10 @@ if [ "$#" -eq 0 ]; then
   exit 1
 fi
 
-note=$*
+note="$*"
 today=$(date +%F)
 printf '%s - %s\n' "$today" "$note" >> "$HOME/today-notes.txt"
+EOF
 ```
 
 Make it executable:
@@ -411,14 +412,15 @@ type today-note
 Expected lookup output should point to your script:
 
 ```text
-/home/you/bin/today-note
-today-note is /home/you/bin/today-note
+.../bin/today-note
+today-note is .../bin/today-note
 ```
 
 Verify from another directory:
 
 ```bash
-cd /tmp
+mkdir -p bash-practice/path-test
+cd bash-practice/path-test
 today-note "verified from another directory"
 tail -n 2 "$HOME/today-notes.txt"
 ```
@@ -452,3 +454,6 @@ Return to the [beginner README](README.md) and continue with the next numbered l
 - Linux `execve(2)` manual page: https://man7.org/linux/man-pages/man2/execve.2.html
 - GNU Coreutils manual, "`env` invocation": https://www.gnu.org/software/coreutils/manual/html_node/env-invocation.html
 - GNU Coreutils manual, "File permissions": https://www.gnu.org/software/coreutils/manual/html_node/File-permissions.html
+- Microsoft WSL documentation: https://learn.microsoft.com/windows/wsl/
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal default shell documentation: https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac

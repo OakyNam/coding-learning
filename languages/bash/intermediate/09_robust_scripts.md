@@ -10,6 +10,15 @@ Small shell scripts often start as quick commands pasted into a file. That is fi
 
 A robust Bash script is not one that can never fail. It is one that fails clearly, cleans up after itself, and tells other programs whether the work succeeded.
 
+## Platform Note
+
+This lesson uses Bash arrays, traps, `mktemp`, and `tar`.
+
+- On Windows 10/11, run these examples inside WSL or Git Bash, not directly in PowerShell.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- Archive metadata and command details can vary slightly between GNU tar and BSD tar. The exercise focuses on script structure, cleanup, quoting, and exit behavior.
+- Run commands from a scratch directory so generated directories, temporary archives, and test files stay easy to inspect and remove.
+
 ## Core Idea
 
 A robust script makes its assumptions visible:
@@ -205,6 +214,7 @@ Expected results:
 ## Worked Answer
 
 ```bash
+cat > safe_archive.sh <<'EOF'
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
@@ -271,6 +281,7 @@ fi
 
 printf 'archived %d file(s)\n' "${#files[@]}" >&2
 printf '%s\n' "$archive"
+EOF
 ```
 
 Expected behavior:
@@ -290,3 +301,7 @@ Return to this level's README and continue with the next numbered lesson. As you
 - ShellCheck SC2086 for why unquoted expansions cause word splitting and globbing: https://www.shellcheck.net/wiki/SC2086
 - Google Shell Style Guide for clear error handling, quoting, and safe temporary-file practices: https://google.github.io/styleguide/shellguide.html
 - GNU coreutils `mktemp` manual for safe temporary file and directory creation: https://www.gnu.org/software/coreutils/manual/html_node/mktemp-invocation.html
+- GNU tar manual for archive creation with `tar -czf`: https://www.gnu.org/software/tar/manual/tar.html
+- Microsoft Learn, "Install WSL": https://learn.microsoft.com/windows/wsl/install
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal User Guide, "Change the default shell": https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac

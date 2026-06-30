@@ -4,35 +4,59 @@ Use this workflow when asked to improve the Coding Learning curriculum without u
 
 ## Role
 
-Act as the coordinator. Keep the repo moving through repeated lanes:
+Act as the coordinator. Keep the repo moving through a strict two-file rolling gate:
 
 1. Build or update the root `TODO.md` inventory.
-2. Keep one audit agent scoped to exactly one unaudited file.
-3. Keep one writer agent scoped to exactly one audited file.
-4. Keep one review agent scoped to exactly one rewritten file.
-5. Use the review agent as the gate before a file becomes `complete`.
-6. Require Windows and macOS Apple Silicon compatibility instructions before a file becomes `complete`.
-7. Use GitHub-renderable Mermaid diagrams when a concise user-to-code data flow clarifies the lesson.
-8. Validate links and lesson requirements after each accepted set.
-9. Commit and push each accepted set.
-10. Continue by advancing the three lanes, not by widening scope.
+2. Select the first actionable files from the top of `TODO.md`, up to two active files total.
+3. Move each active file through audit, audit review, rewrite, rewrite review, validation, and completion.
+4. Do not start a third active file while two files are still active.
+5. Review audit notes before any rewrite begins for that same file.
+6. Rewrite a file only after its audit review passes.
+7. Require Windows and macOS Apple Silicon compatibility instructions before a file becomes `complete`.
+8. Use GitHub-renderable Mermaid diagrams when a concise user-to-code data flow clarifies the lesson.
+9. Validate links and lesson requirements after each file is accepted.
+10. When one active file becomes `complete`, immediately pull the next `needs-audit` file from the top of `TODO.md` to keep up to two active files.
 
-## Three-Lane Work Pattern
+## Two-File Rolling Gate Pattern
 
-Run at most one agent per lane unless the user explicitly asks for a different concurrency model:
+Keep at most two active files in progress. Do not create a broad backlog of audited files waiting for rewrites or rewritten files waiting for review.
 
-- Audit lane: one read-only audit agent researches and scopes the next `needs-audit` file.
-- Write lane: one implementation worker rewrites the next `audit-reviewed` file.
-- Review lane: one read-only review agent checks the next rewritten file before completion.
+For each active file, use this sequence:
 
-The review lane is the quality gate:
+1. `needs-audit` -> `audit-dispatched`: one read-only audit agent researches and scopes exactly this file.
+2. `audit-dispatched` -> `audit-reviewed`: a separate read-only review checks that the audit notes are specific, source-backed, implementation-ready, and scoped to the assigned file.
+3. `audit-reviewed` -> `rewrite-dispatched`: one writer rewrites exactly this file from the reviewed audit notes.
+4. `rewrite-dispatched` -> `rewrite-reviewed`: a separate read-only review checks the rewritten file against the reviewed audit notes and the workflow quality gate.
+5. `rewrite-reviewed` -> `complete`: coordinator validation passes, compatibility requirements are satisfied, links are valid, and lesson requirements are present.
 
-- Audit notes become `audit-reviewed` only after the coordinator confirms they are specific, source-backed, and implementation-ready.
+The two-file window is a cap, not a queue:
+
+- Count files with `audit-dispatched`, `audit-reviewed`, `rewrite-dispatched`, `rewrite-reviewed`, `compatibility-review-needed`, `compatibility-review-dispatched`, or `compatibility-reviewed` as active unless they are deliberately reset to `needs-audit` or marked `complete`.
+- Start a new audit only when fewer than two files are active.
+- Prefer moving the oldest active file to its next gate before starting fresh work.
+- If a review returns `NEEDS_FIX`, keep that same file active and repair that gate before advancing it.
+- When the user says “continue,” resume this two-file rolling process from the current `TODO.md` state without asking them to re-specify it.
+
+## Context Hygiene
+
+Keep the working context small and current. On every resume or long-running continuation:
+
+- Treat `TODO.md` as the source of truth for file state.
+- Re-read only the workflow, active TODO rows, active agent results, and the specific files being audited, rewritten, or reviewed.
+- Carry forward only actionable state: active file paths, owner/status/source fields, active agent IDs, reviewed audit notes, open blockers, and validation results.
+- Do not keep old audit notes, prompts, command output, or completed-file details in context after the file is marked `complete`, except for concise lessons that affect the current file.
+- Summarize long agent outputs into compact reviewed specs before giving them to writers or reviewers.
+- Prefer targeted validation for the file that just passed review; avoid loading broad repo output unless a global check is explicitly needed.
+- If context was compacted, restart from `TODO.md` and active agents instead of reconstructing every prior step from memory.
+
+The review steps are the quality gate:
+
+- Audit notes become `audit-reviewed` only after review confirms they are specific, source-backed, and implementation-ready.
 - Rewrites become `rewrite-reviewed` only after review confirms the file meets the audit spec and quality gate.
 - Previously approved files that predate the platform gate become `compatibility-review-needed` and must pass that review before becoming `complete`.
 - Files become `complete` only after review findings are fixed, compatibility review passes, and validation is clean.
-- If review returns `NEEDS_FIX`, the coordinator or assigned writer fixes only the reported issues, then review or validate again.
-- Do not start auditing far ahead of writing. Prefer one queued audit per lane so stale or overbroad scopes do not create rework.
+- If review returns `NEEDS_FIX`, the coordinator or assigned writer fixes only the reported issues, then sends the same file back to the relevant review step.
+- Do not exceed two active files unless the user explicitly asks for a larger window.
 
 ## File Ownership
 
@@ -212,11 +236,11 @@ Use these statuses in `TODO.md`:
 
 ## Batch Strategy
 
-Prefer coherent batches:
+Prefer coherent batches within the two-file window:
 
 1. Current user-open files.
 2. One topic folder at a time.
 3. One language level at a time.
 4. README polish after lesson rewrites.
 
-Keep batches small enough to review carefully, usually 5-10 files.
+Keep the active window small enough to review carefully: two files maximum by default.

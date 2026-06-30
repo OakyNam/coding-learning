@@ -10,6 +10,15 @@ Shell scripts often need to do several slow checks at once: ping a service, gene
 
 Without process control, scripts tend to leave stray background commands behind or report success before the real work has finished.
 
+## Platform Note
+
+This lesson uses Bash background processes, PIDs, signals, and traps.
+
+- On Windows 10/11, prefer WSL for these examples. Git Bash supports many examples, but process IDs and signals can behave differently from Linux.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- Run the examples from a scratch directory and use short-lived commands such as `sleep` so cleanup is easy to observe.
+- Avoid testing signal examples against important real processes. The exercises start their own child processes and clean those up.
+
 ## Core Idea
 
 Adding `&` after a command starts it in the background:
@@ -191,7 +200,10 @@ The script should:
 
 ## Worked Answer
 
+Run this in Bash from a scratch directory to create `parallel_checks.sh`:
+
 ```bash
+cat > parallel_checks.sh <<'EOF'
 #!/usr/bin/env bash
 
 names=()
@@ -251,6 +263,13 @@ for i in "${!pids[@]}"; do
 done
 
 exit "$failed"
+EOF
+```
+
+Run it with Bash:
+
+```bash
+bash parallel_checks.sh
 ```
 
 Expected behavior:
@@ -272,3 +291,6 @@ Return to this level's README and continue with the next numbered lesson. When y
 - GNU Bash Reference Manual, [Special Parameters](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html)
 - GNU Bash Reference Manual, [Signals](https://www.gnu.org/software/bash/manual/html_node/Signals.html)
 - GNU Bash Reference Manual, [`trap` in Bourne Shell Builtins](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html)
+- Microsoft Learn, "Install WSL": https://learn.microsoft.com/windows/wsl/install
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal User Guide, "Change the default shell": https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac

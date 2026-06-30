@@ -14,11 +14,21 @@ Many Bash programs spend most of their time moving text from one command to anot
 
 The tools overlap, but they are not the same. A clear script usually uses the smallest tool that expresses the job directly.
 
+## Platform Note
+
+This lesson uses Bash plus `grep`, `sed`, and `awk`.
+
+- On Windows 10/11, run these examples inside WSL or Git Bash, not directly in PowerShell.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- `sed` and `awk` have implementation differences. These examples avoid in-place editing and use common options that work in GNU tools and modern macOS tools.
+- Run commands from a scratch directory so generated files such as `access.log` and `summarize_access.sh` stay easy to inspect and remove.
+
 ## Sample Data
 
-Create this file as `access.log`:
+Run this in Bash to create `access.log`:
 
-```text
+```bash
+cat > access.log <<'LOG'
 2026-06-20 api 200 87ms
 2026-06-20 web 404 23ms
 2026-06-20 api 500 310ms
@@ -26,6 +36,7 @@ Create this file as `access.log`:
 2026-06-20 api 200 92ms
 2026-06-20 billing 503 780ms
 2026-06-20 web 200 18ms
+LOG
 ```
 
 Each line has four fields:
@@ -305,7 +316,10 @@ Requirements:
 
 ## Worked Answer
 
+Run this in Bash from the same directory as `access.log` to create `summarize_access.sh`:
+
 ```bash
+cat > summarize_access.sh <<'EOF'
 #!/usr/bin/env bash
 set -u
 
@@ -345,13 +359,13 @@ if grep -Eq ' 5[0-9][0-9] ' "$log"; then
 else
   echo 'warning: no 5xx response found'
 fi
+EOF
 ```
 
 Run it:
 
 ```bash
-chmod +x summarize_access.sh
-./summarize_access.sh
+bash summarize_access.sh
 ```
 
 Expected output:
@@ -392,3 +406,6 @@ Try changing `access.log` so every status is `200`, then run the script again. C
 - GNU Grep manual: https://www.gnu.org/software/grep/manual/grep.html
 - GNU Sed manual: https://www.gnu.org/software/sed/manual/sed.html
 - GNU Awk User Guide: https://www.gnu.org/software/gawk/manual/gawk.html
+- Microsoft Learn, "Install WSL": https://learn.microsoft.com/windows/wsl/install
+- Git for Windows: https://gitforwindows.org/
+- Apple Terminal User Guide, "Change the default shell": https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac

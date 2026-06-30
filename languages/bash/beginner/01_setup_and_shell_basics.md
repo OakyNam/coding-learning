@@ -2,127 +2,158 @@
 
 ## Learning Goal
 
-Learn what Bash is, how to open and verify a Bash shell, how to read simple command examples, how to move around the filesystem, and how to run your first small Bash script.
+Define what a shell and Bash are; open the right terminal on Windows, macOS, or Linux; verify that Bash is running; run simple commands; and understand the prompt, current directory, command shape, paths, quoting, exit status, and safe basic `.sh` script execution.
 
-## What Bash Is
+## What a Shell Is
 
-Bash is a shell. A shell is a program that reads commands you type, asks the operating system to run them, and shows the result. Bash is common on Linux, available on macOS, and available on Windows through tools such as WSL or Git Bash.
+A terminal is the app or window where you type. A shell is the program inside that terminal that reads your command, interprets it, asks the operating system to do work, and prints output.
 
-You will use Bash in two main ways:
+Bash is one shell. You can use it interactively, one command at a time, or you can put commands in a text file and run them as a script.
 
-- Interactive shell: you type one command at a time.
-- Script: you save commands in a file and run them together.
+```mermaid
+flowchart LR
+    A[User types command] --> B[Terminal]
+    B --> C[Bash shell]
+    C --> D[Command or script]
+    D --> E[OS and files]
+    E --> F[Output and exit status]
+```
 
-When you see examples in this lesson, type only the command after the prompt. Do not type the `$`.
+When examples show a prompt symbol such as `$`, do not type the prompt symbol. Type only the command.
 
-```bash
+Example prompt plus command:
+
+```text
 $ pwd
 ```
 
-In that example, type this:
+What you type:
 
 ```bash
 pwd
 ```
 
-## Opening Bash
+## Bash, PowerShell, and zsh
 
-On macOS:
+Bash, PowerShell, and zsh are all shells, but they do not use exactly the same syntax.
 
-1. Open Terminal.
-2. Run `bash --version`.
-3. If your default shell is not Bash, you can start Bash by typing `bash`.
+- Bash is the shell used in this course.
+- PowerShell is common on Windows. Use it only for the Windows setup commands that are clearly labeled PowerShell.
+- zsh is the normal default shell in macOS Terminal. For this lesson, you can start Bash by typing `bash`.
 
-On Linux:
+After you have launched Bash, lesson commands are shown in `bash` code fences.
 
-1. Open your terminal application.
-2. Run `bash --version`.
-3. Most Linux systems already include Bash.
+## Open Bash on Windows WSL/Git Bash/macOS/Linux
 
-On Windows with WSL:
+### Windows with WSL
 
-1. Open your installed Linux distribution, such as Ubuntu, from the Start menu.
-2. You can also open PowerShell or Command Prompt and run `wsl`.
-3. After WSL opens, run `bash --version`.
+WSL runs a Linux environment on Windows. It is usually the closest Windows option to a Linux Bash environment.
 
-On Windows with Git Bash:
+If WSL is not installed, open PowerShell as Administrator and run this PowerShell command:
 
-1. Open Git Bash from the Start menu.
-2. Run `bash --version`.
-3. Git Bash is useful for learning many Bash basics, but WSL is closer to a real Linux environment.
+```powershell
+wsl --install
+```
 
-## Verify Your Shell
+Restart if Windows asks you to. Then open PowerShell and launch WSL in your Linux home directory with this PowerShell command:
 
-Run these commands:
+```powershell
+wsl ~
+```
+
+After WSL opens, you are inside a Linux shell. Verify Bash:
 
 ```bash
 bash --version
+```
+
+### Windows with Git Bash
+
+If you are using Git Bash instead of WSL, install Git for Windows if needed, then open Git Bash from the Start menu.
+
+Verify Bash:
+
+```bash
+bash --version
+```
+
+Git Bash is useful for learning many Bash basics. WSL runs a Linux environment on Windows, so it matches Linux-focused Bash lessons more closely.
+
+### macOS
+
+Open Terminal. On modern macOS, Terminal normally starts zsh. Type `bash` to start Bash; your prompt may change.
+
+```bash
+bash
+bash --version
+```
+
+This works on Apple Silicon Macs too. Do not worry if the version, prompt, or path shown on your machine differs from examples.
+
+### Linux
+
+Open your terminal application and verify Bash:
+
+```bash
+bash --version
+```
+
+## Verify What You Are Running
+
+Run these commands in Bash:
+
+```bash
+bash --version
+echo "$0"
 echo "$SHELL"
 ```
+
+What to notice:
+
+- `bash --version` confirms that Bash is installed and shows its version.
+- `echo "$0"` often shows the current shell or shell process name.
+- `echo "$SHELL"` prints your login shell setting. It can show zsh or another shell even when you started a nested Bash session.
 
 Expected output shape:
 
 ```text
 GNU bash, version ...
+bash
 /bin/bash
 ```
 
-Your exact version and path may be different. On some systems, `echo "$SHELL"` may show another shell such as `/bin/zsh`, even if you are currently running Bash inside it. `bash --version` is the more direct check that Bash is installed and working.
+Your exact output may differ.
 
-## The Prompt
+## Prompt and Current Directory
 
-Your terminal shows a prompt before each command. It may look like this:
+The prompt is the text Bash shows when it is ready for your next command. Prompts vary. They may include your user name, computer name, current directory, or a simple symbol such as `$`.
 
-```text
-$
-```
+Do not type prompt symbols from examples.
 
-or this:
-
-```text
-user@computer:~/projects$
-```
-
-The prompt is not the command. It is Bash saying, "I am ready." Many prompts show your user name, computer name, current directory, or whether the previous command succeeded. Prompt styles vary by system.
-
-## Simple Commands
-
-Try these commands one at a time:
+Bash always has a current directory. Many commands use the current directory unless you give another path.
 
 ```bash
 pwd
 ls
-echo "Hello from Bash"
-date
-whoami
-history
+cd .
+pwd
+cd ..
+pwd
+cd ~
+pwd
 ```
 
 What they do:
 
-- `pwd` prints the current working directory.
+- `pwd` prints the current directory.
 - `ls` lists files and directories.
-- `echo` prints text.
-- `date` prints the current date and time.
-- `whoami` prints your current user name.
-- `history` shows commands you have typed in this shell.
+- `cd .` stays in the current directory.
+- `cd ..` moves to the parent directory.
+- `cd ~` moves to your home directory.
 
-Expected output shape:
+`cd` usually succeeds quietly. Run `pwd` after `cd` when you want to see where you are.
 
-```text
-/home/your-name
-Desktop  Documents  Downloads
-Hello from Bash
-Sat Jun 20 ...
-your-name
-1  pwd
-2  ls
-...
-```
-
-Your filenames, date format, user name, and history numbers will be different.
-
-## Command Shape
+## Command Structure
 
 Most shell commands have this shape:
 
@@ -130,62 +161,51 @@ Most shell commands have this shape:
 command options arguments
 ```
 
-Examples:
+Try these examples:
 
 ```bash
 ls
 ls -l
-echo "Bash is running"
+echo "Hello from Bash"
 mkdir bash-practice
-touch notes.txt
-cat notes.txt
 ```
 
-In these examples:
+In these commands:
 
-- `ls` is a command with no extra details.
+- `ls` is a command.
 - `-l` is an option that changes how `ls` behaves.
-- `"Bash is running"` is an argument passed to `echo`.
+- `"Hello from Bash"` is an argument passed to `echo`.
 - `bash-practice` is an argument passed to `mkdir`.
 
-Options often begin with `-` or `--`. Arguments are the things the command works with, such as text, filenames, or directories.
+Options often start with `-` or `--`. Arguments are the things the command works with, such as text, filenames, or directory names.
 
-## Current Directory And Paths
+## Paths
 
-Bash always has a current directory. Commands like `ls`, `touch`, and `cat` use that location unless you give them a different path.
+A path tells Bash where something is.
 
-```bash
-pwd
-ls
-cd ~
-pwd
-```
+Start with relative paths. A relative path is read from your current directory:
 
-Important path symbols:
-
-- `~` means your home directory.
-- `/` means the filesystem root on macOS, Linux, WSL, and Git Bash.
+- `notes.txt` means a file named `notes.txt` in the current directory.
+- `bash-practice/notes.txt` means `notes.txt` inside `bash-practice`.
 - `.` means the current directory.
 - `..` means the parent directory.
 
 Examples:
 
 ```bash
-cd ~
-mkdir bash-practice
+mkdir -p bash-practice
+echo "Path practice" > bash-practice/notes.txt
+cat bash-practice/notes.txt
 cd bash-practice
-pwd
+cat notes.txt
 cd ..
-pwd
 ```
 
-On WSL, Linux paths look like `/home/your-name/project`. Windows drives are usually mounted under `/mnt`, such as `/mnt/c/Users/your-name`.
+An absolute path starts from the top of a filesystem rather than from your current directory. You will see absolute paths later, but beginners should first get comfortable with relative paths.
 
-On Git Bash, Windows paths may appear in a Unix-like form, such as `/c/Users/your-name`.
+## Quoting
 
-## Basic Quoting
-
-Spaces separate words in Bash. If a filename or directory name contains spaces, quote it.
+Bash splits unquoted text on spaces.
 
 This creates one directory:
 
@@ -193,20 +213,19 @@ This creates one directory:
 mkdir "practice notes"
 ```
 
-This tries to create two directories:
+This creates two directories:
 
 ```bash
 mkdir practice notes
 ```
 
-Use double quotes around text and paths unless you have a reason not to:
+Double quotes keep spaced text together and still allow variables to expand:
 
 ```bash
-echo "My shell is $SHELL"
-cat "notes from today.txt"
+echo "My shell setting is $SHELL"
 ```
 
-Double quotes still allow variables like `$SHELL` to expand. Single quotes print most characters literally:
+Single quotes are mostly literal:
 
 ```bash
 echo '$SHELL'
@@ -218,26 +237,32 @@ Expected output:
 $SHELL
 ```
 
-## Creating And Reading Files
+Use quotes around text or paths that contain spaces.
 
-Create a directory and a file:
+## Exit Status Basics
+
+Every command finishes with an exit status. `0` means success. A nonzero number means failure.
+
+`$?` stores the exit status of the most recent command:
 
 ```bash
-mkdir bash-practice
-cd bash-practice
-touch notes.txt
+pwd
+echo $?
+ls missing-file
+echo $?
 ```
 
-Write text into the file:
+The `pwd` command should print `0` afterward. The missing file example should print an error, then a nonzero status afterward.
+
+## Create and Read a File
+
+Create a practice directory, move into it, write a file, and display it:
 
 ```bash
+mkdir -p bash-practice
+cd bash-practice
 echo "I am learning Bash." > notes.txt
 echo "Commands are small tools." >> notes.txt
-```
-
-Display the file:
-
-```bash
 cat notes.txt
 ```
 
@@ -248,31 +273,15 @@ I am learning Bash.
 Commands are small tools.
 ```
 
-The `>` operator replaces a file with new output. The `>>` operator appends output to the end of a file.
+The `>` operator replaces a file with new output. The `>>` operator appends output to the end of a file. These redirection operators are preview concepts here; you will practice them more later.
 
-## Finding Help
+## Run a `.sh` Script Safely
 
-Bash gives you several ways to ask what a command is or how it works.
+A shell script is a text file containing shell commands.
 
-```bash
-type cd
-type ls
-help cd
-man ls
-```
+Safety first: before running a `.sh` file, inspect it. Do not blindly run unknown downloaded scripts. Look for commands that delete, overwrite, install, upload, or change system settings.
 
-What they do:
-
-- `type cd` tells you whether `cd` is built into Bash, an alias, a function, or an external program.
-- `type ls` shows where Bash finds `ls`.
-- `help cd` shows help for the Bash built-in command `cd`.
-- `man ls` opens the manual page for `ls` on systems that include manual pages.
-
-To exit `man`, press `q`.
-
-## Your First Script
-
-A Bash script is a text file containing Bash commands. Create a file named `where-am-i.sh`:
+Create a small script:
 
 ```bash
 cat > where-am-i.sh <<'EOF'
@@ -282,6 +291,14 @@ pwd
 echo "Current user:"
 whoami
 EOF
+```
+
+The `cat <<'EOF' ... EOF` pattern is called a heredoc. It is a convenient way to write several lines into a file. This is only a preview; you do not need to master heredocs yet.
+
+Inspect the script before running it:
+
+```bash
+cat where-am-i.sh
 ```
 
 Run it with Bash:
@@ -294,44 +311,49 @@ Expected output shape:
 
 ```text
 Current directory:
-/home/your-name/bash-practice
+...
 Current user:
-your-name
+...
 ```
 
-The first line, `#!/usr/bin/env bash`, is called a shebang. It tells Unix-like systems which program should run the script when the script is executed directly. In this beginner lesson, run the file with `bash where-am-i.sh`; that works even before you learn executable permissions.
+The first line, `#!/usr/bin/env bash`, is a shebang. It tells Unix-like systems which interpreter should run the script when the script is executed directly.
 
-Later, you may see scripts run like this:
+Running a script as `bash where-am-i.sh` does not require executable permission. Later, you may see direct execution:
 
 ```bash
+chmod +x where-am-i.sh
 ./where-am-i.sh
 ```
 
-If that gives a permission error, the file probably is not executable yet. That is normal. For now, use `bash where-am-i.sh`.
+For now, inspect scripts first and run this lesson script with `bash where-am-i.sh`.
 
 ## Common Mistakes
 
-- Typing the prompt: if an example shows `$ pwd`, type `pwd`, not `$ pwd`.
-- Running Bash commands in PowerShell or CMD by accident: commands like `pwd` may work differently, and commands like `man ls` may not exist there. Open WSL or Git Bash for this lesson.
-- Forgetting quotes around paths with spaces: use `cat "my notes.txt"`, not `cat my notes.txt`.
-- Assuming `cd` prints your location: `cd` changes directory quietly. Run `pwd` after `cd` if you want to see where you are.
-- Confusing `~`, `/`, `.`, and `..`: home, root, current directory, and parent directory are different places.
-- Mixing Windows paths and WSL paths: in WSL, use paths like `/mnt/c/Users/name`, not `C:\Users\name`.
-- Trying `./script.sh` before learning executable permissions: use `bash script.sh` first.
-- Ignoring command errors: read the first error line carefully, then check spelling, paths, quotes, and whether the file exists.
+- Typing the prompt symbol from an example. If an example shows `$ pwd`, type `pwd`.
+- Running Bash lesson commands in PowerShell by accident. PowerShell has different syntax. PowerShell-only commands in this lesson are labeled.
+- Forgetting that macOS Terminal may start zsh. Type `bash` first when following this Bash lesson.
+- Trusting `echo "$SHELL"` as the current shell. It can show your login shell, not a nested shell you started afterward.
+- Forgetting quotes around spaced names, such as `cat "my notes.txt"`.
+- Expecting `cd` to print your new location. Use `pwd`.
+- Mixing platform-specific paths into Bash examples. Practice with relative paths like `bash-practice/notes.txt`.
+- Using `>` when you meant `>>`. `>` replaces; `>>` appends.
+- Running a downloaded `.sh` file without reading it first.
 
 ## Exercise
 
 Use Bash to do the following:
 
-1. Go to your home directory.
-2. Create a directory named `bash-practice`.
-3. Move into that directory.
-4. Create `notes.txt`.
-5. Write two lines into `notes.txt`.
-6. Display `notes.txt`.
-7. Create a script named `where-am-i.sh`.
-8. Run the script with `bash where-am-i.sh`.
+1. Open Bash for your operating system.
+2. Verify Bash with `bash --version`, `echo "$0"`, and `echo "$SHELL"`.
+3. Go to your home directory.
+4. Create or reuse a directory named `bash-practice`.
+5. Move into `bash-practice`.
+6. Create `notes.txt` with two lines and display it.
+7. Run one successful command, then `echo $?`.
+8. Run one failing command, then `echo $?`.
+9. Create `where-am-i.sh`.
+10. Inspect `where-am-i.sh`.
+11. Run it with `bash where-am-i.sh`.
 
 Your script should print:
 
@@ -342,11 +364,20 @@ Your script should print:
 
 ## Worked Answer
 
+Verify Bash:
+
+```bash
+bash --version
+echo "$0"
+echo "$SHELL"
+```
+
+Create and display `notes.txt`:
+
 ```bash
 cd ~
-mkdir bash-practice
+mkdir -p bash-practice
 cd bash-practice
-touch notes.txt
 echo "I am practicing Bash commands." > notes.txt
 echo "I can create files and run scripts." >> notes.txt
 cat notes.txt
@@ -359,7 +390,27 @@ I am practicing Bash commands.
 I can create files and run scripts.
 ```
 
-Now create the script:
+Check success and failure statuses:
+
+```bash
+pwd
+echo $?
+ls missing-file
+echo $?
+```
+
+Expected output shape:
+
+```text
+...
+0
+ls: cannot access 'missing-file': No such file or directory
+nonzero-number
+```
+
+The exact error wording may differ by system. The important idea is that success gives `0` and failure gives a nonzero number.
+
+Create the script:
 
 ```bash
 cat > where-am-i.sh <<'EOF'
@@ -369,6 +420,12 @@ pwd
 echo "Current user:"
 whoami
 EOF
+```
+
+Inspect it:
+
+```bash
+cat where-am-i.sh
 ```
 
 Run it:
@@ -381,20 +438,20 @@ Expected output shape:
 
 ```text
 Current directory:
-/home/your-name/bash-practice
+...
 Current user:
-your-name
+...
 ```
 
-If your output shows a different home path or user name, that is expected.
-
-## Next Step
-
-Return to this level's README and continue with the next numbered lesson.
+If your output shows a different directory or user name, that is expected.
 
 ## Sources Used
 
 - GNU Bash Reference Manual: https://www.gnu.org/software/bash/manual/bash.html
-- GNU Coreutils Manual: https://www.gnu.org/software/coreutils/manual/coreutils.html
+- Microsoft WSL install documentation: https://learn.microsoft.com/en-us/windows/wsl/install
 - Microsoft WSL basic commands: https://learn.microsoft.com/en-us/windows/wsl/basic-commands
+- Apple Terminal open or quit documentation: https://support.apple.com/guide/terminal/open-or-quit-terminal-apd5265185d-f365-44cb-8b09-71a064a42125/mac
+- Apple Terminal default shell documentation: https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac
+- Apple Terminal shell scripts documentation: https://support.apple.com/guide/terminal/intro-to-shell-scripts-apd53500956-7c5b-496b-a362-2845f2aab4bc/mac
+- Apple Terminal executable script documentation: https://support.apple.com/guide/terminal/make-a-file-executable-apdd100908f-06b3-4e63-8a87-32e71241bab4/mac
 - Git for Windows: https://gitforwindows.org/

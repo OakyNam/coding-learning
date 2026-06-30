@@ -1,50 +1,46 @@
-﻿# Coding Learning
+﻿# 🐍 Python Basics
 
-A Markdown-first curriculum for learning programming across languages and shared software topics.
+A beginner-friendly series of lessons for people with no programming experience.
+Each file includes clear explanations, code examples, and hands-on exercises.
 
-## Languages
+---
 
-Each language has beginner, intermediate, and advanced paths.
+## Lesson Plan
 
-- [Python](languages/python/README.md)
-- [C#](languages/csharp/README.md)
-- [C](languages/c/README.md)
-- [JavaScript](languages/javascript/README.md)
-- [Java](languages/java/README.md)
-- [Bash](languages/bash/README.md)
-- [Perl](languages/perl/README.md)
-- [PHP](languages/php/README.md)
+| # | Topic | What You'll Learn |
+|---|-------|------------------|
+| [01](./01_installing_python.md) | Installing Python | Install Python via CLI on Mac & Windows |
+| [02](./02_virtual_environments.md) | Virtual Environments | Create and use `.venv` to isolate projects |
+| [03](./03_variables_and_data_types.md) | Variables & Data Types | `str`, `int`, `float`, `bool`, f-strings |
+| [04](./04_user_input_and_print.md) | User Input & Print | `input()`, `print()`, string methods |
+| [05](./05_control_flow.md) | Control Flow | `if` / `elif` / `else`, comparison operators |
+| [06](./06_loops.md) | Loops | `for`, `while`, `break`, `continue` |
+| [07](./07_lists.md) | Lists | Indexing, slicing, list methods, comprehensions |
+| [08](./08_dictionaries.md) | Dictionaries | Key-value pairs, looping, nested dicts |
+| [09](./09_functions.md) | Functions | `def`, parameters, `return`, scope |
+| [10](./10_modules_and_packages.md) | Modules & Packages | `import`, `pip`, creating your own modules |
 
-## Topics
+---
 
-Shared topics build skills that transfer across languages. JSON includes a dedicated JSONPath querying track.
+## How to Use
 
-- [Topics overview](topics/README.md)
-- [JSON and JSONPath Querying](topics/json/README.md)
-- [Regex](topics/regex/README.md)
-- [Git](topics/git/README.md)
-- [GitHub](topics/github/README.md)
-- [GitLab](topics/gitlab/README.md)
-- [SQL](topics/sql/README.md)
-- [Terminal](topics/terminal/README.md)
-- [Markdown](topics/markdown/README.md)
-- [Debugging](topics/debugging/README.md)
-- [Testing](topics/testing/README.md)
-- [Data Structures](topics/data-structures/README.md)
-- [Algorithms](topics/algorithms/README.md)
-- [Object-Oriented Programming](topics/oop/README.md)
-- [HTTP and APIs](topics/http-and-apis/README.md)
-- [Web Basics](topics/web-basics/README.md)
-- [Security Basics](topics/security-basics/README.md)
-- [Environment Variables](topics/environment-variables/README.md)
-- [Package Managers](topics/package-managers/README.md)
-- [Docker Basics](topics/docker-basics/README.md)
+1. Start with [01 – Installing Python](./01_installing_python.md)
+2. Follow the lessons in order — each one builds on the last
+3. Complete the exercises in each file before moving on
+4. Write your code in `.py` files and run them from the terminal
 
-## How To Study
+---
 
-1. Pick one language and finish its beginner track.
-2. Study shared topics as they appear in real projects.
-3. Spend extra time on JSON querying because APIs, configuration, and logs often depend on it.
-4. Move to intermediate when you can read, edit, and explain small programs.
-5. Use advanced tracks to deepen architecture, performance, and deployment skills.
+## 💡 Tips for Beginners
 
+- **Type the code yourself** — don't copy/paste. Muscle memory matters!
+- **Make mistakes** — errors are how you learn. Read the error messages carefully.
+- **Experiment** — change the examples and see what happens.
+- **Google is your friend** — professional developers search for answers every day.
+
+## Practice Assets
+
+Each lesson includes executable practice assets:
+- examples/<lesson>/main.py
+- exercises/<lesson>/task.py
+- solutions/<lesson>/solution.py

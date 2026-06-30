@@ -4,6 +4,14 @@
 
 Learn how to store multiple values in a Bash array, read and update elements by index, loop over every element safely, and recognize the basic shape of associative arrays.
 
+## Platform Note
+
+This lesson uses Bash arrays.
+
+- On Windows 10/11, run these examples inside WSL or Git Bash, not directly in PowerShell.
+- On macOS Apple Silicon, Terminal normally starts `zsh`. Type `bash` first when following Bash-specific examples.
+- Indexed arrays are the focus of this lesson. The associative array preview uses `declare -A`, which requires a modern Bash; skip that preview if your `bash --version` is too old.
+
 ## Why Arrays Matter
 
 A normal variable stores one value:
@@ -260,6 +268,8 @@ Paris
 
 Associative arrays are useful for lookup tables, but this lesson focuses on indexed arrays.
 
+If `declare -A capitals` prints an error on your machine, your Bash version does not support associative arrays. Continue with indexed arrays for now.
+
 ## Common Mistakes
 
 - Using `$array` and expecting all values. `$array` means `${array[0]}`, only element `0`.
@@ -290,6 +300,42 @@ Example checklist format:
 ```
 
 ## Worked Answer
+
+Create the script:
+
+```bash
+cat > checklist.sh <<'EOF'
+#!/usr/bin/env bash
+
+tasks=("write notes" "run tests" "commit changes")
+
+echo "First task: ${tasks[0]}"
+echo "Task count: ${#tasks[@]}"
+
+tasks+=("push changes")
+tasks[1]="run shellcheck"
+
+echo
+echo "Checklist:"
+for task in "${tasks[@]}"; do
+  echo "- [ ] $task"
+done
+
+echo
+echo "Tasks with indexes:"
+for index in "${!tasks[@]}"; do
+  echo "$index: ${tasks[$index]}"
+done
+EOF
+```
+
+Run it with Bash:
+
+```bash
+bash checklist.sh
+```
+
+The script contents should be:
 
 ```bash
 #!/usr/bin/env bash
@@ -345,3 +391,6 @@ Practice with values that contain spaces, such as file names or task description
 - [GNU Bash Manual: Double Quotes](https://www.gnu.org/software/bash/manual/html_node/Double-Quotes.html)
 - [GNU Bash Manual: Word Splitting](https://www.gnu.org/software/bash/manual/html_node/Word-Splitting.html)
 - [GNU Bash Manual: Bash Builtins](https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html)
+- [Microsoft WSL documentation](https://learn.microsoft.com/windows/wsl/)
+- [Git for Windows](https://gitforwindows.org/)
+- [Apple Terminal default shell documentation](https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac)

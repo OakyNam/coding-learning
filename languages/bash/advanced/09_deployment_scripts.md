@@ -2,98 +2,126 @@
 
 ## Learning Goal
 
-Write a Bash deployment script that safely promotes a validated build artifact to an explicit environment using preflight checks, dry-run mode, confirmation, locking, logging, cleanup traps, safe remote commands, and rollback-aware release layout.
+Write a Bash deployment script that promotes one validated artifact to one explicit environment with preflight checks, dry-run mode, production confirmation, safe SSH/rsync usage, rollback-aware release layout, timestamped logging, cleanup traps, and CI-friendly inputs.
 
-## Why Deployment Scripts Are Risky Production Glue
+This lesson's runnable worked answer is scoped to a Linux CI runner or WSL Bash. It expects GNU/Linux tools such as `sha256sum`, `flock`, `mktemp`, `rsync`, `ssh`, `tar`, and `readlink`. Do not assume stock Windows PowerShell or stock macOS Bash can run it unchanged.
 
-Deployment scripts sit between source control, build systems, secrets, networks, remote hosts, filesystems, and live traffic. That makes them useful, but also dangerous: a small quoting bug can delete the wrong directory, a missing checksum can promote the wrong artifact, and an unsafe SSH option can train automation to ignore host identity.
+## What Deployment Scripts Do
 
-Bash is often used here because it is already available on build runners and servers. The risk is that Bash makes side effects easy. A production-quality deployment script must therefore be boring on purpose: explicit inputs, loud validation, no hidden defaults for critical choices, safe cleanup, traceable logs, and rollback-aware layout.
+A deployment script is orchestration glue. It should not build the application, invent an environment, or decide what "latest" means. Its job is to take explicit, validated inputs and perform a small set of controlled side effects.
 
-## Safety Checklist
+In this lesson, the inputs are:
 
-- Require an explicit `--env staging|production`. Never guess the target from a branch name, hostname, or current directory.
-- Run preflight checks before mutation: required commands, readable artifact, valid checksum format, reachable host, writable remote directory, and enough remote tools.
-- Validate the artifact and version before upload. Use SHA-256 verification, reject suspicious version strings, and check whether `releases/$version` already exists.
-- Design for idempotence. A repeated deployment should either complete the same final state or fail before changing anything.
-- Provide dry-run mode that mutates nothing locally or remotely. It should print the commands it would run, not create lock files, temporary directories, uploaded files, symlinks, or remote directories.
-- Require production confirmation. `--yes` is acceptable for CI, but interactive users should see the exact environment, version, host, and remote directory.
-- Keep secrets out of arguments, logs, and traces. Prefer CI secret stores or environment/config injection. Do not enable `set -x` around secret-handling code.
-- Use safe SSH defaults: preserve normal host-key verification and use `ssh -o BatchMode=yes` so automation fails instead of prompting. Do not use `StrictHostKeyChecking=no`.
-- Log with timestamps. Logs should identify the step, environment, version, artifact path, and host, but not secret values.
-- Use `mktemp` plus `trap` for local temporary files and cleanup. Cleanup must run on success, failure, and interruption.
-- Use `flock` for local deploy serialization. If deployments can start from multiple laptops or CI runners, local `flock` is not enough; add a remote lock on the deployment host or use your orchestrator's locking model.
-- Use a rollback-aware layout such as:
+- `--env staging|production`
+- `--version VERSION`
+- `--artifact FILE`
+- `--sha256 FILE`
+- `--host HOST`
+- `--remote-dir ABSOLUTE_DIR`
+- `--dry-run`
+- `--yes`
+
+The remote host is a Unix/Linux host with Bash and standard deployment tools. The side effects are:
+
+- upload one immutable artifact with `rsync`
+- create one versioned release directory
+- switch `current` to the completed release
+- preserve `previous` for rollback
+- clean temporary incoming files
+
+Bash is useful here because it is common on CI runners and servers. It is also risky because mutation is easy. A production deployment script should be intentionally boring: explicit inputs, loud validation, no secret logging, safe cleanup, and a clear point where the script changes from checking to mutating.
+
+## Platform Notes
+
+### Linux CI Runner or WSL Bash
+
+Run the worked answer from a Linux environment such as `ubuntu-latest` in CI or WSL on Windows:
+
+```bash
+chmod +x deploy-release.sh
+./deploy-release.sh --env staging --version 2026.06.29-1 \
+  --artifact dist/myapp-2026.06.29-1.tar.gz \
+  --sha256 dist/myapp-2026.06.29-1.tar.gz.sha256 \
+  --host deploy@example.com \
+  --remote-dir /opt/myapp \
+  --dry-run
+```
+
+### Windows PowerShell
+
+Stock Windows PowerShell is not the runtime for this script. Use PowerShell to launch WSL, Git Bash, or a Linux CI job:
+
+```powershell
+wsl bash ./deploy-release.sh --env staging --version 2026.06.29-1 `
+  --artifact dist/myapp-2026.06.29-1.tar.gz `
+  --sha256 dist/myapp-2026.06.29-1.tar.gz.sha256 `
+  --host deploy@example.com `
+  --remote-dir /opt/myapp `
+  --dry-run
+```
+
+PowerShell quoting, paths, SSH configuration, and available commands differ from GNU/Linux Bash. Keep the deployment logic inside Bash on Linux, WSL, Git Bash, or CI.
+
+### macOS Apple Silicon
+
+Modern macOS Terminal opens `zsh` by default. You can launch Bash with `bash ./deploy-release.sh`, but stock macOS tools are not the same as GNU/Linux tools. On Apple Silicon, Homebrew installs under `/opt/homebrew`; GNU tools may need Homebrew packages or, more predictably, a Linux CI runner.
+
+For this lesson, prefer validating the script on Linux or WSL. If you adapt it for macOS, verify every command and option instead of assuming GNU behavior.
+
+## Safety Gates
+
+- Require `--env staging|production`; do not infer production from branch names, hostnames, or directories.
+- Deploy an immutable versioned artifact, never a mutable `latest.tar.gz`.
+- Verify the SHA-256 checksum before upload or any other mutation.
+- Make `--dry-run` mean no local or remote mutation: no temp directories, no lock files, no remote preflight writes, no uploads.
+- Require production confirmation unless `--yes` is provided for CI.
+- Log with timestamps, but never log tokens, passwords, private keys, signed URLs, or secret environment values.
+- Use `ssh -o BatchMode=yes` so automation fails instead of prompting.
+- Preserve normal SSH host-key verification; do not use `StrictHostKeyChecking=no`.
+- Use `rsync` for upload, with arguments separated from shell syntax.
+- Use `mktemp -d` and `trap` for cleanup when mutation begins.
+- Use `flock -n` to prevent two local deployments from the same machine racing. Local `flock` is not a distributed lock; CI concurrency, a remote lock, or an orchestrator is needed if deployments can start from multiple machines.
+- Switch `current` only after the release directory is complete. Do not claim this is fully atomic unless your filesystem and implementation use platform-specific rename semantics that guarantee it.
+- Keep `previous` pointing at the old `current` target so rollback is possible. In the worked answer, `previous` is refreshed only after `current` has been switched successfully.
+- In cloud deployments, check the active account, subscription, project, tenant, and region before calling cloud CLIs.
+
+Rollback-aware layout:
 
 ```text
 /opt/myapp/
   releases/
-    2026.06.22-1/
-    2026.06.22-2/
-  current -> releases/2026.06.22-2
-  previous -> releases/2026.06.22-1
+    2026.06.29-1/
+    2026.06.29-2/
+  current -> releases/2026.06.29-2
+  previous -> releases/2026.06.29-1
 ```
 
-The deployment should upload and unpack into `releases/$version`, validate that release, then atomically move `previous` to the old `current` target and `current` to the new release.
+## Deployment Flow
 
-## Minimal Skeleton
-
-This is the shape of a safe deployment script. It omits many checks so the full worked answer can show them in context.
-
-```bash
-#!/usr/bin/env bash
-set -Eeuo pipefail
-
-env=""
-version=""
-artifact=""
-sha256=""
-host=""
-remote_dir=""
-dry_run=false
-yes=false
-
-usage() {
-  cat <<'USAGE'
-Usage: deploy-release.sh --env staging|production --version VERSION \
-  --artifact FILE --sha256 FILE --host HOST --remote-dir DIR [--dry-run] [--yes]
-USAGE
-}
-
-log() {
-  printf '[%(%Y-%m-%dT%H:%M:%S%z)T] %s\n' -1 "$*"
-}
-
-run() {
-  if "$dry_run"; then
-    printf 'DRY-RUN:'
-    printf ' %q' "$@"
-    printf '\n'
-  else
-    "$@"
-  fi
-}
-
-cleanup() {
-  [[ -n "${tmpdir:-}" && -d "${tmpdir:-}" ]] && rm -rf -- "$tmpdir"
-}
-trap cleanup EXIT INT TERM
-
-# parse arguments, validate inputs, confirm production, take a lock,
-# upload the artifact, and run a parameterized remote script.
+```mermaid
+flowchart LR
+  A[User or CI inputs] --> B[Parse and validate]
+  B --> C[Verify checksum]
+  C --> D{Dry-run?}
+  D -->|yes| E[Print plan and exit]
+  D -->|no| F{Production?}
+  F -->|confirm or --yes| G[Take local lock]
+  F -->|not production| G
+  G --> H[rsync to incoming]
+  H --> I[Remote unpack to temp release]
+  I --> J[Rename complete release]
+  J --> K[Switch current, then refresh previous]
 ```
-
-The important habit is separating "plan" from "do". Validation should happen first. Mutation should happen only after dry-run and confirmation gates have been handled.
 
 ## Safe Remote Commands
 
-The riskiest remote Bash pattern is building an executable string from local variables:
+Do not build a remote shell string by interpolating local variables:
 
 ```bash
-ssh "$host" "mkdir -p $remote_dir/releases/$version && tar -xf $artifact"
+ssh "$host" "mkdir -p $remote_dir/releases/$version && tar -xzf $artifact"
 ```
 
-That line trusts every character in `remote_dir`, `version`, and `artifact` as shell syntax. Instead, pass data as positional parameters to a remote script:
+That treats the contents of `remote_dir`, `version`, and `artifact` as shell syntax. Instead, pass values as positional parameters to a remote Bash script:
 
 ```bash
 ssh -o BatchMode=yes -- "$host" bash -s -- "$remote_dir" "$version" <<'REMOTE'
@@ -104,24 +132,7 @@ mkdir -p -- "$remote_dir/releases/$version"
 REMOTE
 ```
 
-The script still needs validation, but the remote values are data, not source code.
-
-## When Bash Is Not Enough
-
-Bash is reasonable for a small artifact promotion script with a few remote file operations. Reach for a deployment system, orchestrator, or a real programming language when you need distributed locks, health checks across many nodes, progressive rollout, service discovery changes, complex rollback policy, database migrations, secrets broker integration, or audited approvals. Kubernetes, for example, has rollout history and rollback commands; using Bash to reimplement a cluster controller is usually the wrong trade.
-
-## Common Mistakes
-
-- Defaulting to production when `--env` is missing.
-- Treating `--dry-run` as "mostly dry" while still creating temp files, lock files, remote directories, or test uploads.
-- Uploading an artifact before checking its SHA-256.
-- Logging full command lines that contain tokens, passwords, private key paths, or signed URLs.
-- Disabling SSH host-key verification with `StrictHostKeyChecking=no`.
-- Interpolating untrusted values into a remote shell command string.
-- Updating `current` before the new release directory is complete.
-- Overwriting `previous` before recording what `current` pointed to.
-- Using only local `flock` when multiple deploy machines can run the script at the same time.
-- Assuming `set -e` catches every error. Pipelines, conditionals, command substitutions, and remote scripts still need deliberate checks.
+The quoted heredoc delimiter, `<<'REMOTE'`, means the local shell does not expand variables inside the remote script body. The values after `bash -s --` are passed as arguments; the remote script reads them as `$1`, `$2`, and so on. You still validate them, but they are data rather than executable source text.
 
 ## Exercise
 
@@ -129,20 +140,22 @@ Create `deploy-release.sh`.
 
 Requirements:
 
+- Use `set -Eeuo pipefail`.
 - Accept `--env`, `--version`, `--artifact`, `--sha256`, `--host`, `--remote-dir`, `--dry-run`, and `--yes`.
 - Allow only `--env staging` or `--env production`.
 - Require every non-flag option.
-- Validate the artifact is a readable file.
-- Validate `--sha256` points to a readable checksum file.
-- Verify the artifact checksum with `sha256sum --check` before any mutation.
-- Use `mktemp` and `trap` for local cleanup.
-- Use `flock` to prevent two local deployments from running at once.
-- In dry-run mode, print commands and perform no local or remote mutation.
+- Validate the version, host, absolute remote directory, readable artifact file, and `.tar.gz` or `.tgz` artifact extension.
+- Require Linux/WSL commands: `sha256sum`, `ssh`, `rsync`, `flock`, and `mktemp`.
+- Use `mktemp -d` for temporary checksum work and `trap` for cleanup.
+- Verify the checksum before mutation.
+- In dry-run mode, print planned steps and exit before creating temp directories, lock files, uploads, or remote writes.
 - Require confirmation for production unless `--yes` is provided.
+- Use `flock -n` for local serialization.
 - Use `ssh -o BatchMode=yes` and preserve normal host-key verification.
-- Upload with `rsync`.
-- Use remote layout `releases/$version`, `current`, and `previous`.
-- Pass remote values as positional parameters to `bash -s -- ...`.
+- Upload with `rsync` to `.incoming/$version`.
+- Run remote validation before upload, and label any remote writability probe as a write check because it creates and removes a test directory.
+- On the remote host, unpack into a temporary release path, rename it to the final release path after unpack completes, switch `current`, refresh `previous`, and clean `.incoming`.
+- Pass remote values with `ssh -- "$host" bash -s -- "$remote_dir" "$version" ... <<'REMOTE'`.
 - Do not print secrets.
 
 ## Worked Answer
@@ -176,7 +189,7 @@ die() {
 }
 
 log() {
-  printf '[%(%Y-%m-%dT%H:%M:%S%z)T] %s\n' -1 "$*"
+  printf '[%s] %s\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$*"
 }
 
 quote_cmd() {
@@ -184,13 +197,9 @@ quote_cmd() {
   printf '\n'
 }
 
-run() {
-  if "$dry_run"; then
-    printf 'DRY-RUN: '
-    quote_cmd "$@"
-  else
-    "$@"
-  fi
+plan() {
+  printf 'DRY-RUN: '
+  quote_cmd "$@"
 }
 
 cleanup() {
@@ -260,29 +269,46 @@ done
 [[ "$version" =~ ^[A-Za-z0-9._-]+$ ]] || die "--version may contain only letters, numbers, dot, underscore, and dash"
 [[ "$host" =~ ^[A-Za-z0-9._@-]+$ ]] || die "--host contains unsupported characters"
 [[ "$remote_dir" =~ ^/[A-Za-z0-9._/-]+$ ]] || die "--remote-dir must be an absolute path using letters, numbers, dot, underscore, dash, and slash"
-[[ -r "$artifact" && -f "$artifact" ]] || die "artifact is not a readable file: $artifact"
-[[ -r "$sha256_file" && -f "$sha256_file" ]] || die "sha256 file is not readable: $sha256_file"
+[[ -f "$artifact" && -r "$artifact" ]] || die "artifact is not a readable file: $artifact"
+[[ "$artifact" == *.tar.gz || "$artifact" == *.tgz ]] || die "artifact must end in .tar.gz or .tgz"
+[[ -f "$sha256_file" && -r "$sha256_file" ]] || die "sha256 file is not readable: $sha256_file"
 
-for command_name in sha256sum ssh rsync flock; do
+for command_name in date sha256sum ssh rsync flock mktemp; do
   command -v "$command_name" >/dev/null 2>&1 || die "missing required command: $command_name"
 done
 
 artifact_name=$(basename -- "$artifact")
 artifact_dir=$(cd -- "$(dirname -- "$artifact")" && pwd -P)
 artifact_abs="$artifact_dir/$artifact_name"
+[[ "$artifact_name" =~ ^[A-Za-z0-9._-]+$ ]] || die "artifact filename contains unsupported characters"
 
 read -r expected_sha256 _ < "$sha256_file" || die "could not read sha256 file"
 [[ "$expected_sha256" =~ ^[A-Fa-f0-9]{64}$ ]] || die "sha256 file must start with a 64-character checksum"
 
-(
-  cd "$artifact_dir"
-  sha256sum --check <(printf '%s  %s\n' "$expected_sha256" "$artifact_name")
-) || die "artifact checksum mismatch"
-
-[[ "$artifact_name" =~ ^[A-Za-z0-9._-]+$ ]] || die "artifact filename contains unsupported characters"
 remote_upload="$remote_dir/.incoming/$version/$artifact_name"
 
-log "validated artifact=$artifact env=$env version=$version host=$host remote_dir=$remote_dir"
+log "validated inputs env=$env version=$version artifact=$artifact_abs host=$host remote_dir=$remote_dir"
+
+if "$dry_run"; then
+  log "dry-run mode: no local or remote state will be changed"
+  plan sha256sum --check "temporary checksum file for $artifact_name"
+  plan ssh -o BatchMode=yes -- "$host" "remote validation and write check"
+  plan rsync -a -- "$artifact_abs" "$host:$remote_upload"
+  printf 'DRY-RUN: remote script would unpack %q, complete %q, switch current, refresh previous under %q, and clean incoming files\n' \
+    "$artifact_name" "releases/$version" "$remote_dir"
+  exit 0
+fi
+
+tmpdir=$(mktemp -d)
+checksum_input="$tmpdir/artifact.sha256"
+printf '%s  %s\n' "$expected_sha256" "$artifact_name" > "$checksum_input"
+
+(
+  cd "$artifact_dir"
+  sha256sum --check "$checksum_input"
+) || die "artifact checksum mismatch"
+
+log "verified artifact checksum"
 
 if [[ "$env" == "production" && "$yes" != true ]]; then
   printf 'Deploy version %s to PRODUCTION on %s:%s? Type "deploy %s" to continue: ' \
@@ -291,30 +317,41 @@ if [[ "$env" == "production" && "$yes" != true ]]; then
   [[ "$answer" == "deploy $version" ]] || die "production deployment cancelled"
 fi
 
-if "$dry_run"; then
-  log "dry-run mode: no local or remote state will be changed"
-  run ssh -o BatchMode=yes -- "$host" true
-  run rsync -a -- "$artifact_abs" "$host:$remote_upload"
-  printf 'DRY-RUN: remote script would create %q, unpack artifact, and update previous/current symlinks under %q\n' \
-    "releases/$version" "$remote_dir"
-  exit 0
-fi
-
-tmpdir=$(mktemp -d)
 lock_file="${TMPDIR:-/tmp}/deploy-release.lock"
-
 exec 9>"$lock_file"
 flock -n 9 || die "another local deployment is already running"
 
-log "checking remote host"
-ssh -o BatchMode=yes -- "$host" bash -s -- "$remote_dir" <<'REMOTE_PREFLIGHT'
+log "checking remote host and writable release directory"
+ssh -o BatchMode=yes -- "$host" bash -s -- "$remote_dir" "$version" <<'REMOTE_PREFLIGHT'
 set -Eeuo pipefail
 remote_dir=$1
-command -v mkdir >/dev/null
-command -v ln >/dev/null
-command -v tar >/dev/null
-mkdir -p -- "$remote_dir/.preflight"
-rmdir -- "$remote_dir/.preflight"
+version=$2
+
+[[ "$remote_dir" == /* ]] || {
+  printf 'remote_dir must be absolute\n' >&2
+  exit 1
+}
+[[ "$version" =~ ^[A-Za-z0-9._-]+$ ]] || {
+  printf 'invalid remote version\n' >&2
+  exit 1
+}
+
+for command_name in bash mkdir rmdir ln tar mv rm readlink; do
+  command -v "$command_name" >/dev/null 2>&1 || {
+    printf 'missing remote command: %s\n' "$command_name" >&2
+    exit 1
+  }
+done
+
+release_dir="$remote_dir/releases/$version"
+[[ ! -e "$release_dir" ]] || {
+  printf 'release already exists: %s\n' "$release_dir" >&2
+  exit 1
+}
+
+write_check="$remote_dir/.write-check.$$"
+mkdir -- "$write_check"
+rmdir -- "$write_check"
 REMOTE_PREFLIGHT
 
 log "creating remote incoming directory"
@@ -323,10 +360,12 @@ set -Eeuo pipefail
 remote_dir=$1
 version=$2
 release_dir="$remote_dir/releases/$version"
-if [[ -e "$release_dir" ]]; then
+
+[[ ! -e "$release_dir" ]] || {
   printf 'release already exists: %s\n' "$release_dir" >&2
   exit 1
-fi
+}
+
 mkdir -p -- "$remote_dir/.incoming/$version"
 REMOTE_INCOMING
 
@@ -343,8 +382,11 @@ artifact_name=$3
 
 incoming="$remote_dir/.incoming/$version/$artifact_name"
 release_dir="$remote_dir/releases/$version"
+tmp_release="$remote_dir/releases/.tmp-$version-$$"
 current_link="$remote_dir/current"
 previous_link="$remote_dir/previous"
+next_current="$remote_dir/.current-$version-$$"
+next_previous="$remote_dir/.previous-$version-$$"
 
 [[ "$version" =~ ^[A-Za-z0-9._-]+$ ]] || {
   printf 'invalid remote version\n' >&2
@@ -354,39 +396,100 @@ previous_link="$remote_dir/previous"
   printf 'uploaded artifact missing\n' >&2
   exit 1
 }
-
-if [[ -e "$release_dir" ]]; then
+[[ ! -e "$release_dir" ]] || {
   printf 'release already exists: %s\n' "$release_dir" >&2
   exit 1
-fi
+}
 
+rm -rf -- "$tmp_release"
 mkdir -p -- "$remote_dir/releases"
-mkdir -p -- "$release_dir"
-tar -xzf "$incoming" -C "$release_dir"
+mkdir -p -- "$tmp_release"
+
+tar -xzf "$incoming" -C "$tmp_release"
+mv -- "$tmp_release" "$release_dir"
 
 old_current=""
 if [[ -L "$current_link" ]]; then
   old_current=$(readlink -- "$current_link")
 fi
 
-if [[ -n "$old_current" ]]; then
-  ln -sfn -- "$old_current" "$previous_link"
-fi
+ln -sfn -- "releases/$version" "$next_current"
+mv -Tf -- "$next_current" "$current_link"
 
-ln -sfn -- "releases/$version" "$current_link"
+if [[ -n "$old_current" ]]; then
+  ln -sfn -- "$old_current" "$next_previous"
+  mv -Tf -- "$next_previous" "$previous_link"
+fi
 rm -rf -- "$remote_dir/.incoming/$version"
 REMOTE_DEPLOY
 
 log "deployment complete: env=$env version=$version host=$host"
 ```
 
-Notes about this answer:
+The release switch happens only after the artifact has been unpacked and renamed into the final release directory. The script captures the old `current` target, switches `current` to the new release, and then refreshes `previous` from the old target. The symlink update pattern is common and practical, but strict atomicity depends on filesystem and platform-specific rename behavior; use a deployment tool or a carefully tested rename pattern when that guarantee matters.
 
-- Dry-run exits before `mktemp`, `flock`, SSH mutation, or `rsync`, so it does not change local or remote state.
-- The `flock` lock is local to this script process and machine. A production script may need remote locking if deployments can start from multiple machines.
-- The script never passes `StrictHostKeyChecking=no`; SSH keeps normal host-key verification behavior.
-- Remote values are passed after `bash -s --` and read as positional parameters.
-- The script logs deployment metadata, not secret values.
+## GitHub Actions Handoff
+
+This is one CI handoff pattern, not a GitHub-only design. The script still owns the deployment checks.
+
+```yaml
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        required: true
+        options: [staging, production]
+      version:
+        type: string
+        required: true
+
+concurrency:
+  group: deploy-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      REMOTE_DIR: /opt/myapp
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy release
+        shell: bash
+        run: |
+          ./deploy-release.sh \
+            --env "$ENVIRONMENT" \
+            --version "$VERSION" \
+            --artifact "dist/myapp-$VERSION.tar.gz" \
+            --sha256 "dist/myapp-$VERSION.tar.gz.sha256" \
+            --host "$DEPLOY_HOST" \
+            --remote-dir "$REMOTE_DIR" \
+            --yes
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+          VERSION: ${{ inputs.version }}
+```
+
+Use GitHub environments for approval gates and environment-scoped secrets. Use `concurrency` to reduce CI-side races, while remembering that CI concurrency does not protect deployments started from a laptop or another automation system.
+
+## Common Mistakes
+
+- Missing an explicit `--env` and letting the script guess.
+- Letting `--dry-run` create temp directories, lock files, remote directories, or test uploads.
+- Deploying mutable names such as `latest.tar.gz`.
+- Logging secrets, enabling `set -x`, or printing signed URLs.
+- Disabling SSH host-key checks with `StrictHostKeyChecking=no`.
+- Building interpolated remote shell strings instead of passing positional arguments.
+- Updating `current` before the release directory is complete, or changing `previous` before the new `current` switch succeeds.
+- Assuming symlink updates are always fully atomic on every platform.
+- Assuming local `flock` is a distributed lock.
+- Assuming macOS has GNU tools or GNU-compatible command options.
+- Calling cloud CLIs without checking the active account, subscription, project, tenant, and region.
 
 ## Next Step
 
@@ -394,13 +497,15 @@ Return to the [advanced Bash README](README.md) and continue with the next lesso
 
 ## Sources Used
 
-- [GNU Bash Reference Manual: Signals and `trap`](https://www.gnu.org/software/bash/manual/html_node/Signals.html)
-- [GNU Bash / Linux manual page: `set`, shell options, and execution behavior](https://man7.org/linux/man-pages/man1/bash.1.html)
+- [GNU Bash manual: The Set Builtin](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html)
+- [GNU Bash manual: Bourne Shell Builtins, `trap`](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html)
 - [OpenSSH `ssh(1)` manual page](https://man.openbsd.org/ssh)
-- [OpenSSH `ssh_config(5)` manual page](https://man.openbsd.org/ssh_config)
+- [OpenSSH `ssh_config(5)` manual page, including `BatchMode` and `StrictHostKeyChecking`](https://man.openbsd.org/ssh_config)
 - [`rsync(1)` Linux manual page](https://man7.org/linux/man-pages/man1/rsync.1.html)
 - [`flock(1)` Linux manual page](https://man7.org/linux/man-pages/man1/flock.1.html)
 - [`sha256sum(1)` Linux manual page](https://man7.org/linux/man-pages/man1/sha256sum.1.html)
-- [OWASP Secrets Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html)
-- [The Twelve-Factor App: Config](https://12factor.net/config)
-- [Kubernetes Deployment rollout and rollback documentation](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+- [GNU Coreutils manual: `readlink`](https://www.gnu.org/software/coreutils/manual/html_node/readlink-invocation.html)
+- [GitHub Actions workflow syntax](https://docs.github.com/actions/using-workflows/workflow-syntax-for-github-actions)
+- [GitHub Actions secrets documentation](https://docs.github.com/actions/security-guides/using-secrets-in-github-actions)
+- [Apple Terminal User Guide: default shell is zsh](https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac)
+- [Homebrew installation documentation](https://docs.brew.sh/Installation)

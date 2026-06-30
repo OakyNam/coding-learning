@@ -2,166 +2,131 @@
 
 ## Learning Goal
 
-Learn how to measure Bash scripts, identify the common causes of slow shell code, and rewrite small data-processing scripts using builtins, efficient file reading, batching, and the right external tools.
+Measure Bash scripts, recognize slow patterns caused by repeated process creation and unsafe file reading, rewrite small shell loops safely, and know when one external tool such as `awk`, `grep`, `find`, or `xargs` is faster and clearer.
 
-## Why It Matters
+## Run These Examples In Bash
 
-Bash is excellent at connecting programs, handling files, and automating operating-system tasks. It is not always excellent at doing millions of tiny operations one process at a time.
+This lesson teaches Bash. Some commands look similar in other shells, but the examples use Bash syntax such as `TIMEFORMAT`, `./script.sh`, `$name`, heredocs, `${name^^}`, `mapfile`, and `[[ ... ]]`.
 
-Performance problems in Bash usually come from a few patterns:
+Check your Bash version first:
 
-- starting an external command inside a loop
-- reading files in a way that changes whitespace or loses backslashes
-- building long pipelines without understanding process and scope costs
-- processing records one at a time when the work could be batched
-- keeping a problem in Bash after it has become a better fit for `awk`, `find`, `xargs`, `jq`, or Python
+```bash
+bash --version
+```
 
-The goal is not to make every Bash script clever. The goal is to measure first, fix the biggest cost, and keep the script readable.
+On Windows, use WSL or Git Bash. Do not paste Bash syntax directly into PowerShell:
+
+```powershell
+wsl bash --version
+```
+
+Once WSL is installed, beginners should usually enter the Linux shell and run the examples there:
+
+```powershell
+wsl
+```
+
+Git Bash is also acceptable for this lesson, especially when WSL is not available. PowerShell's `Measure-Command { wsl ... }` measures the cost of launching WSL too, so it is not a fair way to compare two Bash script rewrites.
+
+On macOS, Terminal opens `zsh` by default. Start Bash or run scripts with Bash explicitly:
+
+```bash
+bash
+bash script.sh
+```
+
+From `zsh`, use `bash -c` when the command relies on Bash features such as `TIMEFORMAT`:
+
+```bash
+bash -c 'TIMEFORMAT="real=%3R user=%3U sys=%3S"; time ./slow-names.sh'
+```
+
+The `${name^^}` case-conversion expansion is Bash-specific, not POSIX shell or `zsh`. `mapfile` is also Bash-specific. On macOS, the system Bash may be older than Bash versions commonly found on Linux, so `awk` is often the safest portable choice for examples that need uppercase conversion.
+
+Apple Silicon does not require architecture-specific Bash code in this lesson. The practical concern is which shell and command-line tools are installed and which versions they are.
+
+## Why Performance Problems Happen
+
+Bash is good at coordinating programs, working with files, and handling operating-system automation. It is not usually the best place to do millions of tiny text operations one command at a time.
+
+Bash performance problems often come from a few patterns:
+
+- Starting an external command inside a loop.
+- Reading files with command substitution, then accidentally splitting records into words.
+- Building a pipeline without understanding process and scope behavior.
+- Running one command per file or record when the work could be batched.
+- Keeping structured data processing in Bash after the problem belongs in `awk`, `jq`, or Python.
+
+The goal is not to make every script clever. The goal is to measure first, remove the biggest avoidable cost, and keep the result readable.
 
 ## Mental Model
 
-Bash has two broad kinds of work:
+Bash does two broad kinds of work:
 
-- Shell work: variable expansion, parameter expansion, tests, loops, arrays, and builtins such as `read`, `printf`, and `mapfile`.
-- Process work: running external commands such as `tr`, `grep`, `sed`, `awk`, `find`, `xargs`, `jq`, and Python.
+- Shell work: expansions, variables, loops, arithmetic, `[[ ... ]]`, redirects, and builtins such as `read`, `printf`, and `mapfile`.
+- Process work: running another program, such as `tr`, `grep`, `sed`, `awk`, `find`, `xargs`, `jq`, or Python.
 
-Shell work usually happens inside the current Bash process. Process work usually requires Bash to create another process, ask the operating system to run a program, connect input and output, and wait for the result.
+Shell work happens in the Bash process. External commands require Bash to set up an execution environment, ask the operating system to run another program, connect input and output, and wait for the result.
 
-One external command is usually fine. Thousands of external commands inside a loop can dominate the runtime.
+One external command is fine. Thousands of external commands inside a loop are often slow. That does not mean "avoid external tools." One `awk` process can beat a Bash loop for a large line-oriented file because `awk` streams the records and does the inner work in a tool built for that data shape.
 
-That does not mean "never use external tools." Tools such as `awk`, `grep`, `find`, `xargs`, and `jq` are often much faster than Bash when they do a large amount of work in one process. The expensive pattern is often not the tool itself, but starting it repeatedly for tiny pieces of work.
+Pipelines connect commands with pipes. In Bash, each element of a multi-command pipeline usually runs in its own subshell. That process boundary affects both performance and whether variable changes survive after the pipeline finishes.
+
+```mermaid
+flowchart LR
+  A[names.txt] --> B[Slow Bash loop]
+  B --> C[tr and grep per record]
+  A --> D[Safe Bash loop]
+  D --> E[builtins per record]
+  A --> F[One awk process]
+  F --> G[stream records in awk]
+```
 
 ## Measure First
 
-Use timing tools before rewriting. A slow-looking line is not always the real bottleneck.
+Measure the original script before rewriting. Then change one thing and measure again on the same machine. Timing numbers vary by hardware, operating system, shell version, filesystem cache, and background load, so compare local before-and-after results instead of copying someone else's numbers.
 
-The simplest measurement is Bash's `time` reserved word:
+Bash has a `time` reserved word:
 
 ```bash
 time ./script.sh
 ```
 
-It reports three useful values:
+It reports:
 
-- `real`: wall-clock time from start to finish. This is what you felt while waiting.
+- `real`: wall-clock time from start to finish.
 - `user`: CPU time spent running program code.
 - `sys`: CPU time spent in the kernel, often from process creation, file I/O, and other operating-system work.
 
-You can change Bash's `time` output with `TIMEFORMAT`:
+Set Bash's `TIMEFORMAT` variable when you want compact, repeatable output:
 
 ```bash
-TIMEFORMAT='real=%3R user=%3U sys=%3S'
-time ./script.sh
+bash -c 'TIMEFORMAT="real=%3R user=%3U sys=%3S"; time ./slow-names.sh'
 ```
 
-For more detail, use the external `time` program. On many Linux systems it is available as `/usr/bin/time`:
+There is also an external `time` program. On Linux and macOS it is commonly available as `/usr/bin/time`, but its options are not identical everywhere:
 
 ```bash
-/usr/bin/time -p ./script.sh
-/usr/bin/time -v ./script.sh
+/usr/bin/time -p ./slow-names.sh
 ```
 
-The `-p` option gives portable `real`, `user`, and `sys` output. The `-v` option, where available, adds details such as memory use and file-system activity.
+The `-p` option prints `real`, `user`, and `sys` in a portable format.
 
-Measure the original script, make one change, and measure again. This keeps performance work honest.
-
-## Avoid Subprocesses In Loops
-
-A common slow pattern is starting an external command for every line.
-
-Bad:
+GNU systems often provide extra detail with:
 
 ```bash
-while IFS= read -r name; do
-  upper=$(echo "$name" | tr '[:lower:]' '[:upper:]')
-  printf '%s\n' "$upper"
-done < names.txt
+/usr/bin/time -v ./slow-names.sh
 ```
 
-This starts at least two external commands per line: `echo` and `tr`. The pipeline also adds process and pipe overhead.
-
-Better, when Bash can do the transformation:
+Do not treat `-v` as universal. macOS `/usr/bin/time` does not use GNU `-v`; it commonly supports `-l` for resource details:
 
 ```bash
-while IFS= read -r name; do
-  printf '%s\n' "${name^^}"
-done < names.txt
+/usr/bin/time -l -p ./slow-names.sh
 ```
 
-`${name^^}` is Bash parameter expansion. It uppercases the variable without starting `tr`.
+## Read Files Safely
 
-Also good, when the whole task is text processing:
-
-```bash
-awk '{ print toupper($0) }' names.txt
-```
-
-This starts one `awk` process and lets it handle the file efficiently.
-
-## Batch Work
-
-If you need an external command, try to feed it many inputs at once instead of starting it once per item.
-
-Bad:
-
-```bash
-for file in *.log; do
-  grep -H 'ERROR' "$file"
-done
-```
-
-This starts one `grep` process per file.
-
-Better for a normal list of files:
-
-```bash
-printf '%s\0' ./*.log | xargs -0 grep -H 'ERROR'
-```
-
-Better when recursively finding files:
-
-```bash
-find . -type f -name '*.log' -print0 | xargs -0 grep -H 'ERROR'
-```
-
-`find -print0` and `xargs -0` use a null byte as the separator, so filenames with spaces, tabs, and newlines are handled correctly.
-
-Some tools can already accept many file arguments:
-
-```bash
-grep -H 'ERROR' ./*.log
-```
-
-Use `xargs` when the file list is large, generated dynamically, or might exceed the command-line length limit.
-
-## Builtins vs External Tools
-
-Bash builtins and parameter expansion avoid process startup. They are good for simple operations on shell variables.
-
-Examples:
-
-```bash
-name='ada lovelace'
-printf '%s\n' "${name^^}"
-printf '%s\n' "${name// /_}"
-printf '%s\n' "${#name}"
-```
-
-These examples uppercase text, replace spaces with underscores, and get string length without external commands.
-
-External tools are still the right choice when the tool can process the data in bulk:
-
-```bash
-awk -F, '$3 > 90 { print $1 }' scores.csv
-jq -r '.items[].name' data.json
-find . -type f -name '*.tmp' -delete
-```
-
-A good rule: use Bash builtins for small shell-level transformations, and use specialized tools for large structured or record-oriented data.
-
-## Reading Files Efficiently
-
-The standard safe pattern for reading a file line by line is:
+Use this pattern for line-by-line reading:
 
 ```bash
 while IFS= read -r line; do
@@ -169,23 +134,24 @@ while IFS= read -r line; do
 done < input.txt
 ```
 
-Important details:
+The details matter:
 
-- `IFS=` prevents leading and trailing whitespace from being trimmed.
+- `IFS=` prevents `read` from trimming leading and trailing IFS whitespace.
 - `read -r` prevents backslashes from being treated as escapes.
-- `< input.txt` feeds the file to the loop without using `cat`.
+- `< input.txt` redirects the file into the loop without starting `cat`.
+- `printf` is more predictable than `echo` for arbitrary data.
 
-Avoid this:
+Avoid this pattern:
 
-```bash
+```text
 for word in $(cat input.txt); do
   printf '%s\n' "$word"
 done
 ```
 
-That command substitution reads the whole file, then word-splits it on whitespace, then applies pathname expansion. It does not preserve lines.
+Command substitution removes trailing newlines, then Bash performs word splitting and filename expansion on the unquoted result. A line such as `ada lovelace` becomes two loop items, and an input value containing `*` can match filenames in the current directory.
 
-When the file fits comfortably in memory and you want an array of lines, use `mapfile`:
+When a file fits comfortably in memory and you really want an array of lines, Bash's `mapfile` can read it:
 
 ```bash
 mapfile -t lines < input.txt
@@ -195,19 +161,92 @@ for line in "${lines[@]}"; do
 done
 ```
 
-When you really do need the entire file as one string, Bash can capture it without `cat`:
+When you need the whole file as one string, Bash can read it without `cat`:
 
 ```bash
 contents=$(< input.txt)
 ```
 
-Use that only when whole-file capture is actually appropriate. It is not a line-reading pattern.
+Whole-file capture is not a streaming line-reading pattern. Use it only when the whole file should be in memory.
+
+## Avoid Repeated Subprocesses
+
+This loop starts external programs for every line:
+
+```bash
+while IFS= read -r name; do
+  upper=$(printf '%s\n' "$name" | tr '[:lower:]' '[:upper:]')
+  if printf '%s\n' "$upper" | grep -q 'A'; then
+    printf '%s\n' "$upper"
+  fi
+done < names.txt
+```
+
+The repeated `tr` and `grep` calls can dominate runtime for large files.
+
+When your Bash version supports the feature, use parameter expansion for small shell-level string work:
+
+```bash
+while IFS= read -r name; do
+  upper=${name^^}
+  if [[ $upper == *A* ]]; then
+    printf '%s\n' "$upper"
+  fi
+done < names.txt
+```
+
+`${name^^}` is Bash case modification. It is not POSIX shell syntax and it is not `zsh` syntax. If version compatibility matters, or if the input is large record-oriented text, use `awk`:
+
+```bash
+awk '
+{
+  upper = toupper($0)
+  if (upper ~ /A/) {
+    print upper
+  }
+}
+' names.txt
+```
+
+## Batch External Commands
+
+If you need an external tool, try to run it once over many inputs instead of once per input.
+
+Slow for many files:
+
+```bash
+for file in ./*.log; do
+  grep -H 'ERROR' "$file"
+done
+```
+
+Often enough for a normal shell glob:
+
+```bash
+grep -H 'ERROR' ./*.log
+```
+
+Safer for recursively discovered filenames, when you know there is at least one match:
+
+```bash
+find . -type f -name '*.log' -print0 | xargs -0 grep -H 'ERROR'
+```
+
+`find -print0` writes a null byte after each path. `xargs -0` reads null-delimited input. Together, they handle filenames containing spaces, tabs, quotes, and newlines.
+
+Many GNU examples use `xargs -r` to avoid running the command when there is no input. Do not copy that option into cross-platform examples without checking the target system: GNU and BSD/macOS `xargs` differ.
+
+When the input may be empty and you want a portable recursive grep, use `find -exec ... {} +` instead:
+
+```bash
+find . -type f -name '*.log' -exec grep -H 'ERROR' {} +
+```
 
 ## Pipeline Costs And Scope
 
-Pipelines are useful, but each command in a pipeline may run in a separate process. In Bash, each pipeline segment usually runs in a subshell. That means variable changes inside a pipeline loop may disappear when the loop ends.
+Pipelines are idiomatic shell. They are also process boundaries.
 
-Gotcha:
+This looks reasonable, but the final `count` may still be `0`:
 
 ```bash
 count=0
@@ -219,9 +258,9 @@ done
 printf 'count=%s\n' "$count"
 ```
 
-The final value may still be `0` because the `while` loop ran in a subshell.
+The loop is part of a pipeline, so Bash usually runs it in a subshell. The `count` change happens in that subshell and does not survive in the parent shell.
 
-Use redirection when you need loop variables afterward:
+When you need loop state afterward, redirect input into the loop:
 
 ```bash
 count=0
@@ -233,36 +272,52 @@ done < names.txt
 printf 'count=%s\n' "$count"
 ```
 
-Pipelines are not bad. They are one of the main reasons to use shell. Just remember that they have process costs and scope behavior.
+Use pipelines freely when their output is the result and you do not need modified shell variables afterward.
 
-## When To Switch Languages Or Tools
+## When To Use Bash Or Another Tool
 
-Stay in Bash when the script mostly coordinates commands, handles files, checks exit statuses, or does simple variable transformations.
+Stay in Bash when the script coordinates commands, checks exit statuses, moves files, handles simple variables, or does a small amount of control flow.
 
-Switch tools when the data shape asks for it:
+Choose a more specific tool when the data shape asks for it:
 
-- Use `awk` for line-oriented text, fields, totals, grouping, and simple reports.
+- Use `awk` for line-oriented text, fields, totals, grouping, reports, and portable uppercase conversion.
+- Use `grep` once over many files or records when you are filtering by text.
 - Use `find` for recursive filesystem searches and file predicates.
 - Use `xargs` when many paths or records should be passed to a command in batches.
 - Use `jq` for JSON instead of parsing JSON with `grep`, `cut`, or `sed`.
-- Use Python when the script needs complex data structures, nontrivial parsing, tests, libraries, or maintainable application logic.
+- Use Python when the script needs complex data structures, nontrivial parsing, libraries, tests, or maintainable application logic.
 
-The performance win often comes from moving the inner loop into a tool designed for that data.
+The performance win often comes from moving the inner loop into one tool designed for the records.
 
 ## Common Mistakes
 
-- Timing only the rewritten script and never measuring the original.
-- Optimizing tiny scripts where readability matters more than speed.
-- Running `echo "$value" | tr ...` inside a loop when Bash parameter expansion can do the job.
-- Using `for word in $(cat file)` and accidentally destroying the original line structure.
-- Forgetting that pipeline loops may run in a subshell.
-- Starting `grep`, `sed`, `awk`, or `jq` once per record instead of once for the whole input.
-- Using `xargs` without `-0` for filenames that might contain whitespace or newlines.
-- Keeping complex parsing in Bash after the problem clearly belongs in `awk`, `jq`, or Python.
+- Measuring only after rewriting, so there is no baseline.
+- Spending time optimizing tiny scripts where readability matters more.
+- Starting one command per record, such as `tr`, `grep`, `sed`, `awk`, or `jq` inside a large loop.
+- Using `for item in $(cat file)` and accidentally processing words instead of lines.
+- Leaving command substitutions unquoted and triggering word splitting and filename expansion.
+- Expecting variables changed in a pipeline-fed loop to survive after the pipeline.
+- Copying GNU-only options, such as GNU `time -v` or GNU `xargs -r`, into macOS instructions without checking.
+- Pasting Bash heredocs, `TIMEFORMAT`, `chmod`, `./script.sh`, `$name`, or `[[ ... ]]` directly into PowerShell.
+- Keeping JSON or complex parsing in Bash after the problem clearly belongs in `jq` or Python.
 
 ## Exercise
 
-Create a file named `names.txt`:
+Create the exercise files from inside Bash, not directly in PowerShell.
+
+On Windows, enter WSL first:
+
+```powershell
+wsl
+```
+
+On macOS, start Bash from Terminal if your prompt is `zsh`:
+
+```bash
+bash
+```
+
+Create `names.txt`:
 
 ```bash
 cat > names.txt <<'EOF'
@@ -273,9 +328,10 @@ Katherine Johnson
 EOF
 ```
 
-Here is a slow script:
+Create a deliberately slow and flawed script:
 
 ```bash
+cat > slow-names.sh <<'EOF'
 #!/usr/bin/env bash
 
 count=0
@@ -289,37 +345,71 @@ for name in $(cat names.txt); do
 done
 
 echo "count=$count"
+EOF
+
+chmod +x slow-names.sh
 ```
 
-Do the following:
+Then:
 
-1. Measure the script with `time` or `/usr/bin/time`.
-2. List the performance and correctness problems.
-3. Rewrite it using Bash builtins and efficient line reading.
-4. Provide an `awk` solution.
-5. Explain which solution you would choose for a very large file.
+1. Measure `slow-names.sh`.
+2. Identify the performance and correctness problems.
+3. Rewrite it as a safe Bash streaming loop.
+4. Rewrite it as one `awk` program.
+5. Compare the output and decide which rewrite you would choose for a very large file.
 
 ## Worked Answer
 
-One way to measure the original:
+Measure the original with Bash's `time` reserved word:
 
 ```bash
-TIMEFORMAT='real=%3R user=%3U sys=%3S'
-time ./slow-names.sh
+bash -c 'TIMEFORMAT="real=%3R user=%3U sys=%3S"; time ./slow-names.sh'
+```
+
+Or use external `time` in portable output mode:
+
+```bash
+/usr/bin/time -p ./slow-names.sh
+```
+
+On GNU systems only, this may provide more detail:
+
+```bash
+/usr/bin/time -v ./slow-names.sh
+```
+
+On macOS, use the local manual page to confirm options. For resource details, this form is commonly available:
+
+```bash
+/usr/bin/time -l -p ./slow-names.sh
 ```
 
 Problems in the original script:
 
-- `$(cat names.txt)` reads the whole file and then splits it on whitespace, so `ada lovelace` becomes two separate items.
-- The `for` loop iterates over words, not lines.
-- `echo "$name" | tr ...` starts external commands for every item.
-- `echo "$upper" | grep -q ...` starts more external commands for every item.
-- `echo` is less predictable than `printf` for arbitrary text.
-- The script does simple string work that Bash can do without subprocesses.
+- `$(cat names.txt)` reads the whole file, then word-splits it, so `ada lovelace` becomes `ada` and `lovelace`.
+- Unquoted command substitution output is also subject to filename expansion.
+- The loop processes words, not lines.
+- `echo "$name" | tr ...` starts external commands for each item.
+- `echo "$upper" | grep -q ...` starts more external commands for each item.
+- `echo` is less predictable than `printf`.
+- The script uses Bash for the loop but does simple string work through repeated subprocesses.
 
-Bash rewrite:
+The slow script's output is:
+
+```text
+ADA
+GRACE
+ALAN
+KATHERINE
+count=4
+```
+
+That output is wrong if the task is to preserve matching lines. `ada lovelace` and `alan turing` were split apart.
+
+Safe Bash streaming rewrite:
 
 ```bash
+cat > fast-names-bash.sh <<'EOF'
 #!/usr/bin/env bash
 
 count=0
@@ -333,13 +423,30 @@ while IFS= read -r name; do
 done < names.txt
 
 printf 'count=%s\n' "$count"
+EOF
+
+chmod +x fast-names-bash.sh
+./fast-names-bash.sh
 ```
 
-This version preserves each input line, uses Bash uppercase parameter expansion, uses `[[ ... ]]` for the match, and avoids external commands inside the loop.
+Expected output:
 
-`awk` rewrite:
+```text
+ADA LOVELACE
+GRACE HOPPER
+ALAN TURING
+KATHERINE JOHNSON
+count=4
+```
+
+This version streams the file, preserves each line, uses Bash case modification, uses `[[ ... ]]` for pattern matching, and avoids external commands inside the loop.
+
+For maximum macOS compatibility, or for large record-oriented files, prefer the `awk` rewrite:
 
 ```bash
+cat > fast-names-awk.sh <<'EOF'
+#!/usr/bin/env bash
+
 awk '
 {
   upper = toupper($0)
@@ -352,9 +459,23 @@ END {
   print "count=" count
 }
 ' names.txt
+EOF
+
+chmod +x fast-names-awk.sh
+./fast-names-awk.sh
 ```
 
-For a very large file, the `awk` version is usually the better choice. It starts one process, streams the file, and performs the record processing in a tool designed for line-oriented text. The Bash version is useful when the surrounding script is already Bash and the file is modest, but Bash loops are usually slower for large record-by-record processing.
+Expected output:
+
+```text
+ADA LOVELACE
+GRACE HOPPER
+ALAN TURING
+KATHERINE JOHNSON
+count=4
+```
+
+For a very large file, choose the `awk` version. It starts one process, streams the input, and performs the record processing in a language designed for line-oriented text. The Bash rewrite is useful when the surrounding script is already Bash, the file is modest, and your Bash version supports the features you used.
 
 ## Next Step
 
@@ -363,7 +484,17 @@ Return to the advanced Bash README and continue with the next numbered lesson. A
 ## Sources Used
 
 - GNU Bash Manual: Pipelines - https://www.gnu.org/software/bash/manual/bash.html#Pipelines
-- GNU Bash Manual: Command Substitution - https://www.gnu.org/software/bash/manual/bash.html#Command-Substitution
+- GNU Bash Manual: Command Execution Environment - https://www.gnu.org/software/bash/manual/bash.html#Command-Execution-Environment
 - GNU Bash Manual: Bash Builtin Commands - https://www.gnu.org/software/bash/manual/bash.html#Bash-Builtins
+- GNU Bash Manual: Command Substitution - https://www.gnu.org/software/bash/manual/bash.html#Command-Substitution
+- GNU Bash Manual: Word Splitting - https://www.gnu.org/software/bash/manual/bash.html#Word-Splitting
+- GNU Bash Manual: Filename Expansion - https://www.gnu.org/software/bash/manual/bash.html#Filename-Expansion
+- GNU Bash Manual: Shell Parameter Expansion - https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
 - Linux man-pages: `time(1)` - https://man7.org/linux/man-pages/man1/time.1.html
-- GNU Findutils Manual: `xargs` - https://www.gnu.org/software/findutils/manual/html_node/find_html/xargs-options.html
+- GNU Findutils Manual: Safe File Name Handling - https://www.gnu.org/software/findutils/manual/html_node/find_html/Safe-File-Name-Handling.html
+- GNU Findutils Manual: `xargs` options - https://www.gnu.org/software/findutils/manual/html_node/find_html/xargs-options.html
+- GNU Awk Manual: String Functions, including `toupper` - https://www.gnu.org/software/gawk/manual/html_node/String-Functions.html
+- Apple Support: Change the default shell in Terminal on Mac - https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac
+- Microsoft Learn: Install WSL - https://learn.microsoft.com/en-us/windows/wsl/install
+- Git for Windows: Git Bash - https://gitforwindows.org/
+- macOS local manual pages: run `man time` and `man xargs` on the target Mac. If a web link is required, mirrors such as https://manp.gs/mac/1/time and https://leopard-adc.pepas.com/documentation/Darwin/Reference/ManPages/man1/xargs.1.html can be useful, but verify against the local manual page because macOS command options can change by release.

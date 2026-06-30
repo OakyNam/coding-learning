@@ -12,6 +12,13 @@ Bash is a good fit for composing Unix tools, file operations, CI and helper scri
 - Bash through Linux, macOS, WSL, Git Bash, or a dev container.
 - Optional but recommended: Git for version control and ShellCheck for linting shell scripts.
 
+## Platform Notes
+
+- On Windows 10/11, use WSL for the most Linux-like Bash experience. Git Bash is useful for many scripting lessons, but process control, cron, signals, and filesystem behavior can differ.
+- On macOS Apple Silicon, Terminal normally starts `zsh`; type `bash` before following Bash-specific examples.
+- Most lesson scripts run as `bash script.sh` so you can practice before relying on executable permissions.
+- Keep practice work in project or scratch directories. Bash makes file operations quick, so contained examples are easier to inspect and clean up.
+
 ## What You Will Learn
 
 - Commands, flags, manual pages, `help`, `type`, and command discovery.
@@ -66,6 +73,9 @@ Bash is a good fit for composing Unix tools, file operations, CI and helper scri
 ## References
 
 - [GNU Bash Manual](https://www.gnu.org/software/bash/manual/bash.html)
+- [Microsoft Learn: Install WSL](https://learn.microsoft.com/windows/wsl/install)
+- [Git for Windows](https://gitforwindows.org/)
+- [Apple Terminal User Guide: Change the default shell](https://support.apple.com/guide/terminal/change-the-default-shell-trml113/mac)
 - [Google Shell Style Guide](https://google.github.io/styleguide/shellguide.html)
 - [ShellCheck site](https://www.shellcheck.net/)
 - [ShellCheck README](https://github.com/koalaman/shellcheck/blob/master/README.md)
