@@ -1,46 +1,82 @@
-﻿# 🐍 Python Basics
+﻿# Coding Learning
 
-A beginner-friendly series of lessons for people with no programming experience.
-Each file includes clear explanations, code examples, and hands-on exercises.
+This repository is an automation-first learning space for developers.
 
----
+It is designed for people who want to get better at:
 
-## Lesson Plan
+- scripting repetitive work
+- automating local developer workflows
+- working with terminals, files, JSON, and HTTP APIs
+- testing and debugging automation safely
+- shipping automation through containers and CI/CD platforms
 
-| # | Topic | What You'll Learn |
-|---|-------|------------------|
-| [01](./01_installing_python.md) | Installing Python | Install Python via CLI on Mac & Windows |
-| [02](./02_virtual_environments.md) | Virtual Environments | Create and use `.venv` to isolate projects |
-| [03](./03_variables_and_data_types.md) | Variables & Data Types | `str`, `int`, `float`, `bool`, f-strings |
-| [04](./04_user_input_and_print.md) | User Input & Print | `input()`, `print()`, string methods |
-| [05](./05_control_flow.md) | Control Flow | `if` / `elif` / `else`, comparison operators |
-| [06](./06_loops.md) | Loops | `for`, `while`, `break`, `continue` |
-| [07](./07_lists.md) | Lists | Indexing, slicing, list methods, comprehensions |
-| [08](./08_dictionaries.md) | Dictionaries | Key-value pairs, looping, nested dicts |
-| [09](./09_functions.md) | Functions | `def`, parameters, `return`, scope |
-| [10](./10_modules_and_packages.md) | Modules & Packages | `import`, `pip`, creating your own modules |
+The curriculum uses language tracks and topic tracks together. Languages provide implementation tools. Topics provide cross-cutting skills that make automation work reliable, portable, and maintainable.
 
----
+## Start Here
 
-## How to Use
+- Read [CURRICULUM_STRATEGY.md](CURRICULUM_STRATEGY.md) for curriculum purpose, scope tiers, and priority clusters.
+- Read [LEARNING_PATHS.md](LEARNING_PATHS.md) for recommended routes through the material.
+- Read [CURRICULUM_MAP.md](CURRICULUM_MAP.md) for the stage-to-track map that connects strategy to concrete repo paths.
+- Read [TODO.md](TODO.md) for the current execution inventory.
 
-1. Start with [01 – Installing Python](./01_installing_python.md)
-2. Follow the lessons in order — each one builds on the last
-3. Complete the exercises in each file before moving on
-4. Write your code in `.py` files and run them from the terminal
+## Recommended Path
 
----
+For most learners, start with the automation-first path:
 
-## 💡 Tips for Beginners
+1. [topics/terminal/README.md](topics/terminal/README.md)
+2. [topics/environment-variables/README.md](topics/environment-variables/README.md)
+3. [topics/git/README.md](topics/git/README.md)
+4. [languages/bash/beginner/README.md](languages/bash/beginner/README.md)
+5. [languages/bash/intermediate/README.md](languages/bash/intermediate/README.md)
+6. [languages/python/beginner/README.md](languages/python/beginner/README.md)
+7. [topics/json/README.md](topics/json/README.md)
+8. [topics/http-and-apis/README.md](topics/http-and-apis/README.md)
+9. [topics/package-managers/README.md](topics/package-managers/README.md)
+10. [languages/python/intermediate/README.md](languages/python/intermediate/README.md)
+11. [topics/debugging/README.md](topics/debugging/README.md)
+12. [topics/testing/README.md](topics/testing/README.md)
+13. [topics/security-basics/README.md](topics/security-basics/README.md)
+14. [topics/docker-basics/README.md](topics/docker-basics/README.md)
+15. [topics/github/README.md](topics/github/README.md) or [topics/gitlab/README.md](topics/gitlab/README.md), depending on the CI/CD platform you use
 
-- **Type the code yourself** — don't copy/paste. Muscle memory matters!
-- **Make mistakes** — errors are how you learn. Read the error messages carefully.
-- **Experiment** — change the examples and see what happens.
-- **Google is your friend** — professional developers search for answers every day.
+See [LEARNING_PATHS.md](LEARNING_PATHS.md) for alternate language-first and tooling-first routes.
 
-## Practice Assets
+## Repository Shape
 
-Each lesson includes executable practice assets:
-- examples/<lesson>/main.py
-- exercises/<lesson>/task.py
-- solutions/<lesson>/solution.py
+### Languages
+
+Language tracks teach implementation skills at beginner, intermediate, and advanced levels.
+
+- [languages/bash/README.md](languages/bash/README.md)
+- [languages/c/README.md](languages/c/README.md)
+- [languages/csharp/README.md](languages/csharp/README.md)
+- [languages/java/README.md](languages/java/README.md)
+- [languages/javascript/README.md](languages/javascript/README.md)
+- [languages/perl/README.md](languages/perl/README.md)
+- [languages/php/README.md](languages/php/README.md)
+- [languages/python/README.md](languages/python/README.md)
+
+### Topics
+
+Topic tracks teach the supporting knowledge that automation work depends on.
+
+- [topics/README.md](topics/README.md)
+
+## How To Use The Material
+
+1. Start from a README file before diving into individual lesson files.
+2. Follow one path long enough to build momentum instead of sampling everything at once.
+3. Complete exercises and worked answers as part of the lesson flow.
+4. Use the strategy and path documents when deciding what to study next or what to improve in the curriculum.
+
+## Curriculum Governance
+
+The curriculum is improved through a strategy layer and an execution layer.
+
+- The director owns strategy, learning paths, and rewrite priorities.
+- The assistant director reviews strategy changes before they become active.
+- The supervisor and file-level agents execute approved changes through the rolling rewrite workflow.
+
+Use [.codex/workflows/curriculum-strategy-refresh.md](.codex/workflows/curriculum-strategy-refresh.md) for macro strategy refreshes before resuming file-level execution.
+
+The implementation workflow lives in [.codex/workflows/curriculum-audit-rewrite.md](.codex/workflows/curriculum-audit-rewrite.md).

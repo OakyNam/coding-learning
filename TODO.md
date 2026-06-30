@@ -1,10 +1,69 @@
 # Curriculum Rewrite TODO
 
+Strategy references:
+
+- `CURRICULUM_STRATEGY.md` is the source of truth for curriculum purpose, scope tiers, and priority clusters.
+- `LEARNING_PATHS.md` is the source of truth for learner sequencing and path intent.
+- `CURRICULUM_MAP.md` is the source of truth for stage-to-track mapping and rewrite-cluster context.
+
 Status values: `needs-audit`, `audit-dispatched`, `audit-reviewed`, `rewrite-dispatched`, `rewrite-reviewed`, `compatibility-review-needed`, `compatibility-review-dispatched`, `compatibility-reviewed`, `complete`.
+
+Priority tags: `core`, `supporting`, `expansion`.
+
+Path tags: `automation-first`, `language-first`, `tooling-first`.
+
+Cluster tags:
+
+- `automation-foundations`
+- `automation-integration`
+- `automation-delivery`
+- `supporting-systems`
+- `supporting-web-data`
+- `expansion-platform`
+
+Row format:
+
+- Required fields: `type`, `owner`, `status`, `sources`
+- Director metadata fields when available: `priority`, `path`, `cluster`
+- Supervisors may update `owner` and `status` without changing approved `priority`, `path`, or `cluster` values.
+
+Execution rule: the director generates or reprioritizes this file, the assistant director verifies strategic changes, and the supervisor updates operational state while preserving approved priority order.
 
 This inventory is generated from the repo file list. Lesson files need exercises and worked answers; README/workflow/support files need clarity and accurate navigation.
 
 Compatibility baseline: files accepted before this gate must be re-reviewed for Windows 10/11 PowerShell and macOS Apple Silicon (`arm64`, `zsh`) instructions. Mermaid diagrams may be used when they clarify an accurate user-to-code data flow and render in GitHub and the VS Code Mermaid extension.
+
+## Director-Approved Execution Queue
+
+Use this queue before the raw generated inventory order below. Keep the two-file rolling gate: finish the active file first, then pull at most two `needs-audit` files from this queue.
+
+Active file already in the gate:
+
+- `languages\c\advanced\04_data_structures_in_c.md` | priority: supporting | path: language-first | cluster: supporting-systems | current status: audit-dispatched
+
+Next automation-first batch:
+
+1. `topics\terminal\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations
+2. `topics\terminal\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations
+3. `topics\environment-variables\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations
+4. `topics\environment-variables\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations
+5. `topics\git\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations
+6. `topics\git\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations
+7. `languages\python\beginner\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations
+8. `languages\python\beginner\01_setup_and_install.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations
+
+Next integration batch after foundations:
+
+1. `topics\json\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-integration
+2. `topics\json\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-integration
+3. `topics\http-and-apis\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-integration
+4. `topics\http-and-apis\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-integration
+5. `topics\package-managers\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-integration
+6. `topics\package-managers\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-integration
+
+Metadata policy: rows outside the director queue remain generated inventory until they are pulled into an approved batch or classified by a later strategy pass.
+
+## Generated Inventory
 
 - [x] `languages\bash\advanced\01_strict_mode.md` | type: lesson | owner: review-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\advanced\02_traps_and_signals.md` | type: lesson | owner: review-agent-reviewed-by-codex | status: complete | sources: official-docs-reviewed
@@ -41,16 +100,16 @@ Compatibility baseline: files accepted before this gate must be re-reviewed for 
 - [x] `languages\bash\intermediate\README.md` | type: readme | owner: coordinator-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\bash\README.md` | type: readme | owner: coordinator-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\c\advanced\01_memory_layout.md` | type: lesson | owner: coordinator-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [ ] `languages\c\advanced\02_undefined_behavior.md` | type: lesson | owner: coordinator-audit | status: audit-dispatched | sources: pending
-- [ ] `languages\c\advanced\03_function_pointers.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\c\advanced\04_data_structures_in_c.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\c\advanced\05_concurrency_basics.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\c\advanced\06_static_and_dynamic_libraries.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\c\advanced\07_profiling_and_optimization.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\c\advanced\08_portability.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\c\advanced\09_secure_c_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\c\advanced\10_systems_project_design.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\c\advanced\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
+- [x] `languages\c\advanced\02_undefined_behavior.md` | type: lesson | owner: coordinator-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [x] `languages\c\advanced\03_function_pointers.md` | type: lesson | owner: coordinator-reviewed-by-codex | status: complete | sources: official-docs-reviewed
+- [ ] `languages\c\advanced\04_data_structures_in_c.md` | type: lesson | priority: supporting | path: language-first | cluster: supporting-systems | owner: audit-agent-019f194e-2c66-7231-a03a-dca60c2bcd11 | status: audit-dispatched | sources: pending
+- [ ] `languages\c\advanced\05_concurrency_basics.md` | type: lesson | priority: supporting | path: language-first | cluster: supporting-systems | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\c\advanced\06_static_and_dynamic_libraries.md` | type: lesson | priority: supporting | path: language-first | cluster: supporting-systems | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\c\advanced\07_profiling_and_optimization.md` | type: lesson | priority: supporting | path: language-first | cluster: supporting-systems | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\c\advanced\08_portability.md` | type: lesson | priority: supporting | path: language-first | cluster: supporting-systems | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\c\advanced\09_secure_c_patterns.md` | type: lesson | priority: supporting | path: language-first | cluster: supporting-systems | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\c\advanced\10_systems_project_design.md` | type: lesson | priority: supporting | path: language-first | cluster: supporting-systems | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\c\advanced\README.md` | type: readme | priority: supporting | path: language-first | cluster: supporting-systems | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\c\beginner\01_setup_and_install.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\c\beginner\02_project_and_file_structure.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\c\beginner\03_variables_and_data_types.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -278,7 +337,7 @@ Compatibility baseline: files accepted before this gate must be re-reviewed for 
 - [ ] `languages\python\advanced\09_architecture_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\advanced\10_deployment_basics.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\advanced\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\python\beginner\01_setup_and_install.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\python\beginner\01_setup_and_install.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\beginner\02_project_and_file_structure.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\beginner\03_variables_and_data_types.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\beginner\04_input_and_output.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -288,7 +347,7 @@ Compatibility baseline: files accepted before this gate must be re-reviewed for 
 - [ ] `languages\python\beginner\08_dictionaries_and_objects.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\beginner\09_functions.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\beginner\10_modules_and_packages.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\python\beginner\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `languages\python\beginner\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\intermediate\01_virtual_environments_and_dependency_files.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\intermediate\02_reading_and_writing_files.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\intermediate\03_exceptions_and_error_handling.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -326,18 +385,18 @@ Compatibility baseline: files accepted before this gate must be re-reviewed for 
 - [ ] `topics\docker-basics\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\docker-basics\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\docker-basics\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\environment-variables\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\environment-variables\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\environment-variables\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\environment-variables\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\environment-variables\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\environment-variables\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\environment-variables\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\git\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\environment-variables\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\git\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\git\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\git\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\git\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\git\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\git\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\git\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\github\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\github\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\github\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -351,13 +410,13 @@ Compatibility baseline: files accepted before this gate must be re-reviewed for 
 - [ ] `topics\gitlab\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\gitlab\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\gitlab\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\http-and-apis\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\http-and-apis\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-integration | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\http-and-apis\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\http-and-apis\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\http-and-apis\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\http-and-apis\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\http-and-apis\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\json\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\http-and-apis\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-integration | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\json\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-integration | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\json\02_json_structure.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\json\03_jsonpath_basics.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\json\04_querying_nested_data.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -367,7 +426,7 @@ Compatibility baseline: files accepted before this gate must be re-reviewed for 
 - [ ] `topics\json\08_querying_json_in_languages.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\json\09_common_query_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\json\10_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\json\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\json\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-integration | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\markdown\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\markdown\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\markdown\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -380,12 +439,12 @@ Compatibility baseline: files accepted before this gate must be re-reviewed for 
 - [ ] `topics\oop\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\oop\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\oop\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\package-managers\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\package-managers\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-integration | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\package-managers\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\package-managers\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\package-managers\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\package-managers\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\package-managers\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\package-managers\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-integration | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\regex\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\regex\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -405,12 +464,12 @@ Compatibility baseline: files accepted before this gate must be re-reviewed for 
 - [ ] `topics\sql\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\sql\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\sql\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\terminal\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\terminal\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\terminal\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\terminal\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\terminal\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\terminal\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\terminal\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\terminal\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations | owner: audit-agent-019f194e-58bd-7db0-8c8c-ca2d74bee66b | status: audit-dispatched | sources: pending
 - [ ] `topics\testing\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\testing\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\testing\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending

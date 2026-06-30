@@ -2,13 +2,72 @@
 
 Use this workflow when asked to improve the Coding Learning curriculum without user babysitting.
 
-## Role
+## Supervisor Role
 
-Act as the coordinator. Keep the repo moving through a strict two-file rolling gate:
+Act as the supervisor agent for this workflow. Your job is to coordinate, dispatch, review handoffs, maintain `TODO.md` state, and run final validation. Do not collapse the workflow into one undifferentiated rewrite pass when agent dispatch is available.
 
-1. Build or update the root `TODO.md` inventory.
+The foreground agent for this workflow should manage the interaction, not absorb the specialist roles.
+
+- The foreground agent should gather the minimum context needed to route work correctly.
+- The foreground agent should dispatch the appropriate specialist agent for each gate when dispatch is available.
+- The foreground agent should summarize specialist outputs, maintain workflow state, and communicate progress to the user.
+- The foreground agent should not perform director, assistant-director, audit, writer, or review work itself when the corresponding specialist agent is available for that gate.
+- The foreground agent may do small coordinator-only edits such as workflow-state updates, validation notes, or operational metadata changes, but not curriculum-content rewrites assigned to specialists.
+
+The specialist agent definitions live in the repo's `.agents/` folder:
+
+- `.agents/curriculum-director.agent` for macro curriculum strategy, learning-path planning, and `TODO.md` generation.
+- `.agents/curriculum-assistant-director.agent` for read-only verification of director strategy and structure proposals.
+- `.agents/curriculum-audit.agent` for read-only lesson or README audits.
+- `.agents/curriculum-writer.agent` for single-file rewrites.
+- `.agents/curriculum-review.agent` for read-only quality-gate reviews.
+
+The workflow has two layers:
+
+- Strategy layer: the director proposes curriculum purpose, learning paths, priority clusters, and `TODO.md` updates; the assistant director verifies those proposals before execution begins.
+- Execution layer: the supervisor advances approved work through audit, rewrite, review, validation, and completion.
+
+For every active file, dispatch the appropriate specialist agent for the current gate, using the matching `.agents/` configuration as the role contract. The supervisor may summarize, route, validate, and update workflow state, but must not rewrite lesson or README content directly. If a review returns `NEEDS_FIX`, send the finding back to the assigned writer agent or dispatch a new writer agent for that same file. The normal path is director -> assistant director -> supervisor -> audit agent -> review agent -> writer agent -> review agent -> supervisor validation.
+
+## Strategy Layer
+
+Use the strategy layer when the curriculum purpose changes, when the rewrite queue needs reprioritization, when `TODO.md` no longer reflects the automation-first path, or when structural navigation changes are needed.
+
+1. Dispatch `.agents/curriculum-director.agent` to assess scope, learner outcomes, learning paths, gap priorities, and the next execution clusters.
+2. Have the director create or update only macro artifacts such as `CURRICULUM_STRATEGY.md`, `LEARNING_PATHS.md`, `CURRICULUM_MAP.md`, `TODO.md`, and README/navigation files when needed.
+3. If the director proposes moves or renames, require an explicit move plan with rationale and affected paths.
+4. Dispatch `.agents/curriculum-assistant-director.agent` to review the director output for sequencing quality, repo evidence, path correctness, hallucination risk, and churn.
+5. Do not let the supervisor execute a new strategic plan until the assistant director returns `PASS` or the director fixes the reported issues.
+6. After approval, treat `CURRICULUM_STRATEGY.md`, `LEARNING_PATHS.md`, `CURRICULUM_MAP.md`, and the updated `TODO.md` as the source of truth for the next execution batch.
+
+## Assistant Director Review Contract
+
+When the director changes macro planning, the assistant director should review these artifacts together when relevant:
+
+- `CURRICULUM_STRATEGY.md`
+- `LEARNING_PATHS.md`
+- `CURRICULUM_MAP.md`
+- `TODO.md`
+- any explicit move or rename plan
+
+The assistant director should return:
+
+1. `PASS` or `NEEDS_FIX`
+2. blocking findings first
+3. strategy artifact findings
+4. unsupported claims or weak repo evidence
+5. sequencing or prerequisite problems
+6. path, naming, or structural churn risks
+7. TODO metadata or prioritization problems
+8. residual risks
+
+The supervisor should not treat strategy as approved until this review passes.
+
+Keep the repo moving through a strict two-file rolling gate:
+
+1. Ensure `TODO.md` reflects the latest assistant-director-approved strategy.
 2. Select the first actionable files from the top of `TODO.md`, up to two active files total.
-3. Move each active file through audit, audit review, rewrite, rewrite review, validation, and completion.
+3. Dispatch specialist agents from `.agents/` to move each active file through audit, audit review, rewrite, rewrite review, validation, and completion.
 4. Do not start a third active file while two files are still active.
 5. Review audit notes before any rewrite begins for that same file.
 6. Rewrite a file only after its audit review passes.
@@ -21,13 +80,13 @@ Act as the coordinator. Keep the repo moving through a strict two-file rolling g
 
 Keep at most two active files in progress. Do not create a broad backlog of audited files waiting for rewrites or rewritten files waiting for review.
 
-For each active file, use this sequence:
+For each active file, use this dispatch sequence:
 
-1. `needs-audit` -> `audit-dispatched`: one read-only audit agent researches and scopes exactly this file.
-2. `audit-dispatched` -> `audit-reviewed`: a separate read-only review checks that the audit notes are specific, source-backed, implementation-ready, and scoped to the assigned file.
-3. `audit-reviewed` -> `rewrite-dispatched`: one writer rewrites exactly this file from the reviewed audit notes.
-4. `rewrite-dispatched` -> `rewrite-reviewed`: a separate read-only review checks the rewritten file against the reviewed audit notes and the workflow quality gate.
-5. `rewrite-reviewed` -> `complete`: coordinator validation passes, compatibility requirements are satisfied, links are valid, and lesson requirements are present.
+1. `needs-audit` -> `audit-dispatched`: supervisor dispatches one read-only audit agent using `.agents/curriculum-audit.agent`; that agent researches and scopes exactly this file.
+2. `audit-dispatched` -> `audit-reviewed`: supervisor dispatches a separate read-only review agent using `.agents/curriculum-review.agent`; that agent checks that the audit notes are specific, source-backed, implementation-ready, and scoped to the assigned file.
+3. `audit-reviewed` -> `rewrite-dispatched`: supervisor dispatches one writer agent using `.agents/curriculum-writer.agent`; that agent rewrites exactly this file from the reviewed audit notes.
+4. `rewrite-dispatched` -> `rewrite-reviewed`: supervisor dispatches a separate read-only review agent using `.agents/curriculum-review.agent`; that agent checks the rewritten file against the reviewed audit notes and the workflow quality gate.
+5. `rewrite-reviewed` -> `complete`: supervisor runs coordinator validation, confirms compatibility requirements are satisfied, confirms links are valid, and confirms lesson requirements are present.
 
 The two-file window is a cap, not a queue:
 
@@ -42,8 +101,11 @@ The two-file window is a cap, not a queue:
 Keep the working context small and current. On every resume or long-running continuation:
 
 - Treat `TODO.md` as the source of truth for file state.
+- Treat `CURRICULUM_STRATEGY.md`, `LEARNING_PATHS.md`, and `CURRICULUM_MAP.md` as the source of truth for macro priorities and path sequencing once the assistant director approves changes.
 - Re-read only the workflow, active TODO rows, active agent results, and the specific files being audited, rewritten, or reviewed.
+- Re-read director and assistant-director outputs only when strategy, navigation, or queueing decisions are in scope.
 - Carry forward only actionable state: active file paths, owner/status/source fields, active agent IDs, reviewed audit notes, open blockers, and validation results.
+- Carry forward only compact strategic state: current learner path, approved priority cluster, open structural blockers, and the latest strategy artifact references.
 - Do not keep old audit notes, prompts, command output, or completed-file details in context after the file is marked `complete`, except for concise lessons that affect the current file.
 - Summarize long agent outputs into compact reviewed specs before giving them to writers or reviewers.
 - Prefer targeted validation for the file that just passed review; avoid loading broad repo output unless a global check is explicitly needed.
@@ -60,13 +122,25 @@ The review steps are the quality gate:
 
 ## File Ownership
 
+- The director owns curriculum purpose, learning paths, priority clusters, gap analysis, and `TODO.md` generation or reprioritization.
+- The assistant director owns read-only verification of director strategy, sequencing, structure proposals, and TODO quality.
+- The supervisor owns coordination, `TODO.md` state, dispatch decisions, compact handoff summaries, and final validation.
+- The supervisor executes only assistant-director-approved strategy and may update operational status fields while preserving the approved priority order.
+- The supervisor must never edit assigned curriculum content directly. Curriculum file changes belong to writer agents using `.agents/curriculum-writer.agent`.
+- The director may edit planning, roadmap, navigation, and inventory files, but must not directly rewrite assigned lesson content.
+- The director may propose large moves, but those proposals must be reviewed before execution.
+- If a review returns `NEEDS_FIX`, the supervisor must dispatch the fix to a writer agent instead of making the content repair directly.
+- One director agent owns one strategic planning pass.
+- One assistant director agent owns one strategic review pass.
 - One audit agent owns exactly one file.
 - One implementation worker owns exactly one file.
 - One review agent owns exactly one rewritten file.
-- Agents should use the configs in `.agents/curriculum-audit.agent`, `.agents/curriculum-writer.agent`, and `.agents/curriculum-review.agent`.
+- Agents must use the configs in `.agents/curriculum-director.agent`, `.agents/curriculum-assistant-director.agent`, `.agents/curriculum-audit.agent`, `.agents/curriculum-writer.agent`, and `.agents/curriculum-review.agent`.
+- The supervisor must include the assigned file path, current gate, relevant reviewed notes, and strict one-file scope in every dispatch prompt.
 - Workers must edit only their assigned file.
 - Workers are not alone in the codebase; they must not revert unrelated edits.
 - Auditors and writers should treat review as the anti-hallucination and quality gate.
+- Directors should treat assistant-director review as the anti-hallucination and strategy gate.
 - Auditors must cite authoritative sources for language/runtime/library claims.
 - Writers must preserve source-backed claims from reviewed audit notes and avoid adding unsupported claims.
 - README files are navigation/overview files.
