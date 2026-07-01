@@ -78,6 +78,11 @@ These should shape future roadmap planning once the core path is coherent and we
 - secrets management
 - observability for automation
 - event-driven and webhook automation
+- [PLANNED] agentic automation
+- [PLANNED] agent building
+- [PLANNED] mcp integration
+- [PLANNED] agent-tool integration
+- [PLANNED] IDE agent workflows for VS Code, Codex, and Claude Code
 
 ## Curriculum Rules
 
@@ -114,6 +119,15 @@ These should shape future roadmap planning once the core path is coherent and we
 - advanced validation, structured data, logging, and observability lessons
 - security basics
 
+### Cluster 4: Expansion Agentic Automation [PLANNED]
+
+This optional expansion cluster branches after Stage 3 or Stage 4 once learners can work with structured data, APIs, scripts, and basic reliability practices. It is not required before delivery and operations work.
+
+- agent building: specialized agents, one-job boundaries, orchestration patterns, state handling, and decision flow
+- mcp integration: MCP servers, tool discovery, local tool surfaces, and protocol-shaped handoffs
+- agent-tool integration: tool schemas, parameter validation, handoff contracts, and error recovery
+- IDE agent workflows: invoking and coordinating agent workflows in VS Code, Codex, and Claude Code
+
 ## Milestone Outcomes
 
 The curriculum should eventually guide learners to these outcomes:
@@ -123,6 +137,7 @@ The curriculum should eventually guide learners to these outcomes:
 3. Test and debug an automation workflow with predictable inputs and outputs.
 4. Run automation through CI with clear logs and artifacts.
 5. Package or containerize automation for repeatable execution.
+6. Optionally build a specialized automation agent that uses mock MCP tools, validates tool inputs, and can be invoked from VS Code, Codex, or Claude Code.
 
 ## Director Responsibilities
 

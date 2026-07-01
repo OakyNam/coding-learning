@@ -6,11 +6,11 @@ Strategy references:
 - `LEARNING_PATHS.md` is the source of truth for learner sequencing and path intent.
 - `CURRICULUM_MAP.md` is the source of truth for stage-to-track mapping and rewrite-cluster context.
 
-Status values: `needs-audit`, `audit-dispatched`, `audit-reviewed`, `rewrite-dispatched`, `rewrite-reviewed`, `compatibility-review-needed`, `compatibility-review-dispatched`, `compatibility-reviewed`, `complete`.
+Status values: `needs-audit`, `audit-dispatched`, `audit-reviewed`, `rewrite-dispatched`, `rewrite-reviewed`, `compatibility-review-needed`, `compatibility-review-dispatched`, `compatibility-reviewed`, `strategy-review-needed`, `strategy-pass`, `complete`.
 
 Priority tags: `core`, `supporting`, `expansion`.
 
-Path tags: `automation-first`, `language-first`, `tooling-first`.
+Path tags: `automation-first`, `language-first`, `tooling-first`, `agentic-automation`.
 
 Cluster tags:
 
@@ -20,6 +20,7 @@ Cluster tags:
 - `supporting-systems`
 - `supporting-web-data`
 - `expansion-platform`
+- `expansion-agentic`
 
 Row format:
 
@@ -39,7 +40,7 @@ Use this queue before the raw generated inventory order below. Keep the two-file
 
 Active file already in the gate:
 
-- `languages\c\advanced\04_data_structures_in_c.md` | priority: supporting | path: language-first | cluster: supporting-systems | current status: audit-dispatched
+- no strategy-owned doc file is currently active in the gate
 
 Next automation-first batch:
 
@@ -62,6 +63,45 @@ Next integration batch after foundations:
 6. `topics\package-managers\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-integration
 
 Metadata policy: rows outside the director queue remain generated inventory until they are pulled into an approved batch or classified by a later strategy pass.
+
+## Director-Approved Agentic Automation Backlog (Strategy Review Needed)
+
+Scope guardrails:
+
+- planning and navigation only; no lesson drafting in this batch
+- mark all new learner-facing topics as planned until writer/auditor implementation creates them
+- keep the batch bounded to strategy docs and planned README entry points
+
+Assistant-director gate statement:
+
+- every item below is `strategy-review-needed` until assistant-director PASS
+- supervisor execution may proceed only after PASS and TODO status promotion to `strategy-pass`
+
+Status values for this subsection:
+
+- `strategy-review-needed`
+- `strategy-pass`
+
+Doc-writer batch metadata format:
+
+- Required fields: `type`, `owner`, `status`, `sources`, `priority`, `path`, `cluster`, `governance`
+
+Agentic automation doc-writer batch:
+
+1. `CURRICULUM_STRATEGY.md` | type: strategy-doc | priority: expansion | path: agentic-automation | cluster: expansion-agentic | governance: strategy-source-of-truth,planned-topic-boundaries,optional-milestone | owner: unassigned | status: strategy-review-needed | sources: repo-evidence-required
+2. `LEARNING_PATHS.md` | type: strategy-doc | priority: expansion | path: agentic-automation | cluster: expansion-agentic | governance: optional-branch-after-stage-3-or-4,no-stage-5-prerequisite | owner: unassigned | status: strategy-review-needed | sources: repo-evidence-required
+3. `CURRICULUM_MAP.md` | type: strategy-doc | priority: expansion | path: agentic-automation | cluster: expansion-agentic | governance: stage-map-branch,planned-topic-boundaries | owner: unassigned | status: strategy-review-needed | sources: repo-evidence-required
+4. `README.md` | type: strategy-doc | priority: expansion | path: agentic-automation | cluster: expansion-agentic | governance: learner-facing-entrypoint,no-standalone-governance-section | owner: unassigned | status: strategy-review-needed | sources: repo-evidence-required
+5. `TODO.md` | type: strategy-doc | priority: expansion | path: agentic-automation | cluster: expansion-agentic | governance: metadata-complete-doc-writer-batch | owner: unassigned | status: strategy-review-needed | sources: repo-evidence-required
+6. `topics\agent-building\README.md` [PLANNED] | type: readme | priority: expansion | path: agentic-automation | cluster: expansion-agentic | governance: one-job-agent-boundaries,orchestration-patterns,state-and-decision-flow | owner: doc-writer | status: strategy-review-needed | sources: planned-topic
+7. `topics\mcp-integration\README.md` [PLANNED] | type: readme | priority: expansion | path: agentic-automation | cluster: expansion-agentic | governance: mcp-servers,tool-discovery,local-tool-surfaces | owner: doc-writer | status: strategy-review-needed | sources: planned-topic
+8. `topics\agent-tool-integration\README.md` [PLANNED] | type: readme | priority: expansion | path: agentic-automation | cluster: expansion-agentic | governance: tool-schemas,parameter-validation,handoff-contracts,error-recovery | owner: doc-writer | status: strategy-review-needed | sources: planned-topic
+9. `topics\ide-agent-workflows\README.md` [PLANNED] | type: readme | priority: expansion | path: agentic-automation | cluster: expansion-agentic | governance: vscode,codex,claude-code-agent-workflows | owner: doc-writer | status: strategy-review-needed | sources: planned-topic
+
+Doc-writer handoff note:
+
+- Execute in small batches through the approved strategy + assistant-director gate.
+- Keep TODO updates metadata-consistent with existing `priority`, `path`, and `cluster` fields when new rows are added.
 
 ## Generated Inventory
 
@@ -102,7 +142,7 @@ Metadata policy: rows outside the director queue remain generated inventory unti
 - [x] `languages\c\advanced\01_memory_layout.md` | type: lesson | owner: coordinator-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\c\advanced\02_undefined_behavior.md` | type: lesson | owner: coordinator-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [x] `languages\c\advanced\03_function_pointers.md` | type: lesson | owner: coordinator-reviewed-by-codex | status: complete | sources: official-docs-reviewed
-- [ ] `languages\c\advanced\04_data_structures_in_c.md` | type: lesson | priority: supporting | path: language-first | cluster: supporting-systems | owner: audit-agent-019f194e-2c66-7231-a03a-dca60c2bcd11 | status: audit-dispatched | sources: pending
+- [x] `languages\c\advanced\04_data_structures_in_c.md` | type: lesson | priority: supporting | path: language-first | cluster: supporting-systems | owner: coordinator-reviewed-by-codex | status: complete | sources: official-docs-reviewed
 - [ ] `languages\c\advanced\05_concurrency_basics.md` | type: lesson | priority: supporting | path: language-first | cluster: supporting-systems | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\c\advanced\06_static_and_dynamic_libraries.md` | type: lesson | priority: supporting | path: language-first | cluster: supporting-systems | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\c\advanced\07_profiling_and_optimization.md` | type: lesson | priority: supporting | path: language-first | cluster: supporting-systems | owner: unassigned | status: needs-audit | sources: pending
@@ -337,7 +377,7 @@ Metadata policy: rows outside the director queue remain generated inventory unti
 - [ ] `languages\python\advanced\09_architecture_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\advanced\10_deployment_basics.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\advanced\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\python\beginner\01_setup_and_install.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations | owner: unassigned | status: needs-audit | sources: pending
+- [x] `languages\python\beginner\01_setup_and_install.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations | owner: coordinator-validated | status: complete | sources: official-docs-reviewed
 - [ ] `languages\python\beginner\02_project_and_file_structure.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\beginner\03_variables_and_data_types.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\beginner\04_input_and_output.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -347,7 +387,7 @@ Metadata policy: rows outside the director queue remain generated inventory unti
 - [ ] `languages\python\beginner\08_dictionaries_and_objects.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\beginner\09_functions.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\beginner\10_modules_and_packages.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `languages\python\beginner\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations | owner: unassigned | status: needs-audit | sources: pending
+- [x] `languages\python\beginner\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations | owner: coordinator-validated | status: complete | sources: official-docs-reviewed
 - [ ] `languages\python\intermediate\01_virtual_environments_and_dependency_files.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\intermediate\02_reading_and_writing_files.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `languages\python\intermediate\03_exceptions_and_error_handling.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -385,18 +425,18 @@ Metadata policy: rows outside the director queue remain generated inventory unti
 - [ ] `topics\docker-basics\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\docker-basics\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\docker-basics\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\environment-variables\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations | owner: unassigned | status: needs-audit | sources: pending
+- [x] `topics\environment-variables\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations | owner: coordinator-validated | status: complete | sources: official-docs-reviewed
 - [ ] `topics\environment-variables\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\environment-variables\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\environment-variables\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\environment-variables\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\environment-variables\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\git\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations | owner: unassigned | status: needs-audit | sources: pending
+- [x] `topics\environment-variables\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations | owner: coordinator-validated | status: complete | sources: official-docs-reviewed
+- [x] `topics\git\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations | owner: coordinator-validated | status: complete | sources: official-docs-reviewed
 - [ ] `topics\git\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\git\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\git\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\git\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\git\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations | owner: unassigned | status: needs-audit | sources: pending
+- [x] `topics\git\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations | owner: coordinator-validated | status: complete | sources: official-docs-reviewed
 - [ ] `topics\github\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\github\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\github\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -416,7 +456,7 @@ Metadata policy: rows outside the director queue remain generated inventory unti
 - [ ] `topics\http-and-apis\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\http-and-apis\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\http-and-apis\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-integration | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\json\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-integration | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\json\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-integration | owner: audit-agent-dispatched | status: audit-dispatched | sources: pending
 - [ ] `topics\json\02_json_structure.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\json\03_jsonpath_basics.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\json\04_querying_nested_data.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -426,7 +466,7 @@ Metadata policy: rows outside the director queue remain generated inventory unti
 - [ ] `topics\json\08_querying_json_in_languages.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\json\09_common_query_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\json\10_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\json\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-integration | owner: unassigned | status: needs-audit | sources: pending
+- [ ] `topics\json\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-integration | owner: audit-agent-dispatched | status: audit-dispatched | sources: pending
 - [ ] `topics\markdown\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\markdown\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\markdown\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
@@ -464,12 +504,12 @@ Metadata policy: rows outside the director queue remain generated inventory unti
 - [ ] `topics\sql\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\sql\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\sql\README.md` | type: readme | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\terminal\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations | owner: unassigned | status: needs-audit | sources: pending
+- [x] `topics\terminal\01_foundations.md` | type: lesson | priority: core | path: automation-first | cluster: automation-foundations | owner: coordinator-validated | status: complete | sources: official-docs-reviewed
 - [ ] `topics\terminal\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\terminal\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\terminal\04_common_mistakes.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\terminal\05_practice_project.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
-- [ ] `topics\terminal\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations | owner: audit-agent-019f194e-58bd-7db0-8c8c-ca2d74bee66b | status: audit-dispatched | sources: pending
+- [x] `topics\terminal\README.md` | type: readme | priority: core | path: automation-first | cluster: automation-foundations | owner: coordinator-validated | status: complete | sources: official-docs-reviewed
 - [ ] `topics\testing\01_foundations.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\testing\02_core_concepts.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending
 - [ ] `topics\testing\03_practical_patterns.md` | type: lesson | owner: unassigned | status: needs-audit | sources: pending

@@ -59,6 +59,20 @@ Recommended order:
 
 ## Secondary Paths
 
+### Agentic Automation Optional Path [PLANNED]
+
+Use this after Stage 3 when the learner can already work with scripts, JSON, HTTP APIs, and package-managed tools. Learners who want more reliability practice first should complete Stage 4 before starting this path. Stage 5 delivery and operations are useful later but are not required before beginning agentic automation.
+
+Recommended order:
+
+1. [PLANNED] Agentic foundations: understand what an agent is, where agent boundaries belong, and why one agent should have one clear job.
+2. [PLANNED] `topics/agent-building/README.md`: design specialized agents, orchestration flow, state handling, and decision patterns.
+3. [PLANNED] `topics/mcp-integration/README.md`: connect agents to MCP servers, tool discovery, and local tool surfaces.
+4. [PLANNED] `topics/agent-tool-integration/README.md`: define tool schemas, validate parameters, handle tool errors, and manage handoffs.
+5. [PLANNED] `topics/ide-agent-workflows/README.md`: invoke and coordinate agent workflows in VS Code, Codex, and Claude Code.
+
+Milestone outcome: build a specialized automation agent that uses mock MCP tools, validates tool inputs, handles failures, and can be invoked from VS Code, Codex, or Claude Code.
+
 ### Language-First Path
 
 Use this when a learner needs one language deeply before widening into automation topics.

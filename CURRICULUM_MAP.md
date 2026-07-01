@@ -102,6 +102,35 @@ Core tracks:
 - secrets management
 - observability
 - event-driven automation
+- [PLANNED] agentic automation
+- [PLANNED] agent building
+- [PLANNED] mcp integration
+- [PLANNED] agent-tool integration
+- [PLANNED] IDE agent workflows for VS Code, Codex, and Claude Code
+
+## Optional Agentic Automation Branch [PLANNED]
+
+This branch is learner-facing expansion work. It may start after Stage 3 for learners who already have basic debugging discipline, or after Stage 4 for learners who want more reliability practice first. Stage 5 delivery and operations are useful later but are not prerequisites for this branch.
+
+### Agentic Branch Entry Point
+
+Primary outcome: build from structured data, APIs, scripts, and testing habits into agent-driven automation.
+
+Prerequisite tracks:
+
+- Stage 3: Structured Data And Integration
+- Stage 4: Quality And Reliability, recommended before larger multi-tool agent work
+
+### Planned Agentic Tracks
+
+- [PLANNED] `topics/agent-building/README.md`: specialized agents, one-job boundaries, orchestration patterns, state handling, and decision flow
+- [PLANNED] `topics/mcp-integration/README.md`: MCP servers, tool discovery, local tool surfaces, and protocol-shaped handoffs
+- [PLANNED] `topics/agent-tool-integration/README.md`: tool schemas, parameter validation, handoff contracts, and error recovery
+- [PLANNED] `topics/ide-agent-workflows/README.md`: VS Code, Codex, and Claude Code workflows for invoking and coordinating agents
+
+### Optional Agentic Milestone
+
+Build a specialized automation agent that uses mock MCP tools, validates tool inputs, handles tool errors, and can be invoked from VS Code, Codex, or Claude Code.
 
 ## Director Usage
 

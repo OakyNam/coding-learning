@@ -41,6 +41,19 @@ For most learners, start with the automation-first path:
 
 See [LEARNING_PATHS.md](LEARNING_PATHS.md) for alternate language-first and tooling-first routes.
 
+## Agentic Automation Learning [PLANNED]
+
+The strategy now includes an optional expansion path for learners who want to build agent-driven automation after they understand scripts, JSON, HTTP APIs, and basic reliability practices.
+
+Planned learner-facing topics include:
+
+- agent building and one-job agent boundaries
+- MCP integration and local tool surfaces
+- agent-tool schemas, validation, handoffs, and error recovery
+- IDE agent workflows in VS Code, Codex, and Claude Code
+
+The planned sequence lives in [LEARNING_PATHS.md](LEARNING_PATHS.md), and the stage mapping lives in [CURRICULUM_MAP.md](CURRICULUM_MAP.md). Lesson content should be added later through the approved writer/auditor workflow.
+
 ## Repository Shape
 
 ### Languages
